@@ -1,0 +1,14 @@
+bin\Debug\embroideryReader.exe
+bin\Debug\embroideryReader.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\embroideryReader.Properties.Resources.resources
+obj\Debug\embroideryReader.csproj.GenerateResource.Cache
+obj\Debug\embroideryReader.exe
+obj\Debug\embroideryReader.pdb
+bin\Release\embroideryReader.exe
+bin\Release\embroideryReader.pdb
+obj\Release\ResolveAssemblyReference.cache
+obj\Release\embroideryReader.Properties.Resources.resources
+obj\Release\embroideryReader.csproj.GenerateResource.Cache
+obj\Release\embroideryReader.exe
+obj\Release\embroideryReader.pdb
