@@ -12,3 +12,6 @@ obj\Release\embroideryReader.Properties.Resources.resources
 obj\Release\embroideryReader.csproj.GenerateResource.Cache
 obj\Release\embroideryReader.exe
 obj\Release\embroideryReader.pdb
+obj\Release\embroideryReader.Form1.resources
+obj\Debug\embroideryReader.Form1.resources
+obj\Debug\embroideryReader.Form2.resources
