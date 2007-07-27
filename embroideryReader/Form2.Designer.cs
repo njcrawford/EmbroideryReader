@@ -35,6 +35,7 @@ namespace embroideryReader
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(292, 273);
+            this.DoubleBuffered = true;
             this.Name = "Form2";
             this.Text = "Form2";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form2_Paint);
