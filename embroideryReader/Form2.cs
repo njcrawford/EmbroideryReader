@@ -12,14 +12,15 @@ namespace embroideryReader
     {
         //public List<Point> pointList = new List<Point>();
         //public Point[] points = new Point[0];
-        public Color drawColor = System.Drawing.Color.Black;
-        private Bitmap DrawArea;
+        //public Color drawColor = System.Drawing.Color.Black;
+        public Pen drawPen = Pens.Black;
+        public Bitmap DrawArea;
         public Point prevPoint = new Point(-1,-1);
 
         public Form2()
         {
             InitializeComponent();
-            DrawArea = new Bitmap(1000, 1000);
+            //DrawArea = new Bitmap(1000, 1000);
         }
 
         private void Form2_Paint(object sender, PaintEventArgs e)
@@ -44,7 +45,7 @@ namespace embroideryReader
             {
                 Graphics xGraph;
                 xGraph = Graphics.FromImage(DrawArea);
-                xGraph.DrawLine(new Pen(drawColor), prevPoint, p);
+                xGraph.DrawLine(drawPen, prevPoint, p);
                 xGraph.Dispose();
             }
             prevPoint = p;

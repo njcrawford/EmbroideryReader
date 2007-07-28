@@ -17,6 +17,12 @@ namespace embroideryReader
         int stitchCount = 0;
         int stitchesLeft = 0;
         int skipStitches = 0;
+        int minX = int.MaxValue;
+        int minY = int.MaxValue;
+        int maxX = int.MinValue;
+        int maxY = int.MinValue;
+        int imageWidth;
+        int imageHeight;
 
 
         public Form1()
@@ -29,7 +35,16 @@ namespace embroideryReader
             //System.IO.BinaryReader fileIn;
             //char charIn;
             string message = "";
-            fileIn = new System.IO.BinaryReader(System.IO.File.Open("118866.pes", System.IO.FileMode.Open));
+            string filename;
+            openFileDialog1.ShowDialog();
+            filename = openFileDialog1.FileName;
+            if (!System.IO.File.Exists(filename))
+            {
+                return;
+            }
+            //fileIn = new System.IO.BinaryReader(System.IO.File.Open("118866.pes", System.IO.FileMode.Open));
+            //fileIn = new System.IO.BinaryReader(System.IO.File.Open("144496.pes", System.IO.FileMode.Open));
+            fileIn = new System.IO.BinaryReader(System.IO.File.Open(filename, System.IO.FileMode.Open));
             //charIn = fileIn.ReadChar();
             for (int i = 0; i < 8; i++)//8 bytes
             {
@@ -53,15 +68,37 @@ namespace embroideryReader
             //MessageBox.Show(message);
 
             //message = "";
-            for (int i = 0; i < 11; i++) //read 66 bytes
+            int headerValNum = 1;
+            int tmpval;
+            for (int i = 0; i < 33; i++) //read 66 bytes
             {
-                message += fileIn.ReadInt16().ToString();
-                message += "\t| ";
-                message += fileIn.ReadInt16().ToString();
-                message += "\t| ";
-                message += fileIn.ReadInt16().ToString();
-                message += Environment.NewLine;
-                bytesRead += 6;
+                tmpval = fileIn.ReadInt16();
+                switch (headerValNum)
+                {
+                    case 24:
+                        imageWidth = tmpval;
+                        break;
+                    case 25:
+                        imageHeight = tmpval;
+                        break;
+                }
+
+                message += tmpval.ToString();
+                if (headerValNum % 3 == 0)
+                {
+                    message += Environment.NewLine;
+                }
+                else
+                {
+                    message += "\t| ";
+                }
+                headerValNum++;
+                //message += "\t| ";
+                //message += fileIn.ReadInt16().ToString();
+                //message += "\t| ";
+                //message += fileIn.ReadInt16().ToString();
+                //message += Environment.NewLine;
+                //bytesRead += 6;
             }
             //MessageBox.Show(message);
 
@@ -83,33 +120,16 @@ namespace embroideryReader
             }
             MessageBox.Show(message);
 
-            //start of point pairs?
+            //start of point pairs
             message = "";
-            //int tmpx;
-            //int tmpy;
-            //List<Point> tmpPoints = new List<Point>();
             long startPos = fileIn.BaseStream.Position;
             bytesRead = fileIn.BaseStream.Position;
-            //MessageBox.Show(fileIn.BaseStream.Position.ToString());
-            //while (bytesRead + 4 <= 10000)
-            ////while (bytesRead + 4 <= startPos + 1204 + 200)
-            //{
-            //    //if (bytesRead > 1322)
-            //    //{
-            //    //    int junk = 0;
-            //    //    junk++;
-            //    //}
-            //    tmpy = Convert.ToInt32( (fileIn.ReadInt16() / 2.0) + 600);
-            //    tmpx = Convert.ToInt32( (fileIn.ReadInt16() / 2.0) + 600);
-            //    bytesRead += 4;
-            //    tmpPoints.Add(new Point(tmpx, tmpy));
-            //}
-            //_form2.points = new Point[tmpPoints.Count];
-            //tmpPoints.CopyTo(_form2.points);
-            //fileIn.Close();
-            //MessageBox.Show(tmpPoints.Count.ToString());
+            _form2.DrawArea = new Bitmap(imageWidth, imageHeight);
+            _form2.Width = imageWidth + 30;
+            _form2.Height = imageHeight + 45;
             _form2.Show();
-            _form2.drawColor = Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255)));
+            //_form2.drawColor = Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255)));
+            _form2.drawPen = new Pen(Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255))),2);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -126,15 +146,6 @@ namespace embroideryReader
         {
             int tmpx;
             int tmpy;
-            //List<Point> tmpPoints = new List<Point>();
-            //while (bytesRead + 4 <= 10000)
-            //while (bytesRead + 4 <= startPos + 1204 + 200)
-            //{
-            //if (bytesRead > 1322)
-            //{
-            //    int junk = 0;
-            //    junk++;
-            //}
             Int32 realx;
             Int32 realy;
             if (fileIn.BaseStream.Position + 4 < fileIn.BaseStream.Length)
@@ -144,12 +155,12 @@ namespace embroideryReader
                 if (realx == -32765)
                 {
 
-                    if (realy == 1)
+                    if (realy == 1) //probably means change color
                     {
                         //timer1.Enabled = false;
                         //colorDialog1.ShowDialog();
                         //_form2.drawColor = colorDialog1.Color;
-                        _form2.drawColor = Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255)));
+                        _form2.drawPen = new Pen(Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255))),2);
                         _form2.Invalidate();
                         _form2.prevPoint = new Point(-1, -1);
                     }
@@ -162,10 +173,9 @@ namespace embroideryReader
                 }
                 else
                 {
-                    tmpx = Convert.ToInt32((realx / 2.0) + 100);
-                    tmpy = Convert.ToInt32((realy / 2.0) + 600);
+                    tmpx = realx;//x is ok
+                    tmpy = realy + imageHeight;//y needs to be translated
                     bytesRead += 4;
-                    //tmpPoints.Add(new Point(tmpx, tmpy));
                     if (skipStitches > 0)
                     {
                         skipStitches--;
@@ -173,26 +183,39 @@ namespace embroideryReader
                     else
                     {
                         _form2.addPoint(new Point(tmpx, tmpy));
+                        if (realx < minX)
+                        {
+                            minX = realx;
+                        }
+                        if (realx > maxX)
+                        {
+                            maxX = realx;
+                        }
+                        if (realy < minY)
+                        {
+                            minY = realy;
+                        }
+                        if (realy > maxY)
+                        {
+                            maxY = realy;
+                        }
                     }
                     stitchCount++;
                     stitchesLeft--;
-                    _form2.Invalidate();
                 }
-                label1.Text = "file pos: " + fileIn.BaseStream.Position.ToString() + ", last values: " + realx.ToString() + ", " + realy.ToString() + ", stiches: " + stitchCount.ToString() + ", stitches left: " + stitchesLeft.ToString();
+                label1.Text = "file pos: " + fileIn.BaseStream.Position.ToString() + ", last values: " + realx.ToString() + ", " + realy.ToString() + ", total stiches: " + stitchCount.ToString() + ", stitches til next section: " + (stitchesLeft + 1).ToString() + ", min, max vals: " + minX.ToString() + "," + minY.ToString() + ";" + maxX.ToString() + "," + maxY.ToString();
                 if (stitchesLeft < 0)
                 {
                     timer1.Enabled = false;
                     fileIn.Close();
                 }
             }
-            //_form2.points = new Point[tmpPoints.Count];
-            //tmpPoints.CopyTo(_form2.points);
-
-        }
+         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             nextStitch();
+            _form2.Invalidate();
         }
 
         private void button4_Click(object sender, EventArgs e)
