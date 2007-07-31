@@ -15,7 +15,10 @@ namespace embroideryReader
         //public Color drawColor = System.Drawing.Color.Black;
         public Pen drawPen = Pens.Black;
         public Bitmap DrawArea;
-        public Point prevPoint = new Point(-1,-1);
+        //public Point prevPoint = new Point(-1, -1);
+        public PesFile design;
+        //private int blockNum = -1;
+        //private int stitchNum = -1;
 
         public Form2()
         {
@@ -31,25 +34,64 @@ namespace embroideryReader
             //{
             //    e.Graphics.DrawLines(new System.Drawing.Pen(drawColor), points);
             //}
+            //e.Graphics.DrawImage(DrawArea, 0, 0);
+        }
+
+        //public void addPoint(Point p)
+        //{
+        //    //Point[] tmp = new Point[points.Length + 1];
+        //    //points.CopyTo(tmp,0);
+        //    //tmp[tmp.Length - 1] = p;
+        //    //points = tmp;
+
+        //    if (prevPoint != null && prevPoint.X != -1 && prevPoint.Y != -1)
+        //    {
+        //        Graphics xGraph;
+        //        xGraph = Graphics.FromImage(DrawArea);
+        //        xGraph.DrawLine(drawPen, prevPoint, p);
+        //        xGraph.Dispose();
+        //    }
+        //    prevPoint = p;
+
+        //}
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
             e.Graphics.DrawImage(DrawArea, 0, 0);
         }
 
-        public void addPoint(Point p)
+        public void setPanelSize(int x, int y)
         {
-            //Point[] tmp = new Point[points.Length + 1];
-            //points.CopyTo(tmp,0);
-            //tmp[tmp.Length - 1] = p;
-            //points = tmp;
+            panel1.Width = x;
+            panel1.Height = y;
+        }
 
-            if (prevPoint != null && prevPoint.X != -1 && prevPoint.Y != -1)
+        //public void nextStitch()
+        //{
+        //    Graphics xGraph;
+        //    xGraph = Graphics.FromImage(DrawArea);
+        //    if (stitchNum < design.blocks[blockNum].stitches.Length)
+        //    {
+        //        if (stitchNum >= 0)
+        //        {
+        //            xGraph.DrawLine(drawPen, design.blocks[blockNum].stitches[stitchNum], design.blocks[blockNum].stitches[stitchNum]);
+        //        }
+        //        stitchNum++;
+        //    }
+        //    xGraph.Dispose();
+        //    panel1.Invalidate();
+        //}
+
+        public void finishDesign()
+        {
+            Graphics xGraph;
+            xGraph = Graphics.FromImage(DrawArea);
+            for (int i = 0; i < design.blocks.Count; i++)
             {
-                Graphics xGraph;
-                xGraph = Graphics.FromImage(DrawArea);
-                xGraph.DrawLine(drawPen, prevPoint, p);
-                xGraph.Dispose();
+                xGraph.DrawLines(new Pen(design.blocks[i].color,2.5f), design.blocks[i].stitches);
             }
-            prevPoint = p;
-
+            xGraph.Dispose();
+            this.panel1.Invalidate();
         }
     }
 }
