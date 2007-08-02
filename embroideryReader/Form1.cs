@@ -10,7 +10,11 @@ namespace embroideryReader
 {
     public partial class Form1 : Form
     {
-        private Form2 _form2;
+        private string[] args;
+        //private Form2 _form2;
+        public Pen drawPen = Pens.Black;
+        public Bitmap DrawArea;
+        public PesFile design;
         //private PesFile design;
         //private long bytesRead = 0;
         //System.IO.BinaryReader fileIn;
@@ -30,6 +34,7 @@ namespace embroideryReader
         public Form1()
         {
             InitializeComponent();
+            args = Environment.GetCommandLineArgs();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -126,29 +131,40 @@ namespace embroideryReader
             //message = "";
             //long startPos = fileIn.BaseStream.Position;
             //bytesRead = fileIn.BaseStream.Position;
-            _form2 = new Form2();
+            //_form2 = new Form2();
+            //string filename;
+            //openFileDialog1.ShowDialog();
+            //filename = openFileDialog1.FileName;
+            //if (!System.IO.File.Exists(filename) )
+            //{
+            //    return;
+            //}
+            //_form2.design = new PesFile(filename);
+            //_form2.DrawArea = new Bitmap(_form2.design.GetWidth(), _form2.design.GetHeight());
+            //_form2.setPanelSize(_form2.design.GetWidth(), _form2.design.GetHeight());
+            ////_form2.Width = imageWidth + 30;
+            ////_form2.Height = imageHeight + 45;
+
+            //_form2.Show();
+            //_form2.finishDesign();
+            //_form2.drawColor = Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255)));
+            //_form2.drawPen = new Pen(Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255))),4);
             string filename;
             openFileDialog1.ShowDialog();
             filename = openFileDialog1.FileName;
-            if (!System.IO.File.Exists(filename) )
+            if (!System.IO.File.Exists(filename))
             {
                 return;
             }
-            _form2.design = new PesFile(filename);
-            _form2.DrawArea = new Bitmap(_form2.design.GetWidth(), _form2.design.GetHeight());
-            _form2.setPanelSize(_form2.design.GetWidth(), _form2.design.GetHeight());
-            //_form2.Width = imageWidth + 30;
-            //_form2.Height = imageHeight + 45;
-
-            _form2.Show();
-            _form2.finishDesign();
-            //_form2.drawColor = Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255)));
-            //_form2.drawPen = new Pen(Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255))),4);
+            else
+            {
+                openFile(filename);
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            _form2.Show();
+            //_form2.Show();
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -231,7 +247,7 @@ namespace embroideryReader
         private void timer1_Tick(object sender, EventArgs e)
         {
             //_form2.nextStitch();
-            _form2.Invalidate();
+            //_form2.Invalidate();
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -250,7 +266,7 @@ namespace embroideryReader
             //{
             //    nextStitch();
             //}
-            _form2.finishDesign();
+            //_form2.finishDesign();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -259,7 +275,79 @@ namespace embroideryReader
             button3.Enabled = false;
             button4.Enabled = false;
             button5.Enabled = false;
+            //MessageBox.Show(args.Length.ToString());
+            if (args.Length > 1)
+            {
+                openFile(args[1]);
+            }
+        }
+        private void openFile(string filename)
+        {
+            if (!System.IO.File.Exists(filename))
+            {
+                return;
+            }
+            //_form2 = new Form2();
+            //_form2.design = new PesFile(filename);
+            design = new PesFile(filename);
+            //_form2.DrawArea = new Bitmap(_form2.design.GetWidth(), _form2.design.GetHeight());
+            DrawArea = new Bitmap(design.GetWidth(), design.GetHeight());
+            setPanelSize(design.GetWidth(), design.GetHeight());
+
+            //_form2.Show();
+            finishDesign();
         }
 
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string filename;
+            openFileDialog1.FileName = "";
+            openFileDialog1.Filter = "Embroidery Files (*.pes)|*.pes|All Files (*.*)|*.*";
+            openFileDialog1.ShowDialog();
+            filename = openFileDialog1.FileName;
+            if (!System.IO.File.Exists(filename))
+            {
+                return;
+            }
+            else
+            {
+                openFile(filename);
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+            if (DrawArea != null)
+            {
+                e.Graphics.DrawImage(DrawArea, 0, 0);
+            }
+        }
+        public void setPanelSize(int x, int y)
+        {
+            panel1.Width = x;
+            panel1.Height = y;
+        }
+        public void finishDesign()
+        {
+            Graphics xGraph;
+            xGraph = Graphics.FromImage(DrawArea);
+            for (int i = 0; i < design.blocks.Count; i++)
+            {
+                xGraph.DrawLines(new Pen(design.blocks[i].color, 2.5f), design.blocks[i].stitches);
+            }
+            xGraph.Dispose();
+            panel1.Invalidate();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //MessageBox.Show("Embroidery Reader version " + Application.v
+            MessageBox.Show("This is where the version goes");
+        }
     }
 }

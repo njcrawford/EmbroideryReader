@@ -15,3 +15,4 @@ obj\Release\embroideryReader.pdb
 obj\Release\embroideryReader.Form1.resources
 obj\Debug\embroideryReader.Form1.resources
 obj\Debug\embroideryReader.Form2.resources
+obj\Release\embroideryReader.Form2.resources
