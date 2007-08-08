@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.Reflection;
 
 namespace embroideryReader
 {
@@ -15,6 +16,7 @@ namespace embroideryReader
         public Pen drawPen = Pens.Black;
         public Bitmap DrawArea;
         public PesFile design;
+        private SettingsTester.nc_Settings settings = new SettingsTester.nc_Settings("embroideryreader.ini");
         //private PesFile design;
         //private long bytesRead = 0;
         //System.IO.BinaryReader fileIn;
@@ -271,6 +273,12 @@ namespace embroideryReader
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            string temp;
+            temp = settings.getValue("update location");
+            if (temp == null || temp == "")
+            {
+                settings.setValue("update location", "http://www.njcrawford.com/embreader/");
+            }
             button2.Enabled = false;
             button3.Enabled = false;
             button4.Enabled = false;
@@ -346,8 +354,62 @@ namespace embroideryReader
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //MessageBox.Show("Embroidery Reader version " + Application.v
-            MessageBox.Show("This is where the version goes");
+            MessageBox.Show("EmbroideryReader version " + currentVersion() + ". This program reads and displays embroidery designs from .PES files.");
+        }
+
+        private void checkForUpdateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            //bool isNewerVersion = false;
+            UpdateTester.nc_Update updater = new UpdateTester.nc_Update(settings.getValue("update location"));
+            //UpdateTester.nc_Update updater = new UpdateTester.nc_Update("http://www.google.com/");
+            //char[] sep = { '.' };
+            //string[] upVersion = updater.VersionAvailable().Split(sep);
+            //string[] curVersion = currentVersion().Split(sep);
+            //for (int i = 0; i < 4; i++)
+            //{
+            //    if (Convert.ToInt32( upVersion[i]) > Convert.ToInt32(curVersion[i]))
+            //    {
+            //        isNewerVersion = true;
+            //        break;
+            //    }
+            //}
+            //if (isNewerVersion)
+            if(updater.IsUpdateAvailable())
+            {
+                if (MessageBox.Show("Version " + updater.VersionAvailable() + " is available.\nYou have version " + currentVersion() + ". Would you like to update?\n(If you choose Yes, the update will be downloaded and installed, and the program will be restarted)", "New version available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    if (!updater.InstallUpdate())
+                    {
+                        MessageBox.Show("Update failed, error message: " + updater.GetLastError());
+                    }
+                    else
+                    {
+                        Environment.Exit(0);
+                    }
+                }
+            }
+            else if (updater.GetLastError() != "")
+            {
+                MessageBox.Show("Encountered an error while checking for updates: " + updater.GetLastError());
+            }
+            else
+            {
+                MessageBox.Show("No updates are available right now. (Latest version is "+updater.VersionAvailable()+")");
+            }
+
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            settings.save();
+        }
+
+        private string currentVersion()
+        {
+            //Assembly myAsm = Assembly.GetCallingAssembly();
+            //AssemblyName aName = myAsm.GetName();
+            return Assembly.GetCallingAssembly().GetName().Version.ToString();
         }
     }
 }

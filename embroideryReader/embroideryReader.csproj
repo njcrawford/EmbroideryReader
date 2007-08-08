@@ -48,6 +48,8 @@
     <Compile Include="Form2.Designer.cs">
       <DependentUpon>Form2.cs</DependentUpon>
     </Compile>
+    <Compile Include="nc_Settings.cs" />
+    <Compile Include="nc_Update.cs" />
     <Compile Include="PesFile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
