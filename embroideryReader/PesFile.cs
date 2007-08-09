@@ -8,12 +8,20 @@ namespace embroideryReader
     public class stitchBlock
     {
         public System.Drawing.Color color;
+        public Int32 unknownNumber;
+        public Int32 stitchesTotal;
         public Point[] stitches;
         public stitchBlock()
         {
             color = System.Drawing.Color.Black;
             //stitches = new List<System.Drawing.Point>();
         }
+    }
+
+    public struct intPair
+    {
+        public int a;
+        public int b;
     }
 
     public class PesFile
@@ -34,7 +42,11 @@ namespace embroideryReader
         string _filename;
         public List<Int16> pesHeader = new List<short>();
         public List<Int16> embOneHeader = new List<short>();
+        public List<Int16> csewsegHeader = new List<short>();
         public List<stitchBlock> blocks = new List<stitchBlock>();
+        public List<intPair> afterStictchesTable = new List<intPair>();
+
+        Int64 startStitches = 0;
 
         public PesFile(string filename)
         {
@@ -65,7 +77,7 @@ namespace embroideryReader
             //message += Environment.NewLine;
             for (int i = 0; i < 8; i++)//16 bytes
             {
-                pesHeader.Add( fileIn.ReadInt16());
+                pesHeader.Add(fileIn.ReadInt16());
                 //message += fileIn.ReadInt16().ToString();
                 //message += Environment.NewLine;
                 //bytesRead += 2;
@@ -85,7 +97,7 @@ namespace embroideryReader
             for (int i = 0; i < 33; i++) //read 66 bytes
             {
                 tmpval = fileIn.ReadInt16();
-                embOneHeader.Add( tmpval);
+                embOneHeader.Add(tmpval);
                 switch (i)
                 {
                     case 23:
@@ -131,8 +143,10 @@ namespace embroideryReader
                 //message += fileIn.ReadInt16();
                 //message += Environment.NewLine;
                 //bytesRead += 2;
-                fileIn.ReadInt16();
+                csewsegHeader.Add(fileIn.ReadInt16());
+
             }
+            startStitches = fileIn.BaseStream.Position;
             //MessageBox.Show(message);
 
             //start of point pairs
@@ -141,6 +155,8 @@ namespace embroideryReader
             //bytesRead = fileIn.BaseStream.Position;
             List<Point> currentBlock = new List<Point>();
             Color currentColor = Color.Black;
+            Int32 tmpStitchCount = 0;
+            stitchesLeft = 10; //give it kickstart to get over the beginning
             while (stitchesLeft >= 0)
             {
                 int tmpx;
@@ -162,13 +178,17 @@ namespace embroideryReader
                             tmp.stitches = new Point[currentBlock.Count];
                             currentBlock.CopyTo(tmp.stitches);
                             tmp.color = currentColor;
+                            tmp.unknownNumber = lastStrangeNum;
+                            tmp.stitchesTotal = tmpStitchCount;
                             blocks.Add(tmp);
+                            tmpStitchCount = 0;
                             currentBlock = new List<Point>();
                             currentColor = System.Drawing.Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255)));
                         }
                         lastStrangeNum = fileIn.ReadInt16();//don't know what this is, maybe stitching speed? Seems to be 1/100 sec values
                         //timer1.Interval = lastStrangeNum * 10;
                         stitchesLeft = fileIn.ReadInt16();
+                        tmpStitchCount += stitchesLeft;
                         if (realy == 1)
                         {
                             skipStitches = stitchesLeft;//skip these stiches, since they just seem to get in the way
@@ -215,6 +235,16 @@ namespace embroideryReader
                     //}
                 }
             }
+            intPair tmpPair = new intPair();
+            tmpPair.a = fileIn.ReadInt16();
+            tmpPair.b = fileIn.ReadInt16();
+            while (tmpPair.a != 0)
+            {
+                afterStictchesTable.Add(tmpPair);
+                tmpPair = new intPair();
+                tmpPair.a = fileIn.ReadInt16();//strange number
+                tmpPair.b = fileIn.ReadInt16();//file block that strange number end at. Not the same as stichBlock.
+            }
             fileIn.Close();
         }
 
@@ -238,6 +268,72 @@ namespace embroideryReader
             {
                 return _filename;
             }
+        }
+
+        public void saveDebugInfo()
+        {
+            System.IO.StreamWriter outfile = new System.IO.StreamWriter(System.IO.Path.ChangeExtension(_filename, ".txt"));
+            string name = "";
+            outfile.WriteLine("pes header");
+            for (int i = 0; i < pesHeader.Count; i++)
+            {
+                name = (i + 1).ToString();
+                outfile.WriteLine(name + "\t" + pesHeader[i].ToString());
+            }
+            outfile.WriteLine("embone header");
+            for (int i = 0; i < embOneHeader.Count; i++)
+            {
+                switch (i + 1)
+                {
+                    case 24:
+                        name = "width";
+                        break;
+                    case 25:
+                        name = "height";
+                        break;
+                    default:
+                        name = (i + 1).ToString();
+                        break;
+                }
+
+                outfile.WriteLine(name + "\t" + embOneHeader[i].ToString());
+            }
+            outfile.WriteLine("csewseg header");
+            for (int i = 0; i < csewsegHeader.Count; i++)
+            {
+
+                switch (i + 1)
+                {
+                    case 4:
+                        name = "base x";
+                        break;
+                    case 5:
+                        name = "base y";
+                        break;
+                    case 6:
+                        name = "start x";
+                        break;
+                    case 7:
+                        name = "start y";
+                        break;
+                    default:
+                        name = (i + 1).ToString();
+                        break;
+                }
+                outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
+            }
+            outfile.WriteLine("stitches start: " + startStitches.ToString());
+            outfile.WriteLine("block info");
+            for (int i = 0; i < this.blocks.Count; i++)
+            {
+                outfile.WriteLine((i + 1).ToString() + "\t" + blocks[i].unknownNumber.ToString() + "\t" + blocks[i].stitchesTotal.ToString());
+            }
+            outfile.WriteLine("after stitches table");
+            for (int i = 0; i < afterStictchesTable.Count; i++)
+            {
+                outfile.WriteLine((i + 1).ToString() + "\t" + afterStictchesTable[i].a.ToString() + ", " + afterStictchesTable[i].b.ToString());
+            }
+            outfile.Close();
         }
     }
 }

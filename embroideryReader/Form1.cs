@@ -325,7 +325,8 @@ namespace embroideryReader
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Environment.Exit(0);
+            //Environment.Exit(0);
+            this.Close();
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
@@ -346,7 +347,10 @@ namespace embroideryReader
             xGraph = Graphics.FromImage(DrawArea);
             for (int i = 0; i < design.blocks.Count; i++)
             {
-                xGraph.DrawLines(new Pen(design.blocks[i].color, 2.5f), design.blocks[i].stitches);
+                if (design.blocks[i].stitches.Length > 0)
+                {
+                    xGraph.DrawLines(new Pen(design.blocks[i].color, 2.5f), design.blocks[i].stitches);
+                }
             }
             xGraph.Dispose();
             panel1.Invalidate();
@@ -375,7 +379,7 @@ namespace embroideryReader
             //    }
             //}
             //if (isNewerVersion)
-            if(updater.IsUpdateAvailable())
+            if (updater.IsUpdateAvailable())
             {
                 if (MessageBox.Show("Version " + updater.VersionAvailable() + " is available.\nYou have version " + currentVersion() + ". Would you like to update?\n(If you choose Yes, the update will be downloaded and installed, and the program will be restarted)", "New version available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
@@ -395,7 +399,7 @@ namespace embroideryReader
             }
             else
             {
-                MessageBox.Show("No updates are available right now. (Latest version is "+updater.VersionAvailable()+")");
+                MessageBox.Show("No updates are available right now. (Latest version is " + updater.VersionAvailable() + ")");
             }
 
         }
@@ -410,6 +414,11 @@ namespace embroideryReader
             //Assembly myAsm = Assembly.GetCallingAssembly();
             //AssemblyName aName = myAsm.GetName();
             return Assembly.GetCallingAssembly().GetName().Version.ToString();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            design.saveDebugInfo();
         }
     }
 }
