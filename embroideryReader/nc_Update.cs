@@ -9,27 +9,27 @@ namespace UpdateTester
     public class nc_Update
     {
         System.Net.WebClient downloader = new System.Net.WebClient();
-        SettingsTester.nc_Settings updateInfo;
+        nc_settings.IniFile updateInfo;
         System.Uri updateURI;
         string lastError = "";
 
         public nc_Update(string updateLocation)
         {
-            if (!Directory.Exists(Path.Combine(SettingsTester.nc_Settings.appPath(), "update")))
+            if (!Directory.Exists(Path.Combine(nc_settings.IniFile.appPath(), "update")))
             {
-                Directory.CreateDirectory(Path.Combine(SettingsTester.nc_Settings.appPath(), "update"));
+                Directory.CreateDirectory(Path.Combine(nc_settings.IniFile.appPath(), "update"));
             }
             try
             {
                 updateURI = new Uri(updateLocation);
-                downloader.DownloadFile(new Uri(updateURI, "update.ini"), Path.Combine(Path.Combine(SettingsTester.nc_Settings.appPath(), "update"), "update.ini"));
+                downloader.DownloadFile(new Uri(updateURI, "update.ini"), Path.Combine(Path.Combine(nc_settings.IniFile.appPath(), "update"), "update.ini"));
             }
             catch (Exception ex)
             {
                 //don't complain
                 lastError = ex.Message;
             }
-            updateInfo = new SettingsTester.nc_Settings(Path.Combine(Path.Combine(SettingsTester.nc_Settings.appPath(), "update"), "update.ini"));
+            updateInfo = new nc_settings.IniFile (Path.Combine(Path.Combine(nc_settings.IniFile .appPath(), "update"), "update.ini"));
         }
 
         public string VersionAvailable()
@@ -76,21 +76,21 @@ namespace UpdateTester
                 }
                 int numFiles = Convert.ToInt32(updateInfo.getValue("files", "number of files"));
                 string filename = "";
-                if (!Directory.Exists(Path.Combine(SettingsTester.nc_Settings.appPath(), "update")))
+                if (!Directory.Exists(Path.Combine(nc_settings.IniFile.appPath(), "update")))
                 {
-                    Directory.CreateDirectory(Path.Combine(SettingsTester.nc_Settings.appPath(), "update"));
+                    Directory.CreateDirectory(Path.Combine(nc_settings.IniFile.appPath(), "update"));
                 }
                 for (int i = 1; i <= numFiles; i++)
                 {
                     filename = updateInfo.getValue("files", "file" + i.ToString());
-                    downloader.DownloadFile(new Uri(updateURI, filename), Path.Combine(Path.Combine(SettingsTester.nc_Settings.appPath(), "update"), filename));
+                    downloader.DownloadFile(new Uri(updateURI, filename), Path.Combine(Path.Combine(nc_settings.IniFile.appPath(), "update"), filename));
                 }
-                if (!System.IO.File.Exists(System.IO.Path.Combine(SettingsTester.nc_Settings.appPath(), "UpdateInstaller.exe")))
+                if (!System.IO.File.Exists(System.IO.Path.Combine(nc_settings.IniFile.appPath(), "UpdateInstaller.exe")))
                 {
                     lastError = "UpdateInstaller.exe not found";
                     return false;
                 }
-                System.Diagnostics.Process.Start(System.IO.Path.Combine(SettingsTester.nc_Settings.appPath(), "UpdateInstaller.exe"), System.Diagnostics.Process.GetCurrentProcess().Id.ToString());
+                System.Diagnostics.Process.Start(System.IO.Path.Combine(nc_settings.IniFile.appPath(), "UpdateInstaller.exe"), System.Diagnostics.Process.GetCurrentProcess().Id.ToString());
             }
             catch (Exception ex)
             {

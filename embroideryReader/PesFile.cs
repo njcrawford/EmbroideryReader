@@ -306,21 +306,26 @@ namespace embroideryReader
                 {
                     case 4:
                         name = "base x";
+                        outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
                         break;
                     case 5:
                         name = "base y";
+                        outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString() + " (" + (csewsegHeader[i] + imageHeight).ToString() + ")");
                         break;
                     case 6:
                         name = "start x";
+                        outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
                         break;
                     case 7:
                         name = "start y";
+                        outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString() + " (" + (csewsegHeader[i] + imageHeight).ToString() + ")");
                         break;
                     default:
                         name = (i + 1).ToString();
+                        outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
                         break;
                 }
-                outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
+                //outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
             }
             outfile.WriteLine("stitches start: " + startStitches.ToString());
             outfile.WriteLine("block info");

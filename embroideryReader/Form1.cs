@@ -16,7 +16,7 @@ namespace embroideryReader
         public Pen drawPen = Pens.Black;
         public Bitmap DrawArea;
         public PesFile design;
-        private SettingsTester.nc_Settings settings = new SettingsTester.nc_Settings("embroideryreader.ini");
+        private nc_settings.IniFile settings = new nc_settings.IniFile("embroideryreader.ini");
         //private PesFile design;
         //private long bytesRead = 0;
         //System.IO.BinaryReader fileIn;
@@ -273,9 +273,9 @@ namespace embroideryReader
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            string temp;
-            temp = settings.getValue("update location");
-            if (temp == null || temp == "")
+            string updateLoc;
+            updateLoc = settings.getValue("update location");
+            if (updateLoc == null || updateLoc == "")
             {
                 settings.setValue("update location", "http://www.njcrawford.com/embreader/");
             }
@@ -283,11 +283,13 @@ namespace embroideryReader
             button3.Enabled = false;
             button4.Enabled = false;
             button5.Enabled = false;
+            this.Text = "Embroidery Reader";
             //MessageBox.Show(args.Length.ToString());
             if (args.Length > 1)
             {
                 openFile(args[1]);
             }
+            
         }
         private void openFile(string filename)
         {
@@ -298,6 +300,7 @@ namespace embroideryReader
             //_form2 = new Form2();
             //_form2.design = new PesFile(filename);
             design = new PesFile(filename);
+            this.Text = System.IO.Path.GetFileName(filename) + " - Embroidery Reader";
             //_form2.DrawArea = new Bitmap(_form2.design.GetWidth(), _form2.design.GetHeight());
             DrawArea = new Bitmap(design.GetWidth(), design.GetHeight());
             setPanelSize(design.GetWidth(), design.GetHeight());
