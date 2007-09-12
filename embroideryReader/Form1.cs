@@ -299,14 +299,21 @@ namespace embroideryReader
             }
             //_form2 = new Form2();
             //_form2.design = new PesFile(filename);
-            design = new PesFile(filename);
-            this.Text = System.IO.Path.GetFileName(filename) + " - Embroidery Reader";
-            //_form2.DrawArea = new Bitmap(_form2.design.GetWidth(), _form2.design.GetHeight());
-            DrawArea = new Bitmap(design.GetWidth(), design.GetHeight());
-            setPanelSize(design.GetWidth(), design.GetHeight());
+            try
+            {
+                design = new PesFile(filename);
+                this.Text = System.IO.Path.GetFileName(filename) + " - Embroidery Reader";
+                //_form2.DrawArea = new Bitmap(_form2.design.GetWidth(), _form2.design.GetHeight());
+                DrawArea = new Bitmap(design.GetWidth(), design.GetHeight());
+                setPanelSize(design.GetWidth(), design.GetHeight());
 
-            //_form2.Show();
-            finishDesign();
+                //_form2.Show();
+                finishDesign();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occured while reading the design file:" + Environment.NewLine + ex.ToString());
+            }
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)

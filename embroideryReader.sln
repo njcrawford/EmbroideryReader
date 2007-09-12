@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryReader", "embroid
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "emroideryTester", "emroideryTester\emroideryTester.csproj", "{A80DF4D8-967D-4352-9E1D-F22D23236BE2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryInfo", "embroideryInfo\embroideryInfo.csproj", "{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{A80DF4D8-967D-4352-9E1D-F22D23236BE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A80DF4D8-967D-4352-9E1D-F22D23236BE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A80DF4D8-967D-4352-9E1D-F22D23236BE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
