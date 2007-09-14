@@ -46,7 +46,7 @@ namespace emroideryTester
         private void btnNext_Click(object sender, EventArgs e)
         {
             //textBox1.Text += file.BaseStream.Position.ToString() +" 0x"+ file.ReadByte().ToString("X")+Environment.NewLine;
-            string temp="";
+            string temp = "";
             textBox1.Visible = false;
             for (int i = 0; i < shorts.Length; i++)
             {
@@ -63,6 +63,32 @@ namespace emroideryTester
         private void Form1_Load(object sender, EventArgs e)
         {
             textBox1.MaxLength = Int32.MaxValue;
+            this.BackColor = GetRGB(2037741);
+        }
+
+        private Color getColorFromIndex(int index)
+        {
+            Color retval = Color.Black;
+            switch (index)
+            {
+                case 1:
+                    retval = Color.FromArgb(8134414);
+                    break;
+                case 2:
+                    retval = Color.FromArgb(11561576);
+                    break;
+            }
+            return retval;
+        }
+
+        private Color GetRGB(long RGB)
+        {
+            long Red, Green, Blue;
+            Red = RGB & 255;
+            Green = RGB % 256 & 255;
+            Blue = RGB % 256 ^ 2 & 255;
+            Console.WriteLine("RGB: " + Blue.ToString() + ", " + Green.ToString() + ", " + Red.ToString());
+            return Color.FromArgb((int)Blue, (int)Green, (int)Red);
         }
     }
 }

@@ -14,7 +14,6 @@ namespace embroideryReader
         public stitchBlock()
         {
             color = System.Drawing.Color.Black;
-            //stitches = new List<System.Drawing.Point>();
         }
     }
 
@@ -26,16 +25,11 @@ namespace embroideryReader
 
     public class PesFile
     {
-        //private long bytesRead = 0;
         System.IO.BinaryReader fileIn;
         Random rnd = new Random();
         int stitchCount = 0;
         int stitchesLeft = 0;
         int skipStitches = 0;
-        //int minX = int.MaxValue;
-        //int minY = int.MaxValue;
-        //int maxX = int.MinValue;
-        //int maxY = int.MinValue;
         int imageWidth;
         int imageHeight;
         int lastColorIndex = -1;
@@ -57,24 +51,17 @@ namespace embroideryReader
 
         private void OpenFile(string filename)
         {
-            //string message = "";
             _filename = filename;
-            //string filename;
-            //openFileDialog1.ShowDialog();
-            //filename = openFileDialog1.FileName;
-            //if (!System.IO.File.Exists(filename))
-            //{
-            //    return;
-            //}
-            //fileIn = new System.IO.BinaryReader(System.IO.File.Open("118866.pes", System.IO.FileMode.Open));
-            //fileIn = new System.IO.BinaryReader(System.IO.File.Open("144496.pes", System.IO.FileMode.Open));
             fileIn = new System.IO.BinaryReader(System.IO.File.Open(filename, System.IO.FileMode.Open));
-            //charIn = fileIn.ReadChar();
+            string startFileSig = "";
             for (int i = 0; i < 8; i++)//8 bytes
             {
                 //message += fileIn.ReadChar();
-                //bytesRead++;
-                fileIn.ReadChar();
+                startFileSig += fileIn.ReadChar();
+            }
+            if (startFileSig != "#PES0001")//this is not a file that we can read
+            {
+                return;
             }
             //message += Environment.NewLine;
             for (int i = 0; i < 8; i++)//16 bytes
@@ -82,13 +69,16 @@ namespace embroideryReader
                 pesHeader.Add(fileIn.ReadInt16());
                 //message += fileIn.ReadInt16().ToString();
                 //message += Environment.NewLine;
-                //bytesRead += 2;
             }
+            string embOneHeaderString = "";
             for (int i = 0; i < 7; i++)//7 bytes
             {
                 //message += fileIn.ReadChar();
-                //bytesRead++;
-                fileIn.ReadChar();
+                embOneHeaderString+= fileIn.ReadChar();
+            }
+            if(embOneHeaderString != "CEmbOne")//probably a corrupted file
+            {
+                return;
             }
             //message += Environment.NewLine;
             //MessageBox.Show(message);
@@ -110,31 +100,19 @@ namespace embroideryReader
                         break;
                 }
 
-                //message += tmpval.ToString();
-                //if (headerValNum % 3 == 0)
-                //{
-                //    message += Environment.NewLine;
-                //}
-                //else
-                //{
-                //    message += "\t| ";
-                //}
-                //headerValNum++;
-                //message += "\t| ";
-                //message += fileIn.ReadInt16().ToString();
-                //message += "\t| ";
-                //message += fileIn.ReadInt16().ToString();
-                //message += Environment.NewLine;
-                //bytesRead += 6;
             }
             //MessageBox.Show(message);
 
             //message = "";
+            string sewSegHeader = "";
             for (int i = 0; i < 7; i++)//7 bytes
             {
                 //message += fileIn.ReadChar();
-                //bytesRead++;
-                fileIn.ReadChar();
+                sewSegHeader+= fileIn.ReadChar();
+            }
+            if (sewSegHeader != "CSewSeg")//probably corrupt
+            {
+                return;
             }
             //MessageBox.Show(message);
 
@@ -144,8 +122,14 @@ namespace embroideryReader
             {
                 //message += fileIn.ReadInt16();
                 //message += Environment.NewLine;
-                //bytesRead += 2;
-                csewsegHeader.Add(fileIn.ReadInt16());
+                Int16 temp = fileIn.ReadInt16();
+                if (i == 1)//second value is starting color
+                {
+                    lastColorIndex = temp;
+
+                    Console.WriteLine("starting color" + temp.ToString());
+                }
+                csewsegHeader.Add(temp);
 
             }
             startStitches = fileIn.BaseStream.Position;
@@ -173,18 +157,19 @@ namespace embroideryReader
                             stitchBlock tmp = new stitchBlock();
                             tmp.stitches = new Point[currentBlock.Count];
                             currentBlock.CopyTo(tmp.stitches);
-                            if (blocks.Count > 0 && blocks[blocks.Count - 1].colorIndex != lastColorIndex)//don't need to change the color if next block is the same
-                            {
-                                tmp.color = currentColor;
-                                currentColor = System.Drawing.Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255)));
-                            }
+                            //if (blocks.Count > 0)// && blocks[blocks.Count - 1].colorIndex != lastColorIndex)//don't need to change the color if next block is the same
+                            //{
+                                tmp.color = getColorFromIndex(lastColorIndex);
+                                //currentColor = System.Drawing.Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255)));
+
+                            //}
                             tmp.colorIndex = lastColorIndex;
                             tmp.stitchesTotal = tmpStitchCount;
                             blocks.Add(tmp);
                             tmpStitchCount = 0;
                             currentBlock = new List<Point>();
                         }
-                        lastColorIndex = fileIn.ReadInt16();
+                        lastColorIndex = fileIn.ReadInt16();//get color for this block
                         stitchesLeft = fileIn.ReadInt16();
                         tmpStitchCount += stitchesLeft;
                         if (realy == 1)
@@ -208,6 +193,17 @@ namespace embroideryReader
                         stitchesLeft--;
                     }
                 }
+            }
+
+            if (currentBlock.Count > 0)
+            {
+                stitchBlock tmp = new stitchBlock();
+                tmp.stitches = new Point[currentBlock.Count];
+                currentBlock.CopyTo(tmp.stitches);
+                tmp.color = getColorFromIndex(lastColorIndex);
+                tmp.colorIndex = lastColorIndex;
+                blocks.Add(tmp);
+                currentBlock = new List<Point>();
             }
 
             //color index table
@@ -281,6 +277,10 @@ namespace embroideryReader
 
                 switch (i + 1)
                 {
+                    case 2:
+                        name = "start color";
+                        outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
+                        break;
                     case 4:
                         name = "base x";
                         outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
@@ -321,6 +321,34 @@ namespace embroideryReader
         public bool isReadyToUse()
         {
             return _readyToUse;
+        }
+
+        private Color getColorFromIndex(int index)
+        {
+            Color retval = Color.White;
+            Console.WriteLine("color index: " + index.ToString());
+            switch (index)
+            {
+                case 20:
+                    retval = Color.FromArgb(0, 0, 0);
+                    break;
+                case 45:
+                    retval = Color.FromArgb(178, 175, 212);
+                    break;
+                case 46:
+                    retval = Color.FromArgb(104, 106, 176);
+                    break;
+                case 50:
+                    retval = Color.FromArgb(19, 43, 26);
+                    break;
+                case 56:
+                    retval = Color.FromArgb(47, 126, 32);
+                    break;
+                case 60:
+                    retval = Color.FromArgb(240, 249, 112);
+                    break;
+            }
+            return retval;
         }
     }
 }
