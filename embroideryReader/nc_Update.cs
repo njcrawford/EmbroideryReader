@@ -29,7 +29,7 @@ namespace UpdateTester
                 //don't complain
                 lastError = ex.Message;
             }
-            updateInfo = new nc_settings.IniFile (Path.Combine(Path.Combine(nc_settings.IniFile .appPath(), "update"), "update.ini"));
+            updateInfo = new nc_settings.IniFile(Path.Combine(Path.Combine(nc_settings.IniFile.appPath(), "update"), "update.ini"));
         }
 
         public string VersionAvailable()
@@ -85,12 +85,19 @@ namespace UpdateTester
                     filename = updateInfo.getValue("files", "file" + i.ToString());
                     downloader.DownloadFile(new Uri(updateURI, filename), Path.Combine(Path.Combine(nc_settings.IniFile.appPath(), "update"), filename));
                 }
-                if (!System.IO.File.Exists(System.IO.Path.Combine(nc_settings.IniFile.appPath(), "UpdateInstaller.exe")))
+                if (updateInfo.getValue("files", "executeFile") != null)
                 {
-                    lastError = "UpdateInstaller.exe not found";
+                    System.Diagnostics.Process.Start(Path.Combine(nc_settings.IniFile.appPath(), updateInfo.getValue("executeFile")));
+                }
+                else if (System.IO.File.Exists(Path.Combine(nc_settings.IniFile.appPath(), "UpdateInstaller.exe")))
+                {
+                    System.Diagnostics.Process.Start(Path.Combine(Path.Combine(nc_settings.IniFile.appPath(), "update"), "UpdateInstaller.exe"), System.Diagnostics.Process.GetCurrentProcess().Id.ToString());
+                }
+                else
+                {
+                    lastError = "The update didn't have an executable file and UpdateInstaller.exe was not found";
                     return false;
                 }
-                System.Diagnostics.Process.Start(System.IO.Path.Combine(nc_settings.IniFile.appPath(), "UpdateInstaller.exe"), System.Diagnostics.Process.GetCurrentProcess().Id.ToString());
             }
             catch (Exception ex)
             {
