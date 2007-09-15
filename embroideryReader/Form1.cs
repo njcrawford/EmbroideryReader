@@ -157,16 +157,24 @@ namespace embroideryReader
             //if (isNewerVersion)
             if (updater.IsUpdateAvailable())
             {
-                if (MessageBox.Show("Version " + updater.VersionAvailable() + " is available.\nYou have version " + currentVersion() + ". Would you like to update?\n(If you choose Yes, the update will be downloaded and installed, and the program will be restarted)", "New version available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (MessageBox.Show("Version " + updater.VersionAvailable() + " is available." + Environment.NewLine + "You have version " + currentVersion() + ". Would you like to go to the Embroidery Reader website to download it?", "New version available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    if (!updater.InstallUpdate())
+                    try
                     {
-                        MessageBox.Show("Update failed, error message: " + updater.GetLastError());
+                        System.Diagnostics.Process.Start(settings.getValue("update location"));
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        Environment.Exit(0);
+                        MessageBox.Show("An error occured while trying to open the webpage:" + Environment.NewLine + ex.ToString());
                     }
+                    //if (!updater.InstallUpdate())
+                    //{
+                    //    MessageBox.Show("Update failed, error message: " + updater.GetLastError());
+                    //}
+                    //else
+                    //{
+                    //    Environment.Exit(0);
+                    //}
                 }
             }
             else if (updater.GetLastError() != "")
@@ -175,7 +183,7 @@ namespace embroideryReader
             }
             else
             {
-                MessageBox.Show("No updates are available right now. (Latest version is " + updater.VersionAvailable() + ")");
+                MessageBox.Show("No updates are available right now." + Environment.NewLine + "(Latest version is " + updater.VersionAvailable() + ", you have version " + currentVersion() + ")");
             }
 
         }
@@ -194,57 +202,77 @@ namespace embroideryReader
 
 
 
-        [ComImport]
-        [Guid("BB2E617C-0920-11d1-9A0B-00C04FC2D6C1")]
-        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        public interface IExtractImage
-        {
-            [PreserveSig]
-            long GetLocation(
-                [Out]
-            IntPtr pszPathBuffer,
-                int cch,
-                ref int pdwPriority,
-                ref SIZE prgSize,
-                int dwRecClrDepth,
-                ref int pdwFlags);
+        //[ComImport]
+        //[Guid("BB2E617C-0920-11d1-9A0B-00C04FC2D6C1")]
+        //[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        //public interface IExtractImage
+        //{
+        //    [PreserveSig]
+        //    long GetLocation(
+        //        [Out]
+        //    IntPtr pszPathBuffer,
+        //        int cch,
+        //        ref int pdwPriority,
+        //        ref SIZE prgSize,
+        //        int dwRecClrDepth,
+        //        ref int pdwFlags);
 
-            [PreserveSig]
-            int Extract([Out]IntPtr phBmpThumbnail);
-        }
+        //    [PreserveSig]
+        //    int Extract([Out]IntPtr phBmpThumbnail);
+        //}
 
 
-        [ComImport]
-        [Guid("953BB1EE-93B4-11d1-98A3-00C04FB687DA")]
-        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        public interface IExtractImage2 : IExtractImage
-        {
-            int GetDateStamp([In, Out]ref System.Runtime.InteropServices.ComTypes.FILETIME pDateStamp);
-        }
+        //[ComImport]
+        //[Guid("953BB1EE-93B4-11d1-98A3-00C04FB687DA")]
+        //[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        //public interface IExtractImage2 : IExtractImage
+        //{
+        //    int GetDateStamp([In, Out]ref System.Runtime.InteropServices.ComTypes.FILETIME pDateStamp);
+        //}
 
-        public struct SIZE
-        {
-            public long cx;
-            public long cy;
-        }
+        //public struct SIZE
+        //{
+        //    public long cx;
+        //    public long cy;
+        //}
 
         private void saveDebugInfoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (design != null)
             {
-                if (design.isReadyToUse())
+                //if (design.isReadyToUse())
+                //{
+                try
                 {
                     design.saveDebugInfo();
                 }
-                else
+                catch (Exception ex)
                 {
-                    MessageBox.Show("The design could not be read successfully.");
+                    MessageBox.Show("There was an error while saving debug info:" + Environment.NewLine + ex.ToString());
                 }
+                //}
+                //else
+                //{
+                //    MessageBox.Show("The design could not be read successfully.");
+                //}
             }
             else
             {
                 MessageBox.Show("No design loaded.");
             }
+        }
+
+        private void Form1_ResizeEnd(object sender, EventArgs e)
+        {
+            //panel2.Top = 32;
+            //panel2.Left = 0;
+            //panel2.Height = this.Height - 50;
+            //panel2.Width = this.Width - 50;
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            panel2.Height = this.Height - 50;
         }
     }
 }

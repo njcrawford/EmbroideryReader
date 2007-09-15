@@ -61,51 +61,58 @@ namespace UpdateTester
                     isNewerVersion = true;
                     break;
                 }
+                else if (Convert.ToInt32(upVersion[i]) < Convert.ToInt32(curVersion[i]))
+                {
+                    //This means the version available is lower than 
+                    //the one we have installed. This prevents the
+                    //lesser version parts from taking priority.
+                    break;
+                }
             }
             return isNewerVersion;
         }
 
-        public bool InstallUpdate()
-        {
-            try
-            {
-                if (!IsUpdateAvailable())
-                {
-                    lastError = "No updates available";
-                    return false;
-                }
-                int numFiles = Convert.ToInt32(updateInfo.getValue("files", "number of files"));
-                string filename = "";
-                if (!Directory.Exists(Path.Combine(nc_settings.IniFile.appPath(), "update")))
-                {
-                    Directory.CreateDirectory(Path.Combine(nc_settings.IniFile.appPath(), "update"));
-                }
-                for (int i = 1; i <= numFiles; i++)
-                {
-                    filename = updateInfo.getValue("files", "file" + i.ToString());
-                    downloader.DownloadFile(new Uri(updateURI, filename), Path.Combine(Path.Combine(nc_settings.IniFile.appPath(), "update"), filename));
-                }
-                if (updateInfo.getValue("files", "executeFile") != null)
-                {
-                    System.Diagnostics.Process.Start(Path.Combine(nc_settings.IniFile.appPath(), updateInfo.getValue("executeFile")));
-                }
-                else if (System.IO.File.Exists(Path.Combine(nc_settings.IniFile.appPath(), "UpdateInstaller.exe")))
-                {
-                    System.Diagnostics.Process.Start(Path.Combine(Path.Combine(nc_settings.IniFile.appPath(), "update"), "UpdateInstaller.exe"), System.Diagnostics.Process.GetCurrentProcess().Id.ToString());
-                }
-                else
-                {
-                    lastError = "The update didn't have an executable file and UpdateInstaller.exe was not found";
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                lastError = ex.Message;
-                return false;
-            }
-            return true;
-        }
+        //public bool InstallUpdate()
+        //{
+        //    try
+        //    {
+        //        if (!IsUpdateAvailable())
+        //        {
+        //            lastError = "No updates available";
+        //            return false;
+        //        }
+        //        int numFiles = Convert.ToInt32(updateInfo.getValue("files", "number of files"));
+        //        string filename = "";
+        //        if (!Directory.Exists(Path.Combine(nc_settings.IniFile.appPath(), "update")))
+        //        {
+        //            Directory.CreateDirectory(Path.Combine(nc_settings.IniFile.appPath(), "update"));
+        //        }
+        //        for (int i = 1; i <= numFiles; i++)
+        //        {
+        //            filename = updateInfo.getValue("files", "file" + i.ToString());
+        //            downloader.DownloadFile(new Uri(updateURI, filename), Path.Combine(Path.Combine(nc_settings.IniFile.appPath(), "update"), filename));
+        //        }
+        //        if (updateInfo.getValue("files", "executeFile") != null)
+        //        {
+        //            System.Diagnostics.Process.Start(Path.Combine(nc_settings.IniFile.appPath(), updateInfo.getValue("executeFile")));
+        //        }
+        //        else if (System.IO.File.Exists(Path.Combine(nc_settings.IniFile.appPath(), "UpdateInstaller.exe")))
+        //        {
+        //            System.Diagnostics.Process.Start(Path.Combine(Path.Combine(nc_settings.IniFile.appPath(), "update"), "UpdateInstaller.exe"), System.Diagnostics.Process.GetCurrentProcess().Id.ToString());
+        //        }
+        //        else
+        //        {
+        //            lastError = "The update didn't have an executable file and UpdateInstaller.exe was not found";
+        //            return false;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        lastError = ex.Message;
+        //        return false;
+        //    }
+        //    return true;
+        //}
 
         public string GetLastError()
         {
