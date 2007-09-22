@@ -41,9 +41,7 @@ Section "Embroidery Reader (required)"
   SetOutPath $INSTDIR
   
   ; Put file there
-  ;File "example2.nsi"
    File "embroideryReader.exe"
-   File "UpdateInstaller.exe"
    File "nc_settings.dll"
   
   ; Write the installation path into the registry
@@ -121,9 +119,11 @@ Section "Uninstall"
 
   ; Remove files and uninstaller
   Delete $INSTDIR\embroideryReader.exe
-  Delete $INSTDIR\UpdateInstaller.exe
   Delete $INSTDIR\uninstall.exe
   Delete $INSTDIR\nc_settings.dll
+
+  ; Remove obsolete files from previous versions, if they exist
+  Delete $INSTDIR\UpdateInstaller.exe
 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Embroidery Reader\*.*"
