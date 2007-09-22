@@ -121,9 +121,11 @@ Section "Uninstall"
   Delete $INSTDIR\embroideryReader.exe
   Delete $INSTDIR\uninstall.exe
   Delete $INSTDIR\nc_settings.dll
+  Delete $INSTDIR\embroideryreader.ini
 
   ; Remove obsolete files from previous versions, if they exist
   Delete $INSTDIR\UpdateInstaller.exe
+  RMDir "$INSTDIR\update"
 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Embroidery Reader\*.*"
