@@ -16,7 +16,7 @@ namespace embroideryReader
         public Pen drawPen = Pens.Black;
         public Bitmap DrawArea;
         //public Point prevPoint = new Point(-1, -1);
-        public PesFile design;
+        public PesFile.PesFile design;
         //private int blockNum = -1;
         //private int stitchNum = -1;
 

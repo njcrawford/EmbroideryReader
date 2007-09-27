@@ -43,6 +43,7 @@ Section "Embroidery Reader (required)"
   ; Put file there
    File "embroideryReader.exe"
    File "nc_settings.dll"
+   File "PesFile.dll"
   
   ; Write the installation path into the registry
   WriteRegStr HKLM "SOFTWARE\Embroidery Reader" "Install_Dir" "$INSTDIR"
@@ -122,6 +123,7 @@ Section "Uninstall"
   Delete $INSTDIR\uninstall.exe
   Delete $INSTDIR\nc_settings.dll
   Delete $INSTDIR\embroideryreader.ini
+  Delete $INSTDIR\PesFile.dll
 
   ; Remove obsolete files from previous versions, if they exist
   Delete $INSTDIR\UpdateInstaller.exe

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 
-namespace embroideryReader
+namespace PesFile
 {
+    public enum statusEnum { NotOpen, IOError, ReadError, Ready };
     public class stitchBlock
     {
-        public System.Drawing.Color color;
+        public Color color;
         public Int32 colorIndex;
         public Int32 stitchesTotal;
         public Point[] stitches;
@@ -26,7 +27,7 @@ namespace embroideryReader
     public class PesFile
     {
         System.IO.BinaryReader fileIn;
-        Random rnd = new Random();
+        //Random rnd = new Random();
         int stitchCount = 0;
         int stitchesLeft = 0;
         int skipStitches = 0;
@@ -38,11 +39,18 @@ namespace embroideryReader
         public List<Int16> embOneHeader = new List<short>();
         public List<Int16> csewsegHeader = new List<short>();
         public List<stitchBlock> blocks = new List<stitchBlock>();
-        public List<intPair> afterStictchesTable = new List<intPair>();
-
+        public List<intPair> colorTable = new List<intPair>();
+        private statusEnum readyStatus = statusEnum.NotOpen;
         Int64 startStitches = 0;
+        string lastError = "";
+        string pesNum = "";
+        Point translateStart;
 
-        bool _readyToUse = false;
+        //means we couldn't figure out some or all
+        //of the colors, best guess will be used
+        private bool colorWarning = false;
+
+        //bool _readyToUse = false;
 
         public PesFile(string filename)
         {
@@ -51,174 +59,228 @@ namespace embroideryReader
 
         private void OpenFile(string filename)
         {
-            _filename = filename;
-            fileIn = new System.IO.BinaryReader(System.IO.File.Open(filename, System.IO.FileMode.Open));
-            string startFileSig = "";
-            for (int i = 0; i < 8; i++)//8 bytes
+            try
             {
-                //message += fileIn.ReadChar();
-                startFileSig += fileIn.ReadChar();
-            }
-            if (startFileSig != "#PES0001")//this is not a file that we can read
-            {
-                return;
-            }
-            //message += Environment.NewLine;
-            for (int i = 0; i < 8; i++)//16 bytes
-            {
-                pesHeader.Add(fileIn.ReadInt16());
-                //message += fileIn.ReadInt16().ToString();
-                //message += Environment.NewLine;
-            }
-            string embOneHeaderString = "";
-            for (int i = 0; i < 7; i++)//7 bytes
-            {
-                //message += fileIn.ReadChar();
-                embOneHeaderString += fileIn.ReadChar();
-            }
-            if (embOneHeaderString != "CEmbOne")//probably a corrupted file
-            {
-                return;
-            }
-            //message += Environment.NewLine;
-            //MessageBox.Show(message);
+                _filename = filename;
+                fileIn = new System.IO.BinaryReader(System.IO.File.Open(filename, System.IO.FileMode.Open));
 
-            //message = "";
-            //int headerValNum = 1;
-            Int16 tmpval;
-            for (int i = 0; i < 33; i++) //read 66 bytes
-            {
-                tmpval = fileIn.ReadInt16();
-                embOneHeader.Add(tmpval);
-                switch (i)
+                string startFileSig = "";
+                for (int i = 0; i < 8; i++)//8 bytes
                 {
-                    case 23:
-                        imageWidth = tmpval;
-                        break;
-                    case 24:
-                        imageHeight = tmpval;
-                        break;
+                    //message += fileIn.ReadChar();
+                    startFileSig += fileIn.ReadChar();
                 }
-
-            }
-            //MessageBox.Show(message);
-
-            //message = "";
-            string sewSegHeader = "";
-            for (int i = 0; i < 7; i++)//7 bytes
-            {
-                //message += fileIn.ReadChar();
-                sewSegHeader += fileIn.ReadChar();
-            }
-            if (sewSegHeader != "CSewSeg")//probably corrupt
-            {
-                return;
-            }
-            //MessageBox.Show(message);
-
-            //message = "";
-            //MessageBox.Show(fileIn.BaseStream.Position.ToString());
-            for (int i = 0; i < 7; i++)//14 bytes
-            {
-                //message += fileIn.ReadInt16();
-                //message += Environment.NewLine;
-                Int16 temp = fileIn.ReadInt16();
-                if (i == 1)//second value is starting color
+                if (!startFileSig.StartsWith("#PES"))//this is not a file that we can read
                 {
-                    lastColorIndex = temp;
-
-                    Console.WriteLine("starting color" + temp.ToString());
+                    readyStatus = statusEnum.ReadError;
+                    lastError = "Missing #PES at beginning of file";
+                    fileIn.Close();
+                    return;
                 }
-                csewsegHeader.Add(temp);
-
-            }
-            startStitches = fileIn.BaseStream.Position;
-
-            //start of point pairs
-            List<Point> currentBlock = new List<Point>();
-            Color currentColor = Color.Black;
-            Int32 tmpStitchCount = 0;
-            stitchesLeft = 10; //give it kickstart to get over the beginning
-            while (stitchesLeft >= 0)
-            {
-                int tmpx;
-                int tmpy;
-                Int32 realx;
-                Int32 realy;
-                if (fileIn.BaseStream.Position + 4 < fileIn.BaseStream.Length)
+                pesNum = startFileSig.Substring(4);
+                int pesHeaderLength = 0;
+                switch (pesNum)
                 {
-                    realx = fileIn.ReadInt16();
-                    realy = fileIn.ReadInt16();
-                    if (realx == -32765)
+                    case "0001":
+                        pesHeaderLength = 8; //bytes
+                        break;
+                    case "0020":
+                        pesHeaderLength = 17; //bytes
+                        break;
+                    case "0050":
+                        pesHeaderLength = 185;//bytes;
+                        colorWarning = true;
+                        break;
+                    default:
+                        readyStatus = statusEnum.ReadError;
+                        lastError = "Unknown PES number";
+                        fileIn.Close();
+                        return;
+                }
+                for (int i = 0; i < pesHeaderLength; i++)
+                {
+                    pesHeader.Add(fileIn.ReadInt16());
+                }
+                string embOneHeaderString = "";
+                for (int i = 0; i < 7; i++)//7 bytes
+                {
+                    //message += fileIn.ReadChar();
+                    embOneHeaderString += fileIn.ReadChar();
+                }
+                if (embOneHeaderString != "CEmbOne")//probably a corrupted file
+                {
+                    readyStatus = statusEnum.ReadError;
+                    lastError = "Missing CEmbOne header";
+                    fileIn.Close();
+                    return;
+                }
+                //message += Environment.NewLine;
+                //MessageBox.Show(message);
+
+                //message = "";
+                //int headerValNum = 1;
+                for (int i = 0; i < 33; i++) //read 66 bytes
+                {
+                    Int16 tmpval;
+                    tmpval = fileIn.ReadInt16();
+                    embOneHeader.Add(tmpval);
+                    switch (i)
                     {
-
-                        if (realy == 1) //end of block
-                        {
-                            stitchBlock tmp = new stitchBlock();
-                            tmp.stitches = new Point[currentBlock.Count];
-                            currentBlock.CopyTo(tmp.stitches);
-                            //if (blocks.Count > 0)// && blocks[blocks.Count - 1].colorIndex != lastColorIndex)//don't need to change the color if next block is the same
-                            //{
-                            tmp.color = getColorFromIndex(lastColorIndex);
-                            //currentColor = System.Drawing.Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255)));
-
-                            //}
-                            tmp.colorIndex = lastColorIndex;
-                            tmp.stitchesTotal = tmpStitchCount;
-                            blocks.Add(tmp);
-                            tmpStitchCount = 0;
-                            currentBlock = new List<Point>();
-                        }
-                        lastColorIndex = fileIn.ReadInt16();//get color for this block
-                        stitchesLeft = fileIn.ReadInt16();
-                        tmpStitchCount += stitchesLeft;
-                        if (realy == 1)
-                        {
-                            skipStitches = stitchesLeft;//skip these stiches, since they just seem to get in the way
-                        }
+                        case 21:
+                            translateStart.X = tmpval;
+                            break;
+                        case 22:
+                            translateStart.Y = tmpval;
+                            break;
+                        case 23:
+                            imageWidth = tmpval;
+                            break;
+                        case 24:
+                            imageHeight = tmpval;
+                            break;
                     }
-                    else
+
+                }
+
+                string sewSegHeader = "";
+                for (int i = 0; i < 7; i++)//7 bytes
+                {
+                    sewSegHeader += fileIn.ReadChar();
+                }
+                if (sewSegHeader != "CSewSeg")//probably corrupt
+                {
+                    readyStatus = statusEnum.ReadError;
+                    lastError = "Missing CSewSeg header";
+                    fileIn.Close();
+                    return;
+                }
+
+                for (int i = 0; i < 5; i++)//10 bytes
+                {
+                    Int16 temp = fileIn.ReadInt16();
+                    //if (i == 1)//second value is starting color
+                    //{
+                    //    lastColorIndex = temp;
+
+                    //    //Console.WriteLine("starting color" + temp.ToString());
+                    //}
+                    //if (i == 2)//third value is how many stitches until the next block
+                    //{
+                    //    stitchesLeft = temp;
+                    //}
+                    csewsegHeader.Add(temp);
+                    switch (i)
                     {
-                        tmpx = realx;//x is ok
-                        tmpy = realy + imageHeight;//y needs to be translated
-                        if (skipStitches > 0)
+                        case 1://second value is starting color
+                            lastColorIndex = temp;
+                            break;
+                        case 2://third value is how many stitches until the next block
+                            stitchesLeft = temp;
+                            break;
+                    }
+
+                }
+                startStitches = fileIn.BaseStream.Position;
+
+                //start of point pairs
+                List<Point> currentBlock = new List<Point>();
+                Color currentColor = Color.Black;
+                Int32 tmpStitchCount = 0;
+                //stitchesLeft = 10000; //give it kickstart to get over the beginning
+                while (stitchesLeft >= 0)
+                {
+                    int tmpx;
+                    int tmpy;
+                    Int32 realx;
+                    Int32 realy;
+                    if (fileIn.BaseStream.Position + 4 < fileIn.BaseStream.Length)
+                    {
+                        realx = fileIn.ReadInt16();
+                        realy = fileIn.ReadInt16();
+                        if (realx == -32765)
                         {
-                            skipStitches--;
+
+                            if (realy == 1) //end of block
+                            {
+                                stitchBlock tmp = new stitchBlock();
+                                tmp.stitches = new Point[currentBlock.Count];
+                                currentBlock.CopyTo(tmp.stitches);
+                                //if (blocks.Count > 0)// && blocks[blocks.Count - 1].colorIndex != lastColorIndex)//don't need to change the color if next block is the same
+                                //{
+                                tmp.color = getColorFromIndex(lastColorIndex);
+                                //currentColor = System.Drawing.Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255)));
+
+                                //}
+                                tmp.colorIndex = lastColorIndex;
+                                tmp.stitchesTotal = tmpStitchCount;
+                                blocks.Add(tmp);
+                                tmpStitchCount = 0;
+                                currentBlock = new List<Point>();
+                            }
+                            lastColorIndex = fileIn.ReadInt16();//get color for this block
+                            stitchesLeft = fileIn.ReadInt16();
+                            tmpStitchCount += stitchesLeft;
+                            if (realy == 1)
+                            {
+                                skipStitches = stitchesLeft;//skip these stiches, since they just seem to get in the way
+                            }
                         }
                         else
                         {
-                            currentBlock.Add(new System.Drawing.Point(tmpx, tmpy));
+                            tmpx = realx - translateStart.X;//x is ok
+                            tmpy = realy + imageHeight - translateStart.Y;//y needs extra translation
+                            if (skipStitches > 0)
+                            {
+                                skipStitches--;
+                            }
+                            else
+                            {
+                                currentBlock.Add(new System.Drawing.Point(tmpx, tmpy));
+                            }
+                            stitchCount++;
+                            stitchesLeft--;
                         }
-                        stitchCount++;
-                        stitchesLeft--;
                     }
                 }
-            }
 
-            if (currentBlock.Count > 0)
-            {
-                stitchBlock tmp = new stitchBlock();
-                tmp.stitches = new Point[currentBlock.Count];
-                currentBlock.CopyTo(tmp.stitches);
-                tmp.color = getColorFromIndex(lastColorIndex);
-                tmp.colorIndex = lastColorIndex;
-                blocks.Add(tmp);
-                currentBlock = new List<Point>();
-            }
+                if (currentBlock.Count > 0)
+                {
+                    stitchBlock tmp = new stitchBlock();
+                    tmp.stitches = new Point[currentBlock.Count];
+                    currentBlock.CopyTo(tmp.stitches);
+                    tmp.color = getColorFromIndex(lastColorIndex);
+                    tmp.colorIndex = lastColorIndex;
+                    blocks.Add(tmp);
+                    currentBlock = new List<Point>();
+                }
 
-            //color index table
-            intPair tmpPair = new intPair();
-            tmpPair.a = fileIn.ReadInt16();
-            tmpPair.b = fileIn.ReadInt16();
-            while (tmpPair.a != 0)
-            {
-                afterStictchesTable.Add(tmpPair);
-                tmpPair = new intPair();
+                //color index table
+                intPair tmpPair = new intPair();
                 tmpPair.a = fileIn.ReadInt16();
                 tmpPair.b = fileIn.ReadInt16();
+                while (tmpPair.a != 0)
+                {
+                    colorTable.Add(tmpPair);
+                    tmpPair = new intPair();
+                    tmpPair.a = fileIn.ReadInt16();
+                    tmpPair.b = fileIn.ReadInt16();
+                }
+                fileIn.Close();
+                //_readyToUse = true;
+                readyStatus = statusEnum.Ready;
             }
-            fileIn.Close();
-            _readyToUse = true;
+            catch (System.IO.IOException ioex)
+            {
+                readyStatus = statusEnum.IOError;
+                lastError = ioex.Message;
+                fileIn.Close();
+            }
+            catch (Exception ex)
+            {
+                readyStatus = statusEnum.ReadError;
+                lastError = ex.Message;
+                fileIn.Close();
+            }
         }
 
         public int GetWidth()
@@ -247,17 +309,24 @@ namespace embroideryReader
         {
             System.IO.StreamWriter outfile = new System.IO.StreamWriter(System.IO.Path.ChangeExtension(_filename, ".txt"));
             string name = "";
-            outfile.WriteLine("pes header");
+            outfile.WriteLine("PES header");
+            outfile.WriteLine("PES number:\t" + pesNum);
             for (int i = 0; i < pesHeader.Count; i++)
             {
                 name = (i + 1).ToString();
                 outfile.WriteLine(name + "\t" + pesHeader[i].ToString());
             }
-            outfile.WriteLine("embone header");
+            outfile.WriteLine("CEmbOne header");
             for (int i = 0; i < embOneHeader.Count; i++)
             {
                 switch (i + 1)
                 {
+                    case 22:
+                        name = "translate x";
+                        break;
+                    case 23:
+                        name = "translate y";
+                        break;
                     case 24:
                         name = "width";
                         break;
@@ -271,7 +340,7 @@ namespace embroideryReader
 
                 outfile.WriteLine(name + "\t" + embOneHeader[i].ToString());
             }
-            outfile.WriteLine("csewseg header");
+            outfile.WriteLine("CSewSeg header");
             for (int i = 0; i < csewsegHeader.Count; i++)
             {
 
@@ -279,6 +348,10 @@ namespace embroideryReader
                 {
                     case 2:
                         name = "start color";
+                        outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
+                        break;
+                    case 3:
+                        name = "starting stitches";
                         outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
                         break;
                     case 4:
@@ -310,23 +383,38 @@ namespace embroideryReader
             {
                 outfile.WriteLine((i + 1).ToString() + "\t" + blocks[i].colorIndex.ToString() + "\t" + blocks[i].stitchesTotal.ToString());
             }
-            outfile.WriteLine("after stitches table");
-            for (int i = 0; i < afterStictchesTable.Count; i++)
+            outfile.WriteLine("color table");
+            for (int i = 0; i < colorTable.Count; i++)
             {
-                outfile.WriteLine((i + 1).ToString() + "\t" + afterStictchesTable[i].a.ToString() + ", " + afterStictchesTable[i].b.ToString());
+                outfile.WriteLine((i + 1).ToString() + "\t" + colorTable[i].a.ToString() + ", " + colorTable[i].b.ToString());
             }
             outfile.Close();
         }
 
-        public bool isReadyToUse()
+        //public bool isReadyToUse()
+        //{
+        //    return _readyToUse;
+        //}
+
+        public statusEnum getStatus()
         {
-            return _readyToUse;
+            return readyStatus;
+        }
+
+        public string getLastError()
+        {
+            return lastError;
+        }
+
+        public bool getColorWarning()
+        {
+            return colorWarning;
         }
 
         private Color getColorFromIndex(int index)
         {
-            Color retval = Color.White;
-            Console.WriteLine("color index: " + index.ToString());
+            Color retval;// = Color.White;
+            //Console.WriteLine("color index: " + index.ToString());
             switch (index)
             {
                 case 1:
@@ -520,6 +608,10 @@ namespace embroideryReader
                     break;
                 case 64:
                     retval = Color.FromArgb(255, 200, 200);
+                    break;
+                default:
+                    retval = Color.White;
+                    colorWarning = true;
                     break;
             }
             return retval;

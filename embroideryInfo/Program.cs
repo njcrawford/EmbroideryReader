@@ -12,7 +12,7 @@ namespace embroideryInfo
             {
                 try
                 {
-                    embroideryReader.PesFile design = new embroideryReader.PesFile(args[0]);
+                    PesFile.PesFile design = new PesFile.PesFile(args[0]);
                     design.saveDebugInfo();
                 }
                 catch (Exception ex)

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "emroideryTester", "emroider
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryInfo", "embroideryInfo\embroideryInfo.csproj", "{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PesFile", "PesFile\PesFile.csproj", "{66EF662E-F52C-4104-9C15-A14266D8F3B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66EF662E-F52C-4104-9C15-A14266D8F3B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66EF662E-F52C-4104-9C15-A14266D8F3B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66EF662E-F52C-4104-9C15-A14266D8F3B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66EF662E-F52C-4104-9C15-A14266D8F3B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -15,7 +15,7 @@ namespace embroideryReader
         private string[] args;
         public Pen drawPen = Pens.Black;
         public Bitmap DrawArea;
-        public PesFile design;
+        public PesFile.PesFile design;
         private nc_settings.IniFile settings = new nc_settings.IniFile("embroideryreader.ini");
 
 
@@ -61,25 +61,24 @@ namespace embroideryReader
             {
                 return;
             }
-            try
+            design = new PesFile.PesFile(filename);
+            if (design.getStatus() == PesFile.statusEnum.Ready)
             {
-                design = new PesFile(filename);
-                if (design.isReadyToUse())
-                {
-                    this.Text = System.IO.Path.GetFileName(filename) + " - Embroidery Reader";
-                    DrawArea = new Bitmap(design.GetWidth(), design.GetHeight());
-                    setPanelSize(design.GetWidth(), design.GetHeight());
+                this.Text = System.IO.Path.GetFileName(filename) + " - Embroidery Reader";
+                DrawArea = new Bitmap(design.GetWidth(), design.GetHeight());
+                sizePanel2();
+                setPanelSize(design.GetWidth(), design.GetHeight());
 
-                    designToBitmap();
-                }
-                else
+                designToBitmap();
+
+                if (design.getColorWarning())
                 {
-                    MessageBox.Show("The design could not be read.");
+                    toolStripStatusLabel1.Text = "Colors shown for this design may be inaccurate";
                 }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("An error occured while reading the design file:" + Environment.NewLine + ex.ToString());
+                MessageBox.Show("An error occured while reading the file:" + Environment.NewLine + design.getLastError());
             }
         }
 
@@ -112,20 +111,33 @@ namespace embroideryReader
                 e.Graphics.DrawImage(DrawArea, 0, 0);
             }
         }
+
         public void setPanelSize(int x, int y)
         {
             panel1.Width = x;
             panel1.Height = y;
         }
+
         public void designToBitmap()
         {
             Graphics xGraph;
+            Single threadThickness = 5;
+            if (settings.getValue("thread thickness") != null)
+            {
+                try
+                {
+                    threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
+                }
+                catch (Exception ex)
+                {
+                }
+            }
             xGraph = Graphics.FromImage(DrawArea);
             for (int i = 0; i < design.blocks.Count; i++)
             {
                 if (design.blocks[i].stitches.Length > 0)
                 {
-                    xGraph.DrawLines(new Pen(design.blocks[i].color, 2.5f), design.blocks[i].stitches);
+                    xGraph.DrawLines(new Pen(design.blocks[i].color, threadThickness), design.blocks[i].stitches);
                 }
             }
             xGraph.Dispose();
@@ -272,7 +284,15 @@ namespace embroideryReader
 
         private void Form1_Resize(object sender, EventArgs e)
         {
-            panel2.Height = this.Height - 50;
+            //panel2.Height = this.Height - 75;
+            //panel2.Width = this.Width-8;
+            sizePanel2();
+        }
+
+        private void sizePanel2()
+        {
+            panel2.Height = this.Height - 75;
+            panel2.Width = this.Width - 8;
         }
     }
 }
