@@ -62,7 +62,7 @@ namespace PesFile
             try
             {
                 _filename = filename;
-                fileIn = new System.IO.BinaryReader(System.IO.File.Open(filename, System.IO.FileMode.Open));
+                fileIn = new System.IO.BinaryReader(System.IO.File.Open(filename, System.IO.FileMode.Open,System.IO.FileAccess.Read));
 
                 string startFileSig = "";
                 for (int i = 0; i < 8; i++)//8 bytes
@@ -78,47 +78,81 @@ namespace PesFile
                     return;
                 }
                 pesNum = startFileSig.Substring(4);
-                int pesHeaderLength = 0;
+                //int pesHeaderLength = 0;
                 switch (pesNum)
                 {
                     case "0001":
-                        pesHeaderLength = 8; //bytes
+                        //pesHeaderLength = 8; //bytes
                         break;
                     case "0020":
-                        pesHeaderLength = 17; //bytes
+                        //pesHeaderLength = 17; //bytes
+                        break;
+                    case "0030":
+                        //pesHeaderLength = 19; //bytes
                         break;
                     case "0050":
-                        pesHeaderLength = 185;//bytes;
+                        //pesHeaderLength = 185;//bytes;
+                        colorWarning = true;
+                        break;
+                    case "0060":
+                        //pesHeaderLength = -1;//use search method
                         colorWarning = true;
                         break;
                     default:
                         readyStatus = statusEnum.ReadError;
-                        lastError = "Unknown PES number";
+                        lastError = "Unknown PES number " + pesNum;
                         fileIn.Close();
                         return;
                 }
-                for (int i = 0; i < pesHeaderLength; i++)
+                //if (pesHeaderLength > 0)
+                //{
+                //    for (int i = 0; i < pesHeaderLength; i++)
+                //    {
+                //        pesHeader.Add(fileIn.ReadInt16());
+                //    }
+                //    string embOneHeaderString = "";
+                //    for (int i = 0; i < 7; i++)//7 bytes
+                //    {
+                //        //message += fileIn.ReadChar();
+                //        embOneHeaderString += fileIn.ReadChar();
+                //    }
+                //    if (embOneHeaderString != "CEmbOne")//probably a corrupted file
+                //    {
+                //        readyStatus = statusEnum.ReadError;
+                //        lastError = "Missing CEmbOne header";
+                //        fileIn.Close();
+                //        return;
+                //    }
+                //}
+                //else
+                //{
+                long restorePos = fileIn.BaseStream.Position;
+                //char[] tempchars = fileIn.ReadChars(1024);
+                /*ReadChars has a problem reading some characters,
+                 *seems to skip them. Use ReadBytes instaed*/
+                byte[] tempbytes = fileIn.ReadBytes(1024);
+                int foundCEmbOne = -1;
+                for (int s = 0; s + 6 < tempbytes.Length; s++)
                 {
-                    pesHeader.Add(fileIn.ReadInt16());
+                    if (tempbytes[s] == 67 && tempbytes[s + 1] == 69 && tempbytes[s + 2] == 109 && tempbytes[s + 3] == 98 && tempbytes[s + 4] == 79 && tempbytes[s + 5] == 110 && tempbytes[s + 6] == 101)
+                    {
+                        foundCEmbOne = s;
+                        break;
+                    }
                 }
-                string embOneHeaderString = "";
-                for (int i = 0; i < 7; i++)//7 bytes
-                {
-                    //message += fileIn.ReadChar();
-                    embOneHeaderString += fileIn.ReadChar();
-                }
-                if (embOneHeaderString != "CEmbOne")//probably a corrupted file
+                if (foundCEmbOne == -1)
                 {
                     readyStatus = statusEnum.ReadError;
                     lastError = "Missing CEmbOne header";
                     fileIn.Close();
                     return;
                 }
-                //message += Environment.NewLine;
-                //MessageBox.Show(message);
+                else
+                {
+                    fileIn.BaseStream.Position = restorePos + foundCEmbOne + 7;
+                }
+                //}
 
-                //message = "";
-                //int headerValNum = 1;
                 for (int i = 0; i < 33; i++) //read 66 bytes
                 {
                     Int16 tmpval;
@@ -154,23 +188,16 @@ namespace PesFile
                     fileIn.Close();
                     return;
                 }
-
+                int strangeVal0 = -1;
                 for (int i = 0; i < 5; i++)//10 bytes
                 {
                     Int16 temp = fileIn.ReadInt16();
-                    //if (i == 1)//second value is starting color
-                    //{
-                    //    lastColorIndex = temp;
-
-                    //    //Console.WriteLine("starting color" + temp.ToString());
-                    //}
-                    //if (i == 2)//third value is how many stitches until the next block
-                    //{
-                    //    stitchesLeft = temp;
-                    //}
                     csewsegHeader.Add(temp);
                     switch (i)
                     {
+                        case 0://start new block indicator?
+                            strangeVal0 = temp;
+                            break;
                         case 1://second value is starting color
                             lastColorIndex = temp;
                             break;
@@ -200,7 +227,7 @@ namespace PesFile
                         if (realx == -32765)
                         {
 
-                            if (realy == 1) //end of block
+                            if (realy == strangeVal0) //end of block
                             {
                                 stitchBlock tmp = new stitchBlock();
                                 tmp.stitches = new Point[currentBlock.Count];
@@ -273,13 +300,19 @@ namespace PesFile
             {
                 readyStatus = statusEnum.IOError;
                 lastError = ioex.Message;
-                fileIn.Close();
+                if (fileIn != null)
+                {
+                    fileIn.Close();
+                }
             }
             catch (Exception ex)
             {
                 readyStatus = statusEnum.ReadError;
                 lastError = ex.Message;
-                fileIn.Close();
+                if (fileIn!=null)
+                {
+                    fileIn.Close();
+                }
             }
         }
 

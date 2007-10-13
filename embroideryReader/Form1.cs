@@ -75,6 +75,10 @@ namespace embroideryReader
                 {
                     toolStripStatusLabel1.Text = "Colors shown for this design may be inaccurate";
                 }
+                else
+                {
+                    toolStripStatusLabel1.Text = "";
+                }
             }
             else
             {
@@ -135,9 +139,13 @@ namespace embroideryReader
             xGraph = Graphics.FromImage(DrawArea);
             for (int i = 0; i < design.blocks.Count; i++)
             {
-                if (design.blocks[i].stitches.Length > 0)
+                if (design.blocks[i].stitches.Length > 1)//must have 2 points to make a line
                 {
-                    xGraph.DrawLines(new Pen(design.blocks[i].color, threadThickness), design.blocks[i].stitches);
+                    Pen tempPen = new Pen(design.blocks[i].color, threadThickness);
+                    tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+                    tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+                    tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
+                    xGraph.DrawLines(tempPen, design.blocks[i].stitches);
                 }
             }
             xGraph.Dispose();
