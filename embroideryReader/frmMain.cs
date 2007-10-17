@@ -10,16 +10,16 @@ using System.Runtime.InteropServices;
 
 namespace embroideryReader
 {
-    public partial class Form1 : Form
+    public partial class frmMain : Form
     {
         private string[] args;
-        public Pen drawPen = Pens.Black;
-        public Bitmap DrawArea;
-        public PesFile.PesFile design;
+        private Pen drawPen = Pens.Black;
+        private Bitmap DrawArea;
+        private PesFile.PesFile design;
         private nc_settings.IniFile settings = new nc_settings.IniFile("embroideryreader.ini");
 
 
-        public Form1()
+        public frmMain()
         {
             InitializeComponent();
             args = Environment.GetCommandLineArgs();
@@ -40,21 +40,91 @@ namespace embroideryReader
         //    }
         //}
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void loadSettings()
         {
             string updateLoc;
             updateLoc = settings.getValue("update location");
-            if (updateLoc == null || updateLoc == "")
+            if (updateLoc == null || updateLoc.Length == 0)
             {
                 settings.setValue("update location", "http://www.njcrawford.com/embreader/");
             }
+            if (settings.getValue("background color", "enabled") == "yes")
+            {
+                if (checkColorFromStrings(settings.getValue("background color", "red"),
+                                          settings.getValue("background color", "green"),
+                                          settings.getValue("background color", "blue")))
+                {
+                    this.BackColor = makeColorFromStrings(settings.getValue("background color", "red"),
+                                                          settings.getValue("background color", "green"),
+                                                          settings.getValue("background color", "blue"));
+                }
+                else
+                {
+                    this.BackColor = Color.FromKnownColor(KnownColor.Control);
+                }
+            }
+            else
+            {
+                this.BackColor = Color.FromKnownColor(KnownColor.Control);
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            loadSettings();
             this.Text = "Embroidery Reader";
             if (args.Length > 1)
             {
                 openFile(args[1]);
             }
-
         }
+
+        public static bool checkColorFromStrings(string red, string green, string blue)
+        {
+            //string redString;
+            //string greenString;
+            //string blueString;
+            byte redByte;
+            byte greenByte;
+            byte blueByte;
+            //red = settings.getValue("background color", "red");
+            //greenString = settings.getValue("background color", "green");
+            //blueString = settings.getValue("background color", "blue");
+            bool retval = false;
+            if (String.IsNullOrEmpty(red) || String.IsNullOrEmpty(green) || String.IsNullOrEmpty(blue))
+            {
+                retval = false;
+            }
+            else
+            {
+                try
+                {
+                    redByte = Convert.ToByte(red);
+                    greenByte = Convert.ToByte(green);
+                    blueByte = Convert.ToByte(blue);
+                    //this.BackColor = Color.FromArgb(redByte, greenByte, blueByte);
+                    retval = true;
+                }
+                catch (Exception ex)
+                {
+                    retval = false;
+                }
+            }
+            return retval;
+        }
+
+        public static Color makeColorFromStrings(string red, string green, string blue)
+        {
+            if (checkColorFromStrings(red, green, blue))
+            {
+                return Color.FromArgb(Convert.ToByte(red), Convert.ToByte(green), Convert.ToByte(blue));
+            }
+            else
+            {
+                return Color.Red;
+            }
+        }
+
         private void openFile(string filename)
         {
             if (!System.IO.File.Exists(filename))
@@ -65,9 +135,7 @@ namespace embroideryReader
             if (design.getStatus() == PesFile.statusEnum.Ready)
             {
                 this.Text = System.IO.Path.GetFileName(filename) + " - Embroidery Reader";
-                DrawArea = new Bitmap(design.GetWidth(), design.GetHeight());
                 sizePanel2();
-                setPanelSize(design.GetWidth(), design.GetHeight());
 
                 designToBitmap();
 
@@ -91,15 +159,17 @@ namespace embroideryReader
             string filename;
             openFileDialog1.FileName = "";
             openFileDialog1.Filter = "Embroidery Files (*.pes)|*.pes|All Files (*.*)|*.*";
-            openFileDialog1.ShowDialog();
-            filename = openFileDialog1.FileName;
-            if (!System.IO.File.Exists(filename))
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                return;
-            }
-            else
-            {
-                openFile(filename);
+                filename = openFileDialog1.FileName;
+                if (!System.IO.File.Exists(filename))
+                {
+                    return;
+                }
+                else
+                {
+                    openFile(filename);
+                }
             }
         }
 
@@ -116,12 +186,6 @@ namespace embroideryReader
             }
         }
 
-        public void setPanelSize(int x, int y)
-        {
-            panel1.Width = x;
-            panel1.Height = y;
-        }
-
         public void designToBitmap()
         {
             Graphics xGraph;
@@ -136,7 +200,11 @@ namespace embroideryReader
                 {
                 }
             }
+            DrawArea = new Bitmap(design.GetWidth() + (int)(threadThickness * 2), design.GetHeight() + (int)(threadThickness * 2));
+            panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
+            panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
             xGraph = Graphics.FromImage(DrawArea);
+            xGraph.TranslateTransform(threadThickness, threadThickness);
             for (int i = 0; i < design.blocks.Count; i++)
             {
                 if (design.blocks[i].stitches.Length > 1)//must have 2 points to make a line
@@ -260,8 +328,6 @@ namespace embroideryReader
         {
             if (design != null)
             {
-                //if (design.isReadyToUse())
-                //{
                 try
                 {
                     design.saveDebugInfo();
@@ -270,11 +336,6 @@ namespace embroideryReader
                 {
                     MessageBox.Show("There was an error while saving debug info:" + Environment.NewLine + ex.ToString());
                 }
-                //}
-                //else
-                //{
-                //    MessageBox.Show("The design could not be read successfully.");
-                //}
             }
             else
             {
@@ -299,8 +360,19 @@ namespace embroideryReader
 
         private void sizePanel2()
         {
-            panel2.Height = this.Height - 75;
+            panel2.Height = this.Height - 73;
             panel2.Width = this.Width - 8;
+        }
+
+        private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmSettingsDialog tempForm = new frmSettingsDialog();
+            tempForm.settings = settings;
+            if (tempForm.ShowDialog() == DialogResult.OK)
+            {
+                settings = tempForm.settings;
+                loadSettings();
+            }
         }
     }
 }
