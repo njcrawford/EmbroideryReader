@@ -53,7 +53,6 @@
     <Compile Include="frmSettingsDialog.Designer.cs">
       <DependentUpon>frmSettingsDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="nc_Update.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="frmMain.resx">
