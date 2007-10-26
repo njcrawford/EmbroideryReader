@@ -11,7 +11,7 @@
 Name "Embroidery Reader"
 
 ; The file to write
-OutFile "embreadsetup.exe"
+OutFile "embreadsetup110.exe"
 
 ; The default installation directory
 InstallDir "$PROGRAMFILES\Embroidery Reader"
@@ -44,6 +44,7 @@ Section "Embroidery Reader (required)"
    File "embroideryReader.exe"
    File "nc_settings.dll"
    File "PesFile.dll"
+   File "nc_Updater.dll"
   
   ; Write the installation path into the registry
   WriteRegStr HKLM "SOFTWARE\Embroidery Reader" "Install_Dir" "$INSTDIR"
@@ -124,6 +125,7 @@ Section "Uninstall"
   Delete $INSTDIR\nc_settings.dll
   Delete $INSTDIR\embroideryreader.ini
   Delete $INSTDIR\PesFile.dll
+  Delete $INSTDIR\nc_Updater.dll
 
   ; Remove obsolete files from previous versions, if they exist
   Delete $INSTDIR\UpdateInstaller.exe

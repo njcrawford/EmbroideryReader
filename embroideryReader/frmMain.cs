@@ -229,7 +229,7 @@ namespace embroideryReader
         {
 
             //bool isNewerVersion = false;
-            UpdateTester.nc_Update updater = new UpdateTester.nc_Update(settings.getValue("update location"));
+            nc_Updater.IniFileUpdater updater = new nc_Updater.IniFileUpdater(settings.getValue("update location"));
             //UpdateTester.nc_Update updater = new UpdateTester.nc_Update("http://www.google.com/");
             //char[] sep = { '.' };
             //string[] upVersion = updater.VersionAvailable().Split(sep);
@@ -285,7 +285,7 @@ namespace embroideryReader
         {
             //Assembly myAsm = Assembly.GetCallingAssembly();
             //AssemblyName aName = myAsm.GetName();
-            return Assembly.GetCallingAssembly().GetName().Version.ToString();
+            return Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
 
 
