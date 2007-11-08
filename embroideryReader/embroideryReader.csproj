@@ -102,6 +102,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>"$(ProjectDir)\IncrementBuildNumber.exe"</PostBuildEvent>
+    <PostBuildEvent>"$(ProjectDir)\IncrementVersionNumber.exe" --postbuild</PostBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)\IncrementVersionNumber.exe" --prebuild</PreBuildEvent>
   </PropertyGroup>
 </Project>
