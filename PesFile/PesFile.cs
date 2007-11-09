@@ -90,6 +90,9 @@ namespace PesFile
                     case "0030":
                         //pesHeaderLength = 19; //bytes
                         break;
+                    case "0040":
+                        //this one was somehow forgotten in 1.1.0.x
+                        break;
                     case "0050":
                         //pesHeaderLength = 185;//bytes;
                         colorWarning = true;
