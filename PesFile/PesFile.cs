@@ -37,7 +37,9 @@ namespace PesFile
         string _filename;
         public List<Int16> pesHeader = new List<short>();
         public List<Int16> embOneHeader = new List<short>();
-        public List<Int16> csewsegHeader = new List<short>();
+        public List<Int16> sewSegHeader = new List<short>();
+        public List<Int16> embPunchHeader = new List<short>();
+        public List<Int16> sewFigSegHeader = new List<short>();
         public List<stitchBlock> blocks = new List<stitchBlock>();
         public List<intPair> colorTable = new List<intPair>();
         private statusEnum readyStatus = statusEnum.NotOpen;
@@ -62,7 +64,7 @@ namespace PesFile
             try
             {
                 _filename = filename;
-                fileIn = new System.IO.BinaryReader(System.IO.File.Open(filename, System.IO.FileMode.Open,System.IO.FileAccess.Read));
+                fileIn = new System.IO.BinaryReader(System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read));
 
                 string startFileSig = "";
                 for (int i = 0; i < 8; i++)//8 bytes
@@ -134,68 +136,187 @@ namespace PesFile
                 /*ReadChars has a problem reading some characters,
                  *seems to skip them. Use ReadBytes instaed*/
                 byte[] tempbytes = fileIn.ReadBytes(1024);
-                int foundCEmbOne = -1;
-                for (int s = 0; s + 6 < tempbytes.Length; s++)
+                string tempstring = "";
+                for (int ctr = 0; ctr < tempbytes.Length; ctr++)
                 {
-                    if (tempbytes[s] == 67 && tempbytes[s + 1] == 69 && tempbytes[s + 2] == 109 && tempbytes[s + 3] == 98 && tempbytes[s + 4] == 79 && tempbytes[s + 5] == 110 && tempbytes[s + 6] == 101)
+                    tempstring += (char)tempbytes[ctr];
+                }
+                //int foundCEmbOne = -1;
+                //int foundCEmbPunch = -1;
+                //if (tempstring.Contains("CEmbOne"))
+                //{
+                //    foundCEmbOne = tempstring.IndexOf("CEmbOne");
+                //}
+                //else if (tempstring.Contains("CEmbPunch"))
+                //{
+                //    foundCEmbPunch = tempstring.IndexOf("CEmbPunch");
+                //}
+                //for (int s = 0; s + 8 < tempbytes.Length; s++)
+                //{
+                //    //CEmbOne
+                //    if (tempbytes[s] == 67 && tempbytes[s + 1] == 69 && tempbytes[s + 2] == 109 && tempbytes[s + 3] == 98 && tempbytes[s + 4] == 79 && tempbytes[s + 5] == 110 && tempbytes[s + 6] == 101)
+                //    {
+                //        foundCEmbOne = s;
+                //        break;
+                //    }
+                //    //CEmbPunch
+                //    else if (tempbytes[s] == 67 && tempbytes[s + 1] == 69 && tempbytes[s + 2] == 109 && tempbytes[s + 3] == 98 && tempbytes[s + 4] == 80 && tempbytes[s + 5] == 117 && tempbytes[s + 6] == 110 && tempbytes[s + 7] == 99 && tempbytes[s + 8] == 104)
+                //    {
+                //        foundCEmbPunch = s;
+                //        break;
+                //    }
+                //}
+                //if (foundCEmbOne == -1 && foundCEmbPunch == -1)
+                //{
+                //    readyStatus = statusEnum.ReadError;
+                //    lastError = "Missing CEmbOne/CEmbPunch header";
+                //    fileIn.Close();
+                //    return;
+                //}
+                //else
+                //{
+                if (tempstring.Contains("CEmbOne"))
+                {
+                    fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CEmbOne") + 7;
+                    for (int i = 0; i < 33; i++) //read 66 bytes
                     {
-                        foundCEmbOne = s;
-                        break;
+                        Int16 tmpval;
+                        tmpval = fileIn.ReadInt16();
+                        embOneHeader.Add(tmpval);
+                        switch (i)
+                        {
+                            case 21:
+                                translateStart.X = tmpval;
+                                break;
+                            case 22:
+                                translateStart.Y = tmpval;
+                                break;
+                            case 23:
+                                imageWidth = tmpval;
+                                break;
+                            case 24:
+                                imageHeight = tmpval;
+                                break;
+                        }
+
+                    }
+                    string sewSegHeader = "";
+                    for (int i = 0; i < 7; i++)//7 bytes
+                    {
+                        sewSegHeader += (char)fileIn.ReadByte();
+                    }
+                    if (sewSegHeader != "CSewSeg")
+                    {
+                        readyStatus = statusEnum.ReadError;
+                        lastError = "Missing CSewSeg header";
+                        fileIn.Close();
+                        return;
                     }
                 }
-                if (foundCEmbOne == -1)
+                else if (tempstring.Contains("CEmbPunch"))
                 {
-                    readyStatus = statusEnum.ReadError;
-                    lastError = "Missing CEmbOne header";
-                    fileIn.Close();
-                    return;
+                    fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CEmbPunch") + 9;
+                    for (int i = 0; i < 24; i++) //read 48 bytes
+                    {
+                        Int16 tmpval;
+                        tmpval = fileIn.ReadInt16();
+                        embPunchHeader.Add(tmpval);
+                        switch (i)
+                        {
+                            case 1:
+                                translateStart.X = tmpval;
+                                break;
+                            case 2:
+                                translateStart.Y = tmpval;
+                                break;
+                            case 3:
+                                imageWidth = tmpval;
+                                break;
+                            case 4:
+                                imageHeight = tmpval;
+                                break;
+                        }
+
+                    }
+                    string sewSegHeader = "";
+                    for (int i = 0; i < 10; i++)//10 bytes
+                    {
+                        sewSegHeader += (char)fileIn.ReadByte();
+                    }
+                    if (sewSegHeader != "CSewFigSeg")
+                    {
+                        readyStatus = statusEnum.ReadError;
+                        lastError = "Missing CSewFigSeg header";
+                        fileIn.Close();
+                        return;
+                    }
                 }
                 else
                 {
-                    fileIn.BaseStream.Position = restorePos + foundCEmbOne + 7;
-                }
-                //}
-
-                for (int i = 0; i < 33; i++) //read 66 bytes
-                {
-                    Int16 tmpval;
-                    tmpval = fileIn.ReadInt16();
-                    embOneHeader.Add(tmpval);
-                    switch (i)
-                    {
-                        case 21:
-                            translateStart.X = tmpval;
-                            break;
-                        case 22:
-                            translateStart.Y = tmpval;
-                            break;
-                        case 23:
-                            imageWidth = tmpval;
-                            break;
-                        case 24:
-                            imageHeight = tmpval;
-                            break;
-                    }
-
-                }
-
-                string sewSegHeader = "";
-                for (int i = 0; i < 7; i++)//7 bytes
-                {
-                    sewSegHeader += fileIn.ReadChar();
-                }
-                if (sewSegHeader != "CSewSeg")//probably corrupt
-                {
                     readyStatus = statusEnum.ReadError;
-                    lastError = "Missing CSewSeg header";
+                    lastError = "Missing CEmbOne/CEmbPunch header";
                     fileIn.Close();
                     return;
                 }
+                //}
+                //}
+
+                //for (int i = 0; i < 33; i++) //read 66 bytes
+                //{
+                //    Int16 tmpval;
+                //    tmpval = fileIn.ReadInt16();
+                //    embOneHeader.Add(tmpval);
+                //    switch (i)
+                //    {
+                //        case 21:
+                //            translateStart.X = tmpval;
+                //            break;
+                //        case 22:
+                //            translateStart.Y = tmpval;
+                //            break;
+                //        case 23:
+                //            imageWidth = tmpval;
+                //            break;
+                //        case 24:
+                //            imageHeight = tmpval;
+                //            break;
+                //    }
+
+                //}
+                //fileIn.BaseStream.Position -= 25;
+                //restorePos = fileIn.BaseStream.Position;
+                //tempbytes = fileIn.ReadBytes(1024);
+                //tempstring = "";
+                //for (int ctr = 0; ctr < tempbytes.Length; ctr++)
+                //{
+                //    tempstring += (char)tempbytes[ctr];
+                //}
+                //string sewSegHeader = "";
+                //for (int i = 0; i < 7; i++)//7 bytes
+                //{
+                //    sewSegHeader += (char)fileIn.ReadByte();
+                //}
+                //CSewFigSeg
+                //if (tempstring.Contains("CSewSeg"))
+                //{
+                //    fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CSewSeg") + 7;
+                //}
+                //else if (tempstring.Contains("CSewFigSeg"))
+                //{
+                //    fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CSewFigSeg") + 10;
+                //}
+                //else//probably corrupt
+                //{
+                //    readyStatus = statusEnum.ReadError;
+                //    lastError = "Missing CSewSeg/CSewFigSeg header";
+                //    fileIn.Close();
+                //    return;
+                //}
                 int strangeVal0 = -1;
                 for (int i = 0; i < 5; i++)//10 bytes
                 {
                     Int16 temp = fileIn.ReadInt16();
-                    csewsegHeader.Add(temp);
+                    sewSegHeader.Add(temp);
                     switch (i)
                     {
                         case 0://start new block indicator?
@@ -308,15 +429,15 @@ namespace PesFile
                     fileIn.Close();
                 }
             }
-            catch (Exception ex)
-            {
-                readyStatus = statusEnum.ReadError;
-                lastError = ex.Message;
-                if (fileIn!=null)
-                {
-                    fileIn.Close();
-                }
-            }
+            //catch (Exception ex)
+            //{
+            //    readyStatus = statusEnum.ReadError;
+            //    lastError = ex.Message;
+            //    if (fileIn!=null)
+            //    {
+            //        fileIn.Close();
+            //    }
+            //}
         }
 
         public int GetWidth()
@@ -352,77 +473,120 @@ namespace PesFile
                 name = (i + 1).ToString();
                 outfile.WriteLine(name + "\t" + pesHeader[i].ToString());
             }
-            outfile.WriteLine("CEmbOne header");
-            for (int i = 0; i < embOneHeader.Count; i++)
+            if (embOneHeader.Count > 0)
             {
-                switch (i + 1)
+                outfile.WriteLine("CEmbOne header");
+                for (int i = 0; i < embOneHeader.Count; i++)
                 {
-                    case 22:
-                        name = "translate x";
-                        break;
-                    case 23:
-                        name = "translate y";
-                        break;
-                    case 24:
-                        name = "width";
-                        break;
-                    case 25:
-                        name = "height";
-                        break;
-                    default:
-                        name = (i + 1).ToString();
-                        break;
-                }
+                    switch (i + 1)
+                    {
+                        case 22:
+                            name = "translate x";
+                            break;
+                        case 23:
+                            name = "translate y";
+                            break;
+                        case 24:
+                            name = "width";
+                            break;
+                        case 25:
+                            name = "height";
+                            break;
+                        default:
+                            name = (i + 1).ToString();
+                            break;
+                    }
 
-                outfile.WriteLine(name + "\t" + embOneHeader[i].ToString());
+                    outfile.WriteLine(name + "\t" + embOneHeader[i].ToString());
+                }
+            }
+            if (embPunchHeader.Count > 0)
+            {
+                outfile.WriteLine("CEmbPunch header");
+                for (int i = 0; i < embPunchHeader.Count; i++)
+                {
+                    switch (i + 1)
+                    {
+                        //case 22:
+                        //    name = "translate x";
+                        //    break;
+                        //case 23:
+                        //    name = "translate y";
+                        //    break;
+                        //case 24:
+                        //    name = "width";
+                        //    break;
+                        //case 25:
+                        //    name = "height";
+                        //    break;
+                        default:
+                            name = (i + 1).ToString();
+                            break;
+                    }
+
+                    outfile.WriteLine(name + "\t" + embPunchHeader[i].ToString());
+                }
             }
             outfile.WriteLine("CSewSeg header");
-            for (int i = 0; i < csewsegHeader.Count; i++)
+            for (int i = 0; i < sewSegHeader.Count; i++)
             {
-
                 switch (i + 1)
                 {
                     case 2:
                         name = "start color";
-                        outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
+                        outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
                         break;
                     case 3:
                         name = "starting stitches";
-                        outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
+                        outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
                         break;
                     case 4:
                         name = "base x";
-                        outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
+                        outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
                         break;
                     case 5:
                         name = "base y";
-                        outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString() + " (" + (csewsegHeader[i] + imageHeight).ToString() + ")");
+                        outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString() + " (" + (sewSegHeader[i] + imageHeight).ToString() + ")");
                         break;
                     case 6:
                         name = "start x";
-                        outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
+                        outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
                         break;
                     case 7:
                         name = "start y";
-                        outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString() + " (" + (csewsegHeader[i] + imageHeight).ToString() + ")");
+                        outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString() + " (" + (sewSegHeader[i] + imageHeight).ToString() + ")");
                         break;
                     default:
                         name = (i + 1).ToString();
-                        outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
+                        outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
                         break;
                 }
                 //outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
             }
             outfile.WriteLine("stitches start: " + startStitches.ToString());
             outfile.WriteLine("block info");
+            outfile.WriteLine("number\tcolor\tstitches");
             for (int i = 0; i < this.blocks.Count; i++)
             {
                 outfile.WriteLine((i + 1).ToString() + "\t" + blocks[i].colorIndex.ToString() + "\t" + blocks[i].stitchesTotal.ToString());
             }
             outfile.WriteLine("color table");
+            outfile.WriteLine("number\ta\tb");
             for (int i = 0; i < colorTable.Count; i++)
             {
                 outfile.WriteLine((i + 1).ToString() + "\t" + colorTable[i].a.ToString() + ", " + colorTable[i].b.ToString());
+            }
+            if (blocks.Count > 0)
+            {
+                outfile.WriteLine("Extended stitch debug info");
+                for (int blocky = 0; blocky < blocks.Count; blocky++)
+                {
+                    outfile.WriteLine("block " + (blocky + 1).ToString() + " start");
+                    for (int stitchy = 0; stitchy < blocks[blocky].stitches.Length; stitchy++)
+                    {
+                        outfile.WriteLine(blocks[blocky].stitches[stitchy].X.ToString() + ", " + blocks[blocky].stitches[stitchy].Y.ToString());
+                    }
+                }
             }
             outfile.Close();
         }
