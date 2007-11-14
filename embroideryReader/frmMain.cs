@@ -374,5 +374,41 @@ namespace embroideryReader
                 loadSettings();
             }
         }
+
+        private void printToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (printDialog1.ShowDialog() == DialogResult.OK)
+            {
+                //MessageBox.Show("It's OK!");
+                printDocument1.Print();
+            }
+            //printDocument1.Print();
+        }
+
+        private void printDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
+        {
+            if (DrawArea != null)
+            {
+                //e.Graphics.DrawImage(DrawArea, 30, 30);
+                //RectangleF tempRect = new RectangleF(0,0,DrawArea.Width,DrawArea.Height);
+                //tempRect.X = 0;
+                //tempRect.Y = 0;
+                //tempRect.Width = DrawArea.Width;
+                //tempRect.Height = DrawArea.Height;
+                //float dpiX = e.Graphics.DpiX;
+                //float dpiY = e.Graphics.DpiY;
+                //double mmPerInch = 0.03937007874015748031496062992126;
+                //MessageBox.Show((dpiX * mmPerInch * 0.1).ToString());
+                //e.Graphics.ScaleTransform((float)(dpiX * mmPerInch * 0.1), (float)(dpiY * mmPerInch * 0.1));
+                e.Graphics.ScaleTransform(0.1f, 0.1f);
+                e.Graphics.DrawImage(DrawArea, 30, 30);
+            }
+        }
+
+        private void printPreviewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            printPreviewDialog1.Document = printDocument1;
+            printPreviewDialog1.ShowDialog();
+        }
     }
 }
