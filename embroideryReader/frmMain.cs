@@ -182,6 +182,8 @@ namespace embroideryReader
         {
             if (DrawArea != null)
             {
+                //e.Graphics.ScaleTransform(0.1f, 0.1f);
+                //e.Graphics.PageUnit = GraphicsUnit.Millimeter;
                 e.Graphics.DrawImage(DrawArea, 0, 0);
             }
         }
@@ -213,6 +215,7 @@ namespace embroideryReader
                     tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
                     tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
                     tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
+                    xGraph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
                     xGraph.DrawLines(tempPen, design.blocks[i].stitches);
                 }
             }
@@ -397,11 +400,16 @@ namespace embroideryReader
                 //tempRect.Height = DrawArea.Height;
                 //float dpiX = e.Graphics.DpiX;
                 //float dpiY = e.Graphics.DpiY;
-                //double mmPerInch = 0.03937007874015748031496062992126;
+                float dpiX = 100;
+                float dpiY = 100;
+                double mmPerInch = 0.03937007874015748031496062992126;
                 //MessageBox.Show((dpiX * mmPerInch * 0.1).ToString());
-                //e.Graphics.ScaleTransform((float)(dpiX * mmPerInch * 0.1), (float)(dpiY * mmPerInch * 0.1));
-                e.Graphics.ScaleTransform(0.1f, 0.1f);
+                //e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                e.Graphics.ScaleTransform((float)(dpiX * mmPerInch * 0.1), (float)(dpiY * mmPerInch * 0.1));
+
+                //e.Graphics.ScaleTransform(0.1f, 0.1f);
                 e.Graphics.DrawImage(DrawArea, 30, 30);
+                //e.Graphics.DrawRectangle(Pens.Black, 20, 20, 100, 100);
             }
         }
 

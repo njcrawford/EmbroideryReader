@@ -135,48 +135,20 @@ namespace PesFile
                 //char[] tempchars = fileIn.ReadChars(1024);
                 /*ReadChars has a problem reading some characters,
                  *seems to skip them. Use ReadBytes instaed*/
-                byte[] tempbytes = fileIn.ReadBytes(1024);
+                byte[] tempbytes = fileIn.ReadBytes(10240);
                 string tempstring = "";
                 for (int ctr = 0; ctr < tempbytes.Length; ctr++)
                 {
                     tempstring += (char)tempbytes[ctr];
                 }
-                //int foundCEmbOne = -1;
-                //int foundCEmbPunch = -1;
-                //if (tempstring.Contains("CEmbOne"))
-                //{
-                //    foundCEmbOne = tempstring.IndexOf("CEmbOne");
-                //}
-                //else if (tempstring.Contains("CEmbPunch"))
-                //{
-                //    foundCEmbPunch = tempstring.IndexOf("CEmbPunch");
-                //}
-                //for (int s = 0; s + 8 < tempbytes.Length; s++)
-                //{
-                //    //CEmbOne
-                //    if (tempbytes[s] == 67 && tempbytes[s + 1] == 69 && tempbytes[s + 2] == 109 && tempbytes[s + 3] == 98 && tempbytes[s + 4] == 79 && tempbytes[s + 5] == 110 && tempbytes[s + 6] == 101)
-                //    {
-                //        foundCEmbOne = s;
-                //        break;
-                //    }
-                //    //CEmbPunch
-                //    else if (tempbytes[s] == 67 && tempbytes[s + 1] == 69 && tempbytes[s + 2] == 109 && tempbytes[s + 3] == 98 && tempbytes[s + 4] == 80 && tempbytes[s + 5] == 117 && tempbytes[s + 6] == 110 && tempbytes[s + 7] == 99 && tempbytes[s + 8] == 104)
-                //    {
-                //        foundCEmbPunch = s;
-                //        break;
-                //    }
-                //}
-                //if (foundCEmbOne == -1 && foundCEmbPunch == -1)
-                //{
-                //    readyStatus = statusEnum.ReadError;
-                //    lastError = "Missing CEmbOne/CEmbPunch header";
-                //    fileIn.Close();
-                //    return;
-                //}
-                //else
-                //{
+                //List<Int16> pesHeader = new List<short>();
                 if (tempstring.Contains("CEmbOne"))
                 {
+                    fileIn.BaseStream.Position = restorePos;
+                    while (fileIn.BaseStream.Position < restorePos + tempstring.IndexOf("CEmbOne"))
+                    {
+                        pesHeader.Add(fileIn.ReadInt16());
+                    }
                     fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CEmbOne") + 7;
                     for (int i = 0; i < 33; i++) //read 66 bytes
                     {
@@ -215,6 +187,11 @@ namespace PesFile
                 }
                 else if (tempstring.Contains("CEmbPunch"))
                 {
+                    fileIn.BaseStream.Position = restorePos;
+                    while (fileIn.BaseStream.Position < restorePos + tempstring.IndexOf("CEmbPunch"))
+                    {
+                        pesHeader.Add(fileIn.ReadInt16());
+                    }
                     fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CEmbPunch") + 9;
                     for (int i = 0; i < 24; i++) //read 48 bytes
                     {
@@ -337,8 +314,9 @@ namespace PesFile
                 List<Point> currentBlock = new List<Point>();
                 Color currentColor = Color.Black;
                 Int32 tmpStitchCount = 0;
-                //stitchesLeft = 10000; //give it kickstart to get over the beginning
-                while (stitchesLeft >= 0)
+                bool doneWithStitches = false;
+                //while (stitchesLeft >= 0)
+                while (!doneWithStitches)
                 {
                     int tmpx;
                     int tmpy;
@@ -348,20 +326,27 @@ namespace PesFile
                     {
                         realx = fileIn.ReadInt16();
                         realy = fileIn.ReadInt16();
+                        //if (realy == -32765)
+                        //{
+                        //    fileIn.ReadInt16();
+                        //    fileIn.ReadInt16();
+                        //    fileIn.ReadInt16();
+                        //    realy = fileIn.ReadInt16();
+                        //}//-14579, 15787
+                        //if (realx == -13989 && realy == 16355)
+                        //{
+                        //    realx = fileIn.ReadInt16();
+                        //    realy = fileIn.ReadInt16();
+                        //}
                         if (realx == -32765)
                         {
-
+                            //Console.WriteLine(realy.ToString());
                             if (realy == strangeVal0) //end of block
                             {
                                 stitchBlock tmp = new stitchBlock();
                                 tmp.stitches = new Point[currentBlock.Count];
                                 currentBlock.CopyTo(tmp.stitches);
-                                //if (blocks.Count > 0)// && blocks[blocks.Count - 1].colorIndex != lastColorIndex)//don't need to change the color if next block is the same
-                                //{
                                 tmp.color = getColorFromIndex(lastColorIndex);
-                                //currentColor = System.Drawing.Color.FromArgb((rnd.Next(0, 255)), (rnd.Next(0, 255)), (rnd.Next(0, 255)));
-
-                                //}
                                 tmp.colorIndex = lastColorIndex;
                                 tmp.stitchesTotal = tmpStitchCount;
                                 blocks.Add(tmp);
@@ -376,15 +361,28 @@ namespace PesFile
                                 skipStitches = stitchesLeft;//skip these stiches, since they just seem to get in the way
                             }
                         }
+                        else if (realx == 16716 || realy == 16716)
+                        {
+                            doneWithStitches = true;
+                        }
+                        else if (realx == 8224 || realy == 8224)
+                        {
+                            doneWithStitches = true;
+                        }
                         else
                         {
                             tmpx = realx - translateStart.X;//x is ok
                             tmpy = realy + imageHeight - translateStart.Y;//y needs extra translation
+                            //if (tmpx == -14579)
+                            //{
+                            //    int crap=0;
+                            //    crap++;
+                            //}
                             if (skipStitches > 0)
                             {
                                 skipStitches--;
                             }
-                            else
+                            else if (stitchesLeft > 0)
                             {
                                 currentBlock.Add(new System.Drawing.Point(tmpx, tmpy));
                             }

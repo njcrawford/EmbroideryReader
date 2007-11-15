@@ -13,7 +13,7 @@ namespace emroideryTester
     public partial class Form1 : Form
     {
         //BinaryReader file;
-        short[] shorts;
+        //byte[] shorts;
 
         //int byteNume = 0;
         //short itemNumber = 0;
@@ -26,38 +26,65 @@ namespace emroideryTester
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                byte[] bytes;
+                //byte[] bytes;
 
-                bytes = File.ReadAllBytes(openFileDialog1.FileName);
-                GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-                IntPtr ptr = handle.AddrOfPinnedObject();
-                //ReDim bytes((bytes.Length \ 2) - 1)
-                //int temp = bytes.Length;
-                //temp = temp /2
-                shorts = new short[bytes.Length / 2 - 1];
-                Marshal.Copy(ptr, shorts, 0, shorts.Length);
-                handle.Free();
-                this.Text = openFileDialog1.FileName;
-                btnNext.Enabled = true;
+                //bytes = File.ReadAllBytes(openFileDialog1.FileName);
+                //shorts = File.ReadAllBytes(openFileDialog1.FileName);
+                //GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                //IntPtr ptr = handle.AddrOfPinnedObject();
+                ////ReDim bytes((bytes.Length \ 2) - 1)
+                ////int temp = bytes.Length;
+                ////temp = temp /2
+                //shorts = new short[bytes.Length / 2 - 1];
+                //Marshal.Copy(ptr, shorts, 0, shorts.Length);
+                //handle.Free();
+                //this.Text = openFileDialog1.FileName;
+                //btnNext.Enabled = true;
+
+                System.IO.BinaryReader fileIn = new System.IO.BinaryReader(System.IO.File.Open(openFileDialog1.FileName, System.IO.FileMode.Open, System.IO.FileAccess.Read));
+
+                long restorePos = fileIn.BaseStream.Position;
+                byte[] tempbytes = fileIn.ReadBytes(10240);
+                string tempstring = "";
+                for (int ctr = 0; ctr < tempbytes.Length; ctr++)
+                {
+                    tempstring += (char)tempbytes[ctr];
+                }
+                if (tempstring.Contains("CEmbOne"))
+                {
+                    fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CEmbOne") + 7;
+                }
+                else if (tempstring.Contains("CEmbPunch"))
+                {
+                    fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CEmbPunch") + 9;
+                }
+                string temp = "";
+                textBox1.Visible = false;
+                while(fileIn.BaseStream.Position +1< fileIn.BaseStream.Length)
+                {
+                    temp += fileIn.ReadInt16().ToString() + Environment.NewLine;
+                }
+                textBox1.Text = temp;
+                textBox1.Visible = true;
             }
 
         }
 
         private void btnNext_Click(object sender, EventArgs e)
         {
-            //textBox1.Text += file.BaseStream.Position.ToString() +" 0x"+ file.ReadByte().ToString("X")+Environment.NewLine;
-            string temp = "";
-            textBox1.Visible = false;
-            for (int i = 0; i < shorts.Length; i++)
-            {
-                temp += shorts[i].ToString() + Environment.NewLine;
-            }
-            textBox1.Text = temp;
-            textBox1.Visible = true;
-            textBox1.Select(textBox1.Text.Length, 0);
-            textBox1.ScrollToCaret();
+            ////textBox1.Text += file.BaseStream.Position.ToString() +" 0x"+ file.ReadByte().ToString("X")+Environment.NewLine;
+            //string temp = "";
+            //textBox1.Visible = false;
+            //for (int i = 0; i < shorts.Length; i++)
+            //{
+            //    temp += shorts[i].ToString("X") + Environment.NewLine;
+            //}
+            //textBox1.Text = temp;
+            //textBox1.Visible = true;
+            //textBox1.Select(textBox1.Text.Length, 0);
+            //textBox1.ScrollToCaret();
 
-            //itemNumber++;
+            ////itemNumber++;
         }
 
         private void Form1_Load(object sender, EventArgs e)
