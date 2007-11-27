@@ -137,7 +137,21 @@ namespace embroideryReader
                 this.Text = System.IO.Path.GetFileName(filename) + " - Embroidery Reader";
                 sizePanel2();
 
-                designToBitmap();
+                Single threadThickness = 5;
+                if (settings.getValue("thread thickness") != null)
+                {
+                    try
+                    {
+                        threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
+                DrawArea= design.designToBitmap(threadThickness);
+                panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
+                panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
+                panel1.Invalidate();
 
                 if (design.getColorWarning())
                 {
@@ -188,40 +202,40 @@ namespace embroideryReader
             }
         }
 
-        public void designToBitmap()
-        {
-            Graphics xGraph;
-            Single threadThickness = 5;
-            if (settings.getValue("thread thickness") != null)
-            {
-                try
-                {
-                    threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
-                }
-                catch (Exception ex)
-                {
-                }
-            }
-            DrawArea = new Bitmap(design.GetWidth() + (int)(threadThickness * 2), design.GetHeight() + (int)(threadThickness * 2));
-            panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
-            panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
-            xGraph = Graphics.FromImage(DrawArea);
-            xGraph.TranslateTransform(threadThickness, threadThickness);
-            for (int i = 0; i < design.blocks.Count; i++)
-            {
-                if (design.blocks[i].stitches.Length > 1)//must have 2 points to make a line
-                {
-                    Pen tempPen = new Pen(design.blocks[i].color, threadThickness);
-                    tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
-                    tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
-                    tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
-                    xGraph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                    xGraph.DrawLines(tempPen, design.blocks[i].stitches);
-                }
-            }
-            xGraph.Dispose();
-            panel1.Invalidate();
-        }
+        //public void designToBitmap()
+        //{
+        //    Graphics xGraph;
+        //    Single threadThickness = 5;
+        //    if (settings.getValue("thread thickness") != null)
+        //    {
+        //        try
+        //        {
+        //            threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //        }
+        //    }
+        //    DrawArea = new Bitmap(design.GetWidth() + (int)(threadThickness * 2), design.GetHeight() + (int)(threadThickness * 2));
+        //    panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
+        //    panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
+        //    xGraph = Graphics.FromImage(DrawArea);
+        //    xGraph.TranslateTransform(threadThickness, threadThickness);
+        //    for (int i = 0; i < design.blocks.Count; i++)
+        //    {
+        //        if (design.blocks[i].stitches.Length > 1)//must have 2 points to make a line
+        //        {
+        //            Pen tempPen = new Pen(design.blocks[i].color, threadThickness);
+        //            tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+        //            tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+        //            tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
+        //            xGraph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+        //            xGraph.DrawLines(tempPen, design.blocks[i].stitches);
+        //        }
+        //    }
+        //    xGraph.Dispose();
+        //    panel1.Invalidate();
+        //}
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -417,6 +431,18 @@ namespace embroideryReader
         {
             printPreviewDialog1.Document = printDocument1;
             printPreviewDialog1.ShowDialog();
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Clipboard.Clear();
+            Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height,  System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            Graphics tempGraph = Graphics.FromImage(temp);
+            tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
+            tempGraph.DrawImageUnscaled(DrawArea, 0, 0);
+            tempGraph.Dispose();
+            //temp = System.Drawing.Imaging.PixelFormat.Format24bppRgb;
+            Clipboard.SetImage(temp);
         }
     }
 }

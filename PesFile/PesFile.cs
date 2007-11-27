@@ -814,5 +814,33 @@ namespace PesFile
             }
             return retval;
         }
+
+        public Bitmap designToBitmap(Single threadThickness)
+        {
+            Bitmap DrawArea;
+            Graphics xGraph;
+            
+            DrawArea = new Bitmap(GetWidth() + (int)(threadThickness * 2), GetHeight() + (int)(threadThickness * 2));
+            //panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
+            //panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
+            xGraph = Graphics.FromImage(DrawArea);
+            //xGraph.FillRectangle(Brushes.White, 0, 0, DrawArea.Width, DrawArea.Height);
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                if (blocks[i].stitches.Length > 1)//must have 2 points to make a line
+                {
+                    Pen tempPen = new Pen(blocks[i].color, threadThickness);
+                    tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+                    tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+                    tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
+                    xGraph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                    xGraph.DrawLines(tempPen, blocks[i].stitches);
+                }
+            }
+            xGraph.Dispose();
+            //panel1.Invalidate();
+
+            return DrawArea;
+        }
     }
 }
