@@ -40,11 +40,11 @@ namespace embroideryReader
         //    }
         //}
 
-        private void loadSettings()
+        private void checkSettings()
         {
             string updateLoc;
             updateLoc = settings.getValue("update location");
-            if (updateLoc == null || updateLoc.Length == 0)
+            if (String.IsNullOrEmpty(updateLoc))
             {
                 settings.setValue("update location", "http://www.njcrawford.com/embreader/");
             }
@@ -71,7 +71,7 @@ namespace embroideryReader
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            loadSettings();
+            checkSettings();
             this.Text = "Embroidery Reader";
             if (args.Length > 1)
             {
@@ -135,7 +135,7 @@ namespace embroideryReader
             if (design.getStatus() == PesFile.statusEnum.Ready)
             {
                 this.Text = System.IO.Path.GetFileName(filename) + " - Embroidery Reader";
-                sizePanel2();
+                //sizePanel2();
 
                 Single threadThickness = 5;
                 if (settings.getValue("thread thickness") != null)
@@ -148,7 +148,7 @@ namespace embroideryReader
                     {
                     }
                 }
-                DrawArea= design.designToBitmap(threadThickness);
+                DrawArea = design.designToBitmap(threadThickness);
                 panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
                 panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
                 panel1.Invalidate();
@@ -161,10 +161,12 @@ namespace embroideryReader
                 {
                     toolStripStatusLabel1.Text = "";
                 }
+                copyToolStripMenuItem.Enabled = true;
             }
             else
             {
                 MessageBox.Show("An error occured while reading the file:" + Environment.NewLine + design.getLastError());
+                copyToolStripMenuItem.Enabled = false;
             }
         }
 
@@ -260,7 +262,7 @@ namespace embroideryReader
             //    }
             //}
             //if (isNewerVersion)
-            if (updater.IsUpdateAvailable())
+            if (updater.IsUpdateAvailable() && settings.getValue("update location") != null)
             {
                 if (MessageBox.Show("Version " + updater.VersionAvailable() + " is available." + Environment.NewLine + "You have version " + currentVersion() + ". Would you like to go to the Embroidery Reader website to download it?", "New version available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
@@ -360,26 +362,31 @@ namespace embroideryReader
             }
         }
 
-        private void Form1_ResizeEnd(object sender, EventArgs e)
-        {
+        //private void Form1_ResizeEnd(object sender, EventArgs e)
+        //{
             //panel2.Top = 32;
             //panel2.Left = 0;
             //panel2.Height = this.Height - 50;
             //panel2.Width = this.Width - 50;
-        }
+        //}
 
-        private void Form1_Resize(object sender, EventArgs e)
-        {
+        //private void Form1_Resize(object sender, EventArgs e)
+        //{
             //panel2.Height = this.Height - 75;
             //panel2.Width = this.Width-8;
-            sizePanel2();
-        }
+            //sizePanel2();
+        //}
 
-        private void sizePanel2()
-        {
-            panel2.Height = this.Height - 73;
-            panel2.Width = this.Width - 8;
-        }
+        //private void sizePanel2()
+        //{
+            //panel2.Height = this.Height - 73;
+            //panel2.Width = this.Width - 8;
+            //panel2.Height = this.Height - (statusStrip1.Height + menuStrip1.Height + 33);
+            //panel2.Top = menuStrip1.Bottom;
+            //panel2.Height = statusStrip1.Top - menuStrip1.Bottom;
+            //panel2.Width = this.Width - 8;
+            //panel2.Width = panel3.Right;
+        //}
 
         private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -388,7 +395,7 @@ namespace embroideryReader
             if (tempForm.ShowDialog() == DialogResult.OK)
             {
                 settings = tempForm.settings;
-                loadSettings();
+                checkSettings();
             }
         }
 
@@ -435,14 +442,17 @@ namespace embroideryReader
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Clipboard.Clear();
-            Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height,  System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            Graphics tempGraph = Graphics.FromImage(temp);
-            tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
-            tempGraph.DrawImageUnscaled(DrawArea, 0, 0);
-            tempGraph.Dispose();
-            //temp = System.Drawing.Imaging.PixelFormat.Format24bppRgb;
-            Clipboard.SetImage(temp);
+            if (DrawArea != null)
+            {
+                Clipboard.Clear();
+                Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                Graphics tempGraph = Graphics.FromImage(temp);
+                tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
+                tempGraph.DrawImageUnscaled(DrawArea, 0, 0);
+                tempGraph.Dispose();
+                //temp = System.Drawing.Imaging.PixelFormat.Format24bppRgb;
+                Clipboard.SetImage(temp);
+            }
         }
     }
 }

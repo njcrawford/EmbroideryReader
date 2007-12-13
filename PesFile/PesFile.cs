@@ -824,11 +824,14 @@ namespace PesFile
             //panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
             //panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
             xGraph = Graphics.FromImage(DrawArea);
+            xGraph.TranslateTransform(threadThickness, threadThickness);
             //xGraph.FillRectangle(Brushes.White, 0, 0, DrawArea.Width, DrawArea.Height);
             for (int i = 0; i < blocks.Count; i++)
             {
                 if (blocks[i].stitches.Length > 1)//must have 2 points to make a line
                 {
+                    //Color tempcolor = Color.FromArgb(127,blocks[i].color);
+                    //Pen tempPen = new Pen(tempcolor, threadThickness);
                     Pen tempPen = new Pen(blocks[i].color, threadThickness);
                     tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
                     tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;

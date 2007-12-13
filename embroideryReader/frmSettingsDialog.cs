@@ -32,6 +32,26 @@ namespace embroideryReader
                         settings.getValue("background color", "green"),
                         settings.getValue("background color", "blue"));
                 }
+                if (settings.getValue("thread thickness") != null)
+                {
+                    Single threadThickness = 5;
+                    try
+                    {
+                        threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                    if (threadThickness < 1)
+                    {
+                        threadThickness = 1;
+                    }
+                    txtThreadThickness.Text = threadThickness.ToString();
+                }
+                else
+                {
+                    txtThreadThickness.Text = "5";
+                }
             }
         }
 
@@ -92,11 +112,25 @@ namespace embroideryReader
                     settings.setValue("background color", "red", lblColor.BackColor.R.ToString());
                     settings.setValue("background color", "green", lblColor.BackColor.G.ToString());
                     settings.setValue("background color", "blue", lblColor.BackColor.B.ToString());
+
                 }
                 else
                 {
                     settings.setValue("background color", "enabled", "no");
                 }
+            }
+            Single threadThickness = 5;
+            try
+            {
+                threadThickness = Convert.ToSingle(txtThreadThickness.Text);
+                if (threadThickness < 1)
+                {
+                    threadThickness = 1;
+                }
+                settings.setValue("thread thickness", threadThickness.ToString());
+            }
+            catch (Exception ex)
+            {
             }
         }
     }
