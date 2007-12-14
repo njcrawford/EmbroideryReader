@@ -52,6 +52,8 @@ namespace PesFile
         //of the colors, best guess will be used
         private bool colorWarning = false;
 
+        private bool formatWarning = false;
+
         //bool _readyToUse = false;
 
         public PesFile(string filename)
@@ -187,6 +189,7 @@ namespace PesFile
                 }
                 else if (tempstring.Contains("CEmbPunch"))
                 {
+                    formatWarning = true;
                     fileIn.BaseStream.Position = restorePos;
                     while (fileIn.BaseStream.Position < restorePos + tempstring.IndexOf("CEmbPunch"))
                     {
@@ -607,6 +610,11 @@ namespace PesFile
         public bool getColorWarning()
         {
             return colorWarning;
+        }
+
+        public bool getFormatWarning()
+        {
+            return formatWarning;
         }
 
         private Color getColorFromIndex(int index)

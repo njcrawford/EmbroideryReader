@@ -153,7 +153,11 @@ namespace embroideryReader
                 panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
                 panel1.Invalidate();
 
-                if (design.getColorWarning())
+                if (design.getFormatWarning())
+                {
+                    toolStripStatusLabel1.Text = "The format of this file is not completely supported";
+                }
+                else if (design.getColorWarning())
                 {
                     toolStripStatusLabel1.Text = "Colors shown for this design may be inaccurate";
                 }
@@ -162,11 +166,18 @@ namespace embroideryReader
                     toolStripStatusLabel1.Text = "";
                 }
                 copyToolStripMenuItem.Enabled = true;
+                saveDebugInfoToolStripMenuItem.Enabled = true;
+                printPreviewToolStripMenuItem.Enabled = true;
+                printToolStripMenuItem.Enabled = true;
+                panel2.Select();
             }
             else
             {
                 MessageBox.Show("An error occured while reading the file:" + Environment.NewLine + design.getLastError());
                 copyToolStripMenuItem.Enabled = false;
+                saveDebugInfoToolStripMenuItem.Enabled = false;
+                printPreviewToolStripMenuItem.Enabled = false;
+                printToolStripMenuItem.Enabled = false;
             }
         }
 
@@ -453,6 +464,77 @@ namespace embroideryReader
                 //temp = System.Drawing.Imaging.PixelFormat.Format24bppRgb;
                 Clipboard.SetImage(temp);
             }
+        }
+
+        private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (design.getStatus() == PesFile.statusEnum.Ready)
+            {
+                //this.Text = System.IO.Path.GetFileName(filename) + " - Embroidery Reader";
+                //sizePanel2();
+
+                Single threadThickness = 5;
+                if (settings.getValue("thread thickness") != null)
+                {
+                    try
+                    {
+                        threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
+                DrawArea = design.designToBitmap(threadThickness);
+                panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
+                panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
+                panel1.Invalidate();
+
+                if (design.getFormatWarning())
+                {
+                    toolStripStatusLabel1.Text = "The format of this file is not completely supported";
+                }
+                else if (design.getColorWarning())
+                {
+                    toolStripStatusLabel1.Text = "Colors shown for this design may be inaccurate";
+                }
+                else
+                {
+                    toolStripStatusLabel1.Text = "";
+                }
+                //copyToolStripMenuItem.Enabled = true;
+                //saveDebugInfoToolStripMenuItem.Enabled = true;
+                //printPreviewToolStripMenuItem.Enabled = true;
+                //printToolStripMenuItem.Enabled = true;
+                //panel2.Select();
+            }
+        }
+
+        private void rotateLeftToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Bitmap temp = new Bitmap(DrawArea.Height,DrawArea.Width);
+            Graphics g = Graphics.FromImage(temp);
+            g.RotateTransform(270.0f);
+            g.DrawImage(DrawArea, -DrawArea.Width, 0);
+            g.Dispose();
+            DrawArea = temp;
+            int temp2 = panel1.Width;
+            panel1.Width = panel1.Height;
+            panel1.Height = temp2;
+            panel1.Invalidate();
+        }
+
+        private void rotateRightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Bitmap temp = new Bitmap(DrawArea.Height, DrawArea.Width);
+            Graphics g = Graphics.FromImage(temp);
+            g.RotateTransform(90.0f);
+            g.DrawImage(DrawArea, 0, -DrawArea.Height);
+            g.Dispose();
+            DrawArea = temp;
+            int temp2 = panel1.Width;
+            panel1.Width = panel1.Height;
+            panel1.Height = temp2;
+            panel1.Invalidate();
         }
     }
 }
