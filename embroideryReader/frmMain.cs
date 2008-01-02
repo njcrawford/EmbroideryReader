@@ -169,6 +169,10 @@ namespace embroideryReader
                 saveDebugInfoToolStripMenuItem.Enabled = true;
                 printPreviewToolStripMenuItem.Enabled = true;
                 printToolStripMenuItem.Enabled = true;
+                rotateLeftToolStripMenuItem.Enabled = true;
+                rotateRightToolStripMenuItem.Enabled = true;
+                refreshToolStripMenuItem.Enabled = true;
+                showDebugInfoToolStripMenuItem.Enabled = true;
                 panel2.Select();
             }
             else
@@ -178,6 +182,10 @@ namespace embroideryReader
                 saveDebugInfoToolStripMenuItem.Enabled = false;
                 printPreviewToolStripMenuItem.Enabled = false;
                 printToolStripMenuItem.Enabled = false;
+                rotateLeftToolStripMenuItem.Enabled = false;
+                rotateRightToolStripMenuItem.Enabled = false;
+                refreshToolStripMenuItem.Enabled = false;
+                showDebugInfoToolStripMenuItem.Enabled = false;
             }
         }
 
@@ -468,7 +476,7 @@ namespace embroideryReader
 
         private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (design.getStatus() == PesFile.statusEnum.Ready)
+            if (design != null && design.getStatus() == PesFile.statusEnum.Ready)
             {
                 //this.Text = System.IO.Path.GetFileName(filename) + " - Embroidery Reader";
                 //sizePanel2();
@@ -535,6 +543,26 @@ namespace embroideryReader
             panel1.Width = panel1.Height;
             panel1.Height = temp2;
             panel1.Invalidate();
+        }
+
+        private void showDebugInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (design != null)
+            {
+                try
+                {
+                    frmTextbox theform = new frmTextbox();
+                    theform.showText(design.getDebugInfo());
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("There was an error while saving debug info:" + Environment.NewLine + ex.ToString());
+                }
+            }
+            else
+            {
+                MessageBox.Show("No design loaded.");
+            }
         }
     }
 }

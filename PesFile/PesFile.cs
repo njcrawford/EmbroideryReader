@@ -466,6 +466,137 @@ namespace PesFile
         public void saveDebugInfo()
         {
             System.IO.StreamWriter outfile = new System.IO.StreamWriter(System.IO.Path.ChangeExtension(_filename, ".txt"));
+            outfile.Write(getDebugInfo());
+            outfile.Close();
+            //string name = "";
+            //outfile.WriteLine("PES header");
+            //outfile.WriteLine("PES number:\t" + pesNum);
+            //for (int i = 0; i < pesHeader.Count; i++)
+            //{
+            //    name = (i + 1).ToString();
+            //    outfile.WriteLine(name + "\t" + pesHeader[i].ToString());
+            //}
+            //if (embOneHeader.Count > 0)
+            //{
+            //    outfile.WriteLine("CEmbOne header");
+            //    for (int i = 0; i < embOneHeader.Count; i++)
+            //    {
+            //        switch (i + 1)
+            //        {
+            //            case 22:
+            //                name = "translate x";
+            //                break;
+            //            case 23:
+            //                name = "translate y";
+            //                break;
+            //            case 24:
+            //                name = "width";
+            //                break;
+            //            case 25:
+            //                name = "height";
+            //                break;
+            //            default:
+            //                name = (i + 1).ToString();
+            //                break;
+            //        }
+
+            //        outfile.WriteLine(name + "\t" + embOneHeader[i].ToString());
+            //    }
+            //}
+            //if (embPunchHeader.Count > 0)
+            //{
+            //    outfile.WriteLine("CEmbPunch header");
+            //    for (int i = 0; i < embPunchHeader.Count; i++)
+            //    {
+            //        switch (i + 1)
+            //        {
+            //            //case 22:
+            //            //    name = "translate x";
+            //            //    break;
+            //            //case 23:
+            //            //    name = "translate y";
+            //            //    break;
+            //            //case 24:
+            //            //    name = "width";
+            //            //    break;
+            //            //case 25:
+            //            //    name = "height";
+            //            //    break;
+            //            default:
+            //                name = (i + 1).ToString();
+            //                break;
+            //        }
+
+            //        outfile.WriteLine(name + "\t" + embPunchHeader[i].ToString());
+            //    }
+            //}
+            //outfile.WriteLine("CSewSeg header");
+            //for (int i = 0; i < sewSegHeader.Count; i++)
+            //{
+            //    switch (i + 1)
+            //    {
+            //        case 2:
+            //            name = "start color";
+            //            outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
+            //            break;
+            //        case 3:
+            //            name = "starting stitches";
+            //            outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
+            //            break;
+            //        case 4:
+            //            name = "base x";
+            //            outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
+            //            break;
+            //        case 5:
+            //            name = "base y";
+            //            outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString() + " (" + (sewSegHeader[i] + imageHeight).ToString() + ")");
+            //            break;
+            //        case 6:
+            //            name = "start x";
+            //            outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
+            //            break;
+            //        case 7:
+            //            name = "start y";
+            //            outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString() + " (" + (sewSegHeader[i] + imageHeight).ToString() + ")");
+            //            break;
+            //        default:
+            //            name = (i + 1).ToString();
+            //            outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
+            //            break;
+            //    }
+            //    //outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
+            //}
+            //outfile.WriteLine("stitches start: " + startStitches.ToString());
+            //outfile.WriteLine("block info");
+            //outfile.WriteLine("number\tcolor\tstitches");
+            //for (int i = 0; i < this.blocks.Count; i++)
+            //{
+            //    outfile.WriteLine((i + 1).ToString() + "\t" + blocks[i].colorIndex.ToString() + "\t" + blocks[i].stitchesTotal.ToString());
+            //}
+            //outfile.WriteLine("color table");
+            //outfile.WriteLine("number\ta\tb");
+            //for (int i = 0; i < colorTable.Count; i++)
+            //{
+            //    outfile.WriteLine((i + 1).ToString() + "\t" + colorTable[i].a.ToString() + ", " + colorTable[i].b.ToString());
+            //}
+            //if (blocks.Count > 0)
+            //{
+            //    outfile.WriteLine("Extended stitch debug info");
+            //    for (int blocky = 0; blocky < blocks.Count; blocky++)
+            //    {
+            //        outfile.WriteLine("block " + (blocky + 1).ToString() + " start");
+            //        for (int stitchy = 0; stitchy < blocks[blocky].stitches.Length; stitchy++)
+            //        {
+            //            outfile.WriteLine(blocks[blocky].stitches[stitchy].X.ToString() + ", " + blocks[blocky].stitches[stitchy].Y.ToString());
+            //        }
+            //    }
+            //}
+            //outfile.Close();
+        }
+
+        public string getDebugInfo()
+        {
+            System.IO.StringWriter outfile = new System.IO.StringWriter();
             string name = "";
             outfile.WriteLine("PES header");
             outfile.WriteLine("PES number:\t" + pesNum);
@@ -590,6 +721,7 @@ namespace PesFile
                 }
             }
             outfile.Close();
+            return outfile.ToString();
         }
 
         //public bool isReadyToUse()
