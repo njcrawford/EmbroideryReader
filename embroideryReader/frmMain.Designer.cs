@@ -50,6 +50,7 @@ namespace embroideryReader
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkForUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveDebugInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showDebugInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -58,7 +59,6 @@ namespace embroideryReader
             this.printDocument1 = new System.Drawing.Printing.PrintDocument();
             this.printDialog1 = new System.Windows.Forms.PrintDialog();
             this.printPreviewDialog1 = new System.Windows.Forms.PrintPreviewDialog();
-            this.showDebugInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -186,7 +186,7 @@ namespace embroideryReader
             // 
             this.rotateLeftToolStripMenuItem.Enabled = false;
             this.rotateLeftToolStripMenuItem.Name = "rotateLeftToolStripMenuItem";
-            this.rotateLeftToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.rotateLeftToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.rotateLeftToolStripMenuItem.Text = "Rotate left";
             this.rotateLeftToolStripMenuItem.Click += new System.EventHandler(this.rotateLeftToolStripMenuItem_Click);
             // 
@@ -194,7 +194,7 @@ namespace embroideryReader
             // 
             this.rotateRightToolStripMenuItem.Enabled = false;
             this.rotateRightToolStripMenuItem.Name = "rotateRightToolStripMenuItem";
-            this.rotateRightToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.rotateRightToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.rotateRightToolStripMenuItem.Text = "Rotate right";
             this.rotateRightToolStripMenuItem.Click += new System.EventHandler(this.rotateRightToolStripMenuItem_Click);
             // 
@@ -202,7 +202,7 @@ namespace embroideryReader
             // 
             this.refreshToolStripMenuItem.Enabled = false;
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.refreshToolStripMenuItem.Text = "Reset";
             this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
             // 
@@ -232,6 +232,14 @@ namespace embroideryReader
             this.saveDebugInfoToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.saveDebugInfoToolStripMenuItem.Text = "Save design debug info";
             this.saveDebugInfoToolStripMenuItem.Click += new System.EventHandler(this.saveDebugInfoToolStripMenuItem_Click);
+            // 
+            // showDebugInfoToolStripMenuItem
+            // 
+            this.showDebugInfoToolStripMenuItem.Enabled = false;
+            this.showDebugInfoToolStripMenuItem.Name = "showDebugInfoToolStripMenuItem";
+            this.showDebugInfoToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.showDebugInfoToolStripMenuItem.Text = "Show debug info";
+            this.showDebugInfoToolStripMenuItem.Click += new System.EventHandler(this.showDebugInfoToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -289,14 +297,6 @@ namespace embroideryReader
             this.printPreviewDialog1.Name = "printPreviewDialog1";
             this.printPreviewDialog1.Visible = false;
             // 
-            // showDebugInfoToolStripMenuItem
-            // 
-            this.showDebugInfoToolStripMenuItem.Enabled = false;
-            this.showDebugInfoToolStripMenuItem.Name = "showDebugInfoToolStripMenuItem";
-            this.showDebugInfoToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.showDebugInfoToolStripMenuItem.Text = "Show debug info";
-            this.showDebugInfoToolStripMenuItem.Click += new System.EventHandler(this.showDebugInfoToolStripMenuItem_Click);
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -305,6 +305,7 @@ namespace embroideryReader
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "frmMain";
             this.Text = "Form1";

@@ -11,7 +11,7 @@
 Name "Embroidery Reader"
 
 ; The file to write
-OutFile "embreadsetup110.exe"
+OutFile "embreadsetup121.exe"
 
 ; The default installation directory
 InstallDir "$PROGRAMFILES\Embroidery Reader"
