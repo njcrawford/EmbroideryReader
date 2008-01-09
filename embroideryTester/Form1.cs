@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace emroideryTester
+namespace embroideryTester
 {
     public partial class Form1 : Form
     {

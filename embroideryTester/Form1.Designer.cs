@@ -1,4 +1,4 @@
-namespace emroideryTester
+namespace embroideryTester
 {
     partial class Form1
     {

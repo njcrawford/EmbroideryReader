@@ -7,8 +7,8 @@
     <ProjectGuid>{A80DF4D8-967D-4352-9E1D-F22D23236BE2}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>emroideryTester</RootNamespace>
-    <AssemblyName>emroideryTester</AssemblyName>
+    <RootNamespace>embroideryTester</RootNamespace>
+    <AssemblyName>embroideryTester</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -56,6 +56,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
