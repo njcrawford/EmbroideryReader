@@ -28,6 +28,7 @@ namespace embroideryReader
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -59,6 +60,10 @@ namespace embroideryReader
             this.printDocument1 = new System.Drawing.Printing.PrintDocument();
             this.printDialog1 = new System.Windows.Forms.PrintDialog();
             this.printPreviewDialog1 = new System.Windows.Forms.PrintPreviewDialog();
+            this.saveAsBitmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -93,6 +98,7 @@ namespace embroideryReader
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
+            this.saveAsBitmapToolStripMenuItem,
             this.toolStripSeparator2,
             this.printToolStripMenuItem,
             this.printPreviewToolStripMenuItem,
@@ -105,20 +111,20 @@ namespace embroideryReader
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.openToolStripMenuItem.Text = "Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(157, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(167, 6);
             // 
             // printToolStripMenuItem
             // 
             this.printToolStripMenuItem.Enabled = false;
             this.printToolStripMenuItem.Name = "printToolStripMenuItem";
-            this.printToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.printToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.printToolStripMenuItem.Text = "Print...";
             this.printToolStripMenuItem.Click += new System.EventHandler(this.printToolStripMenuItem_Click);
             // 
@@ -126,19 +132,19 @@ namespace embroideryReader
             // 
             this.printPreviewToolStripMenuItem.Enabled = false;
             this.printPreviewToolStripMenuItem.Name = "printPreviewToolStripMenuItem";
-            this.printPreviewToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.printPreviewToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.printPreviewToolStripMenuItem.Text = "Print Preview...";
             this.printPreviewToolStripMenuItem.Click += new System.EventHandler(this.printPreviewToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(157, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(167, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -186,7 +192,7 @@ namespace embroideryReader
             // 
             this.rotateLeftToolStripMenuItem.Enabled = false;
             this.rotateLeftToolStripMenuItem.Name = "rotateLeftToolStripMenuItem";
-            this.rotateLeftToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.rotateLeftToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.rotateLeftToolStripMenuItem.Text = "Rotate left";
             this.rotateLeftToolStripMenuItem.Click += new System.EventHandler(this.rotateLeftToolStripMenuItem_Click);
             // 
@@ -194,7 +200,7 @@ namespace embroideryReader
             // 
             this.rotateRightToolStripMenuItem.Enabled = false;
             this.rotateRightToolStripMenuItem.Name = "rotateRightToolStripMenuItem";
-            this.rotateRightToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.rotateRightToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.rotateRightToolStripMenuItem.Text = "Rotate right";
             this.rotateRightToolStripMenuItem.Click += new System.EventHandler(this.rotateRightToolStripMenuItem_Click);
             // 
@@ -202,7 +208,7 @@ namespace embroideryReader
             // 
             this.refreshToolStripMenuItem.Enabled = false;
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.refreshToolStripMenuItem.Text = "Reset";
             this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
             // 
@@ -221,7 +227,7 @@ namespace embroideryReader
             // checkForUpdateToolStripMenuItem
             // 
             this.checkForUpdateToolStripMenuItem.Name = "checkForUpdateToolStripMenuItem";
-            this.checkForUpdateToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.checkForUpdateToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.checkForUpdateToolStripMenuItem.Text = "Check for update";
             this.checkForUpdateToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdateToolStripMenuItem_Click);
             // 
@@ -229,7 +235,7 @@ namespace embroideryReader
             // 
             this.saveDebugInfoToolStripMenuItem.Enabled = false;
             this.saveDebugInfoToolStripMenuItem.Name = "saveDebugInfoToolStripMenuItem";
-            this.saveDebugInfoToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.saveDebugInfoToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.saveDebugInfoToolStripMenuItem.Text = "Save design debug info";
             this.saveDebugInfoToolStripMenuItem.Click += new System.EventHandler(this.saveDebugInfoToolStripMenuItem_Click);
             // 
@@ -237,19 +243,19 @@ namespace embroideryReader
             // 
             this.showDebugInfoToolStripMenuItem.Enabled = false;
             this.showDebugInfoToolStripMenuItem.Name = "showDebugInfoToolStripMenuItem";
-            this.showDebugInfoToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.showDebugInfoToolStripMenuItem.Text = "Show debug info";
+            this.showDebugInfoToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.showDebugInfoToolStripMenuItem.Text = "Show design debug info";
             this.showDebugInfoToolStripMenuItem.Click += new System.EventHandler(this.showDebugInfoToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(194, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(196, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -266,7 +272,8 @@ namespace embroideryReader
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
+            this.toolStripStatusLabel1,
+            this.toolStripStatusLabel2});
             this.statusStrip1.Location = new System.Drawing.Point(0, 356);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(572, 22);
@@ -296,6 +303,25 @@ namespace embroideryReader
             this.printPreviewDialog1.Icon = ((System.Drawing.Icon)(resources.GetObject("printPreviewDialog1.Icon")));
             this.printPreviewDialog1.Name = "printPreviewDialog1";
             this.printPreviewDialog1.Visible = false;
+            // 
+            // saveAsBitmapToolStripMenuItem
+            // 
+            this.saveAsBitmapToolStripMenuItem.Name = "saveAsBitmapToolStripMenuItem";
+            this.saveAsBitmapToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.saveAsBitmapToolStripMenuItem.Text = "Save as image...";
+            this.saveAsBitmapToolStripMenuItem.Click += new System.EventHandler(this.saveAsBitmapToolStripMenuItem_Click);
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(557, 17);
+            this.toolStripStatusLabel2.Spring = true;
+            this.toolStripStatusLabel2.Text = "status label";
+            this.toolStripStatusLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // frmMain
             // 
@@ -353,6 +379,10 @@ namespace embroideryReader
         private System.Windows.Forms.ToolStripMenuItem rotateLeftToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rotateRightToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showDebugInfoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveAsBitmapToolStripMenuItem;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 

@@ -51,6 +51,7 @@ namespace embroideryReader
             // 
             // lblColor
             // 
+            this.lblColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.lblColor.Location = new System.Drawing.Point(12, 9);
             this.lblColor.Name = "lblColor";
             this.lblColor.Size = new System.Drawing.Size(130, 52);

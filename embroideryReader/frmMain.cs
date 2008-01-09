@@ -192,6 +192,10 @@ namespace embroideryReader
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string filename;
+            if (settings.getValue("last open file folder") != null)
+            {
+                openFileDialog1.InitialDirectory = settings.getValue("last open file folder");
+            }
             openFileDialog1.FileName = "";
             openFileDialog1.Filter = "Embroidery Files (*.pes)|*.pes|All Files (*.*)|*.*";
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
@@ -203,6 +207,7 @@ namespace embroideryReader
                 }
                 else
                 {
+                    settings.setValue("last open file folder", System.IO.Path.GetDirectoryName(filename));
                     openFile(filename);
                 }
             }
@@ -383,28 +388,28 @@ namespace embroideryReader
 
         //private void Form1_ResizeEnd(object sender, EventArgs e)
         //{
-            //panel2.Top = 32;
-            //panel2.Left = 0;
-            //panel2.Height = this.Height - 50;
-            //panel2.Width = this.Width - 50;
+        //panel2.Top = 32;
+        //panel2.Left = 0;
+        //panel2.Height = this.Height - 50;
+        //panel2.Width = this.Width - 50;
         //}
 
         //private void Form1_Resize(object sender, EventArgs e)
         //{
-            //panel2.Height = this.Height - 75;
-            //panel2.Width = this.Width-8;
-            //sizePanel2();
+        //panel2.Height = this.Height - 75;
+        //panel2.Width = this.Width-8;
+        //sizePanel2();
         //}
 
         //private void sizePanel2()
         //{
-            //panel2.Height = this.Height - 73;
-            //panel2.Width = this.Width - 8;
-            //panel2.Height = this.Height - (statusStrip1.Height + menuStrip1.Height + 33);
-            //panel2.Top = menuStrip1.Bottom;
-            //panel2.Height = statusStrip1.Top - menuStrip1.Bottom;
-            //panel2.Width = this.Width - 8;
-            //panel2.Width = panel3.Right;
+        //panel2.Height = this.Height - 73;
+        //panel2.Width = this.Width - 8;
+        //panel2.Height = this.Height - (statusStrip1.Height + menuStrip1.Height + 33);
+        //panel2.Top = menuStrip1.Bottom;
+        //panel2.Height = statusStrip1.Top - menuStrip1.Bottom;
+        //panel2.Width = this.Width - 8;
+        //panel2.Width = panel3.Right;
         //}
 
         private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -519,7 +524,7 @@ namespace embroideryReader
 
         private void rotateLeftToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Bitmap temp = new Bitmap(DrawArea.Height,DrawArea.Width);
+            Bitmap temp = new Bitmap(DrawArea.Height, DrawArea.Width);
             Graphics g = Graphics.FromImage(temp);
             g.RotateTransform(270.0f);
             g.DrawImage(DrawArea, -DrawArea.Width, 0);
@@ -563,6 +568,55 @@ namespace embroideryReader
             {
                 MessageBox.Show("No design loaded.");
             }
+        }
+
+        private void saveAsBitmapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (DrawArea != null)
+            {
+                Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+
+                Graphics tempGraph = Graphics.FromImage(temp);
+                tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
+                tempGraph.DrawImageUnscaled(DrawArea, 0, 0);
+                tempGraph.Dispose();
+                saveFileDialog1.FileName = "";
+                saveFileDialog1.Filter = "Bitmap (*.bmp)|*.bmp|PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|TIFF (*.tif)|*.tif|All Files (*.*)|*.*";
+                if (settings.getValue("last save image location") != null)
+                {
+                    saveFileDialog1.InitialDirectory = settings.getValue("last save image location");
+                }
+                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    string filename = "";
+                    filename = saveFileDialog1.FileName;
+                    System.Drawing.Imaging.ImageFormat format;
+                    switch (System.IO.Path.GetExtension(filename).ToLower())
+                    {
+                        case ".bmp": format = System.Drawing.Imaging.ImageFormat.Bmp; break;
+                        case ".png": format = System.Drawing.Imaging.ImageFormat.Png; break;
+                        case ".jpg": format = System.Drawing.Imaging.ImageFormat.Jpeg; break;
+                        case ".gif": format = System.Drawing.Imaging.ImageFormat.Gif; break;
+                        case ".tif": format = System.Drawing.Imaging.ImageFormat.Tiff; break;
+                        default: format = System.Drawing.Imaging.ImageFormat.Bmp; break;
+                    }
+                    temp.Save(filename, format);
+                    showStatus("Image saved", 5000);
+                    settings.setValue("last save image location", System.IO.Path.GetDirectoryName(filename));
+                }
+            }
+        }
+
+        private void showStatus(string text, int msec)
+        {
+            toolStripStatusLabel2.Text = text;
+            timer1.Interval = msec;
+            timer1.Enabled = true;
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            toolStripStatusLabel2.Text = "";
         }
     }
 }
