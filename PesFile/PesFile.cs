@@ -292,131 +292,69 @@ namespace PesFile
                 //    fileIn.Close();
                 //    return;
                 //}
-                int strangeVal0 = -1;
-                for (int i = 0; i < 5; i++)//10 bytes
-                {
-                    Int16 temp = fileIn.ReadInt16();
-                    sewSegHeader.Add(temp);
-                    switch (i)
-                    {
-                        case 0://start new block indicator?
-                            strangeVal0 = temp;
-                            break;
-                        case 1://second value is starting color
-                            lastColorIndex = temp;
-                            break;
-                        case 2://third value is how many stitches until the next block
-                            stitchesLeft = temp;
-                            break;
-                    }
 
-                }
                 startStitches = fileIn.BaseStream.Position;
 
-                //start of point pairs
-                List<Point> currentBlock = new List<Point>();
-                Color currentColor = Color.Black;
-                Int32 tmpStitchCount = 0;
                 bool doneWithStitches = false;
-                //while (stitchesLeft >= 0)
+                int xValue = -100;
+                int yValue = -100;
+                bool startNewColor = true;
+                stitchBlock currentBlock;
+                int newColorMarker = -100;
+                bool isColorMarkerSet = false;
+                int blockType; //if this is equal to newColorMarker, it's time to change color
+                int colorIndex;
+                int remainingStitches;
+                List<Point> stitchData;
+
                 while (!doneWithStitches)
                 {
-                    int tmpx;
-                    int tmpy;
-                    Int32 realx;
-                    Int32 realy;
-                    if (fileIn.BaseStream.Position + 4 < fileIn.BaseStream.Length)
+                    //reset variables
+                    xValue = 0;
+                    yValue = 0;
+                    stitchData = new List<Point>();
+                    currentBlock = new stitchBlock();
+
+                    blockType = fileIn.ReadInt16();
+                    colorIndex = fileIn.ReadInt16();
+                    remainingStitches = fileIn.ReadInt16();
+                    if (!isColorMarkerSet)
                     {
-                        realx = fileIn.ReadInt16();
-                        realy = fileIn.ReadInt16();
-                        //if (realy == -32765)
-                        //{
-                        //    fileIn.ReadInt16();
-                        //    fileIn.ReadInt16();
-                        //    fileIn.ReadInt16();
-                        //    realy = fileIn.ReadInt16();
-                        //}//-14579, 15787
-                        //if (realx == -13989 && realy == 16355)
-                        //{
-                        //    realx = fileIn.ReadInt16();
-                        //    realy = fileIn.ReadInt16();
-                        //}
-                        if (realx == -32765)
+                        isColorMarkerSet = true;
+                        newColorMarker = blockType;
+                    }
+                    while (remainingStitches >= 0)
+                    {
+                        xValue = fileIn.ReadInt16();
+                        if (xValue == -32765)
                         {
-                            //Console.WriteLine(realy.ToString());
-                            if (realy == strangeVal0) //end of block
-                            {
-                                stitchBlock tmp = new stitchBlock();
-                                tmp.stitches = new Point[currentBlock.Count];
-                                currentBlock.CopyTo(tmp.stitches);
-                                tmp.color = getColorFromIndex(lastColorIndex);
-                                tmp.colorIndex = lastColorIndex;
-                                tmp.stitchesTotal = tmpStitchCount;
-                                blocks.Add(tmp);
-                                tmpStitchCount = 0;
-                                currentBlock = new List<Point>();
-                            }
-                            lastColorIndex = fileIn.ReadInt16();//get color for this block
-                            stitchesLeft = fileIn.ReadInt16();
-                            tmpStitchCount += stitchesLeft;
-                            if (realy == 1)
-                            {
-                                skipStitches = stitchesLeft;//skip these stiches, since they just seem to get in the way
-                            }
+                            break;
                         }
-                        else if (realx == 16716 || realy == 16716)
+                        yValue = fileIn.ReadInt16();
+                        stitchData.Add(new Point(xValue - translateStart.X, yValue + imageHeight - translateStart.Y));
+                        remainingStitches--;
+                        if (xValue == 16716 || yValue == 16716 || xValue == 8224 || yValue == 8224)
                         {
                             doneWithStitches = true;
-                        }
-                        else if (realx == 8224 || realy == 8224)
-                        {
-                            doneWithStitches = true;
-                        }
-                        else
-                        {
-                            tmpx = realx - translateStart.X;//x is ok
-                            tmpy = realy + imageHeight - translateStart.Y;//y needs extra translation
-                            //if (tmpx == -14579)
-                            //{
-                            //    int crap=0;
-                            //    crap++;
-                            //}
-                            if (skipStitches > 0)
-                            {
-                                skipStitches--;
-                            }
-                            else if (stitchesLeft > 0)
-                            {
-                                currentBlock.Add(new System.Drawing.Point(tmpx, tmpy));
-                            }
-                            stitchCount++;
-                            stitchesLeft--;
+                            break;
                         }
                     }
+
+                    currentBlock.stitches = new Point[stitchData.Count];
+                    stitchData.CopyTo(currentBlock.stitches);
+                    currentBlock.colorIndex = colorIndex;
+                    currentBlock.color = getColorFromIndex(colorIndex);
+                    currentBlock.stitchesTotal = stitchData.Count;
+                    blocks.Add(currentBlock);
+
                 }
 
-                if (currentBlock.Count > 0)
+                if (!formatWarning) //only filter stitches if we think we understand the format
                 {
-                    stitchBlock tmp = new stitchBlock();
-                    tmp.stitches = new Point[currentBlock.Count];
-                    currentBlock.CopyTo(tmp.stitches);
-                    tmp.color = getColorFromIndex(lastColorIndex);
-                    tmp.colorIndex = lastColorIndex;
-                    blocks.Add(tmp);
-                    currentBlock = new List<Point>();
+                    blocks = filterStitches(blocks);
                 }
 
-                //color index table
-                intPair tmpPair = new intPair();
-                tmpPair.a = fileIn.ReadInt16();
-                tmpPair.b = fileIn.ReadInt16();
-                while (tmpPair.a != 0)
-                {
-                    colorTable.Add(tmpPair);
-                    tmpPair = new intPair();
-                    tmpPair.a = fileIn.ReadInt16();
-                    tmpPair.b = fileIn.ReadInt16();
-                }
+
                 fileIn.Close();
                 //_readyToUse = true;
                 readyStatus = statusEnum.Ready;
@@ -440,6 +378,67 @@ namespace PesFile
             //    }
             //}
         }
+
+        List<stitchBlock> filterStitches(List<stitchBlock> input)
+        {
+            List<stitchBlock> retval = new List<stitchBlock>();
+            List<Point> tempStitchData = new List<Point>();
+            for (int x = 0; x < input.Count; x++)
+            {
+
+                for (int i = 0; i < input[x].stitches.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        if (Math.Abs(Math.Sqrt(Math.Pow(input[x].stitches[i].X - input[x].stitches[i - 1].X, 2) + Math.Pow(input[x].stitches[i].Y - input[x].stitches[i - 1].Y, 2))) < 50) //check distance between this point and the last one
+                        {
+                            tempStitchData.Add(input[x].stitches[i]);
+                        }
+                        else
+                        {
+                            if (tempStitchData.Count > 2)
+                            {
+                                stitchBlock tempBlock = new stitchBlock();
+                                tempBlock.color = input[x].color;
+                                tempBlock.colorIndex = input[x].colorIndex;
+                                tempBlock.stitches = new Point[tempStitchData.Count];
+                                tempStitchData.CopyTo(tempBlock.stitches);
+                                retval.Add(tempBlock);
+                                tempStitchData = new List<Point>();
+                            }
+                        }
+                    }
+                }
+                if (tempStitchData.Count > 2)
+                {
+                    stitchBlock tempBlock = new stitchBlock();
+                    tempBlock.color = input[x].color;
+                    tempBlock.colorIndex = input[x].colorIndex;
+                    tempBlock.stitches = new Point[tempStitchData.Count];
+                    tempStitchData.CopyTo(tempBlock.stitches);
+                    retval.Add(tempBlock);
+                    tempStitchData = new List<Point>();
+                }
+            }
+            return retval;
+        }
+
+        //List<Point> filterStitches(List<Point> input)
+        //{
+        //    List<Point> retval = new List<Point>();
+        //    for (int i = 0; i < input.Count; i++)
+        //    {
+        //        if (i > 0)
+        //        {
+        //            if (Math.Abs(Math.Sqrt(Math.Pow(input[i].X - input[i - 1].X, 2) + Math.Pow(input[i].Y - input[i - 1].Y, 2))) < 50) //check distance between this point and the last one
+        //            {
+        //                retval.Add(input[i]);
+        //            }
+        //        }
+        //    }
+        //    return retval;
+        //}
+
 
         public int GetWidth()
         {
@@ -724,6 +723,7 @@ namespace PesFile
             return outfile.ToString();
         }
 
+
         //public bool isReadyToUse()
         //{
         //    return _readyToUse;
@@ -959,7 +959,7 @@ namespace PesFile
         {
             Bitmap DrawArea;
             Graphics xGraph;
-            
+
             DrawArea = new Bitmap(GetWidth() + (int)(threadThickness * 2), GetHeight() + (int)(threadThickness * 2));
             //panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
             //panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
