@@ -58,7 +58,11 @@ Block:
     (y value)
     (x value)
     ...
-    -32765 (end of block) (03 80 in hex, 32771 as UInt16)
+    -32765 (block seperator) (03 80 in hex, 32771 as UInt16)
+    (block)
+    (block seperator)
+    (block)
+    when you read all the stitches for a block and the next value is not a block seperator, stitch blocks are done
     after last stich block there is a color table block. This block ends with 0 0 (00 00 in hex)
     at some point 16716 (LA in char, 4C 41 in hex) seems to signal an end of stitch blocks or start of section UNKNOWN01
 </body>
