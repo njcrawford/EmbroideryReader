@@ -35,7 +35,7 @@ namespace PesFile
         int imageHeight;
         int lastColorIndex = -1;
         string _filename;
-        public List<Int16> pesHeader = new List<short>();
+        public List<Int64> pesHeader = new List<Int64>();
         public List<Int16> embOneHeader = new List<short>();
         public List<Int16> sewSegHeader = new List<short>();
         public List<Int16> embPunchHeader = new List<short>();
@@ -47,6 +47,7 @@ namespace PesFile
         string lastError = "";
         string pesNum = "";
         Point translateStart;
+
 
         //means we couldn't figure out some or all
         //of the colors, best guess will be used
@@ -147,9 +148,18 @@ namespace PesFile
                 if (tempstring.Contains("CEmbOne"))
                 {
                     fileIn.BaseStream.Position = restorePos;
+                    int tempHeaderNum = 1;
                     while (fileIn.BaseStream.Position < restorePos + tempstring.IndexOf("CEmbOne"))
                     {
-                        pesHeader.Add(fileIn.ReadInt16());
+                        if (tempHeaderNum == 1)
+                        {
+                            pesHeader.Add(fileIn.ReadUInt32());
+                        }
+                        else
+                        {
+                            pesHeader.Add(fileIn.ReadInt16());
+                        }
+                        tempHeaderNum++;
                     }
                     fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CEmbOne") + 7;
                     for (int i = 0; i < 33; i++) //read 66 bytes
@@ -306,6 +316,7 @@ namespace PesFile
                 int colorIndex;
                 int remainingStitches;
                 List<Point> stitchData;
+                long lastEndPos = 0;
 
                 while (!doneWithStitches)
                 {
@@ -316,8 +327,14 @@ namespace PesFile
                     currentBlock = new stitchBlock();
 
                     blockType = fileIn.ReadInt16();
+                    if (blockType == 16716) 
+                        break;
                     colorIndex = fileIn.ReadInt16();
+                    if (colorIndex == 16716) 
+                        break;
                     remainingStitches = fileIn.ReadInt16();
+                    if (remainingStitches == 16716) 
+                        break;
                     if (!isColorMarkerSet)
                     {
                         isColorMarkerSet = true;
@@ -326,18 +343,24 @@ namespace PesFile
                     while (remainingStitches >= 0)
                     {
                         xValue = fileIn.ReadInt16();
-                        if (xValue == -32765)
+                        if (xValue == -32765  )
                         {
-                            break;
+                            lastEndPos = fileIn.BaseStream.Position;//this is debug
+                            break;//drop out before we start eating into the next section 
                         }
-                        yValue = fileIn.ReadInt16();
-                        stitchData.Add(new Point(xValue - translateStart.X, yValue + imageHeight - translateStart.Y));
-                        remainingStitches--;
-                        if (xValue == 16716 || yValue == 16716 || xValue == 8224 || yValue == 8224)
+                        else if(xValue == 16716 || xValue == 8224)
                         {
                             doneWithStitches = true;
                             break;
                         }
+                        yValue = fileIn.ReadInt16();
+                        if ( yValue == 16716 || yValue == 8224)
+                        {
+                            doneWithStitches = true;
+                            break;
+                        }
+                        stitchData.Add(new Point(xValue - translateStart.X, yValue + imageHeight - translateStart.Y));
+                        remainingStitches--;
                     }
 
                     currentBlock.stitches = new Point[stitchData.Count];
@@ -390,7 +413,7 @@ namespace PesFile
                 {
                     if (i > 0)
                     {
-                        if (Math.Abs(Math.Sqrt(Math.Pow(input[x].stitches[i].X - input[x].stitches[i - 1].X, 2) + Math.Pow(input[x].stitches[i].Y - input[x].stitches[i - 1].Y, 2))) < 50) //check distance between this point and the last one
+                        if (Math.Abs(Math.Sqrt(Math.Pow(input[x].stitches[i].X - input[x].stitches[i - 1].X, 2) + Math.Pow(input[x].stitches[i].Y - input[x].stitches[i - 1].Y, 2))) < 105) //check distance between this point and the last one
                         {
                             tempStitchData.Add(input[x].stitches[i]);
                         }
