@@ -316,7 +316,6 @@ namespace PesFile
                 int colorIndex;
                 int remainingStitches;
                 List<Point> stitchData;
-                long lastEndPos = 0;
 
                 while (!doneWithStitches)
                 {
@@ -345,10 +344,14 @@ namespace PesFile
                         xValue = fileIn.ReadInt16();
                         if (xValue == -32765  )
                         {
-                            lastEndPos = fileIn.BaseStream.Position;//this is debug
                             break;//drop out before we start eating into the next section 
                         }
-                        else if(xValue == 16716 || xValue == 8224)
+                        else if (remainingStitches == 0 && xValue != -32765)//this is the one we should hit at the end of the stitch blocks
+                        {
+                            doneWithStitches = true;
+                            break;
+                        }
+                        else if (xValue == 16716 || xValue == 8224)
                         {
                             doneWithStitches = true;
                             break;
@@ -370,6 +373,19 @@ namespace PesFile
                     currentBlock.stitchesTotal = stitchData.Count;
                     blocks.Add(currentBlock);
 
+                }
+
+                //color index table
+                intPair tmpPair = new intPair();
+                //tmpPair.a = fileIn.ReadInt16();
+                tmpPair.a = xValue;//it should already contain the first value
+                tmpPair.b = fileIn.ReadInt16();
+                while (tmpPair.a != 0)
+                {
+                    colorTable.Add(tmpPair);
+                    tmpPair = new intPair();
+                    tmpPair.a = fileIn.ReadInt16();
+                    tmpPair.b = fileIn.ReadInt16();
                 }
 
                 if (!formatWarning) //only filter stitches if we think we understand the format
