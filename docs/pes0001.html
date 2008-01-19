@@ -5,8 +5,8 @@ Most numerical values appear to be 16 bit ints and are shown as such in this doc
 All characters appear to be ascii.
 
 #PES0001 (16 bytes in this section)
-1. address of section UNKNOWN01 start (this is a UInt32)
-2. a value of 1 here seems to indicate design data is over 100KB long, 0 for less than 100KB
+1. address of section UNKNOWN01 start (this is a UInt32) (UNKNOWN01 is the name I gave it until I find out what it does)
+2. a value of 1 here seems to indicate design data is over 100KB long, or 0 for less than 100KB
 3. 1 (the rest of the fields in this section appear to be always the same; they also match the ending fields of the next section)
 4. 1
 5. -1
@@ -49,7 +49,7 @@ CEmbOne (66 bytes in this section)
 CSewSeg
 Start stitch blocks 
 Block:
-    (color start indicator; all color changes have the same value for this field)
+    (color start indicator) (all color changes have the same value for this field; if the value here is not the same as the first block, it's not a color change)
     (color index)
     (number of stitches in this block)
     (x value)
@@ -58,18 +58,20 @@ Block:
     (y value)
     (x value)
     ...
-    -32765 (block seperator) (03 80 in hex, 32771 as UInt16)
-    (block)
-    (block seperator)
-    (block)
-    when you read all the stitches for a block and the next value is not a block seperator, stitch blocks are done
-    after last stitch block there is a color table block. 
+    -32765 (block seperator or joiner) (03 80 in hex, 32771 as UInt16)
+(block)
+(block seperator)
+(block)
+(block seperator)
+...
+when you read all the stitches for a block and the next value is not a block seperator, stitch blocks are done (I think)
+Start color table: 
     (color index)
-    (number of blocks before color chnage?)
+    (number of blocks before next color change?)
     (color index)
     (number of blocks)
     ...
     This block ends with 0 0 (00 00 in hex)
-    After the color table should be 16716 (LA in char, 4C 41 in hex) which seems to signal the start of section UNKNOWN01
+After the color table should be 16716 (LA in char, 4C 41 in hex) which seems to signal the start of section UNKNOWN01
 </body>
 </html>
