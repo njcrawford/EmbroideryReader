@@ -378,7 +378,7 @@ namespace PesFile
                 //color index table
                 intPair tmpPair = new intPair();
                 //tmpPair.a = fileIn.ReadInt16();
-                tmpPair.a = xValue;//it should already contain the first value
+                tmpPair.a = xValue;//xValue should already contain the first value
                 tmpPair.b = fileIn.ReadInt16();
                 while (tmpPair.a != 0)
                 {
@@ -388,10 +388,12 @@ namespace PesFile
                     tmpPair.b = fileIn.ReadInt16();
                 }
 
+#if !DEBUG
                 if (!formatWarning) //only filter stitches if we think we understand the format
                 {
                     blocks = filterStitches(blocks);
                 }
+#endif
 
 
                 fileIn.Close();
