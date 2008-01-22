@@ -13,16 +13,23 @@ namespace embroideryInfo
             {
                 try
                 {
-                    PesFile.PesFile design = new PesFile.PesFile(args[0]);
-                    design.saveDebugInfo();
 
-                    //Bitmap DrawArea = design.designToBitmap(5);
-                    //Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-                    //Graphics tempGraph = Graphics.FromImage(temp);
-                    //tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
-                    //tempGraph.DrawImageUnscaled(DrawArea, 0, 0);
-                    //tempGraph.Dispose();
-                    //temp.Save(args[0] + ".png");
+                    if (args[0] == "--image" && args.Length > 1)
+                    {
+                        PesFile.PesFile design = new PesFile.PesFile(args[1]);
+                        Bitmap DrawArea = design.designToBitmap(5);
+                        Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                        Graphics tempGraph = Graphics.FromImage(temp);
+                        tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
+                        tempGraph.DrawImageUnscaled(DrawArea, 0, 0);
+                        tempGraph.Dispose();
+                        temp.Save(System.IO.Path.ChangeExtension(args[1], ".png"));
+                    }
+                    else
+                    {
+                        PesFile.PesFile design = new PesFile.PesFile(args[0]);
+                        design.saveDebugInfo();
+                    }
                 }
                 catch (Exception ex)
                 {
