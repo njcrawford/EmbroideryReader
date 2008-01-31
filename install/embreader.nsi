@@ -5,6 +5,10 @@
 ;
 ; It will install example2.nsi into a directory that the user selects,
 
+!include LogicLib.nsh
+!include "DotNET.nsh"
+#define DOTNET_VERSION "2.0"
+
 ;--------------------------------
 
 ; The name of the installer
@@ -36,6 +40,9 @@ UninstPage instfiles
 Section "Embroidery Reader (required)"
 
   SectionIn RO
+
+  ;check for .net 2
+  !insertmacro CheckDotNet "2.0"
   
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
