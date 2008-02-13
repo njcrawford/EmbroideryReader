@@ -196,6 +196,7 @@ namespace PesFile
                         fileIn.Close();
                         return;
                     }
+                    readCSewSeg(fileIn);
                 }
                 else if (tempstring.Contains("CEmbPunch"))
                 {
@@ -240,6 +241,7 @@ namespace PesFile
                         fileIn.Close();
                         return;
                     }
+                    readCSewFigSeg(fileIn);
                 }
                 else
                 {
@@ -248,156 +250,8 @@ namespace PesFile
                     fileIn.Close();
                     return;
                 }
-                //}
-                //}
-
-                //for (int i = 0; i < 33; i++) //read 66 bytes
-                //{
-                //    Int16 tmpval;
-                //    tmpval = fileIn.ReadInt16();
-                //    embOneHeader.Add(tmpval);
-                //    switch (i)
-                //    {
-                //        case 21:
-                //            translateStart.X = tmpval;
-                //            break;
-                //        case 22:
-                //            translateStart.Y = tmpval;
-                //            break;
-                //        case 23:
-                //            imageWidth = tmpval;
-                //            break;
-                //        case 24:
-                //            imageHeight = tmpval;
-                //            break;
-                //    }
-
-                //}
-                //fileIn.BaseStream.Position -= 25;
-                //restorePos = fileIn.BaseStream.Position;
-                //tempbytes = fileIn.ReadBytes(1024);
-                //tempstring = "";
-                //for (int ctr = 0; ctr < tempbytes.Length; ctr++)
-                //{
-                //    tempstring += (char)tempbytes[ctr];
-                //}
-                //string sewSegHeader = "";
-                //for (int i = 0; i < 7; i++)//7 bytes
-                //{
-                //    sewSegHeader += (char)fileIn.ReadByte();
-                //}
-                //CSewFigSeg
-                //if (tempstring.Contains("CSewSeg"))
-                //{
-                //    fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CSewSeg") + 7;
-                //}
-                //else if (tempstring.Contains("CSewFigSeg"))
-                //{
-                //    fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CSewFigSeg") + 10;
-                //}
-                //else//probably corrupt
-                //{
-                //    readyStatus = statusEnum.ReadError;
-                //    lastError = "Missing CSewSeg/CSewFigSeg header";
-                //    fileIn.Close();
-                //    return;
-                //}
-
-                startStitches = fileIn.BaseStream.Position;
-
-                bool doneWithStitches = false;
-                int xValue = -100;
-                int yValue = -100;
-                bool startNewColor = true;
-                stitchBlock currentBlock;
-                int newColorMarker = -100;
-                bool isColorMarkerSet = false;
-                int blockType; //if this is equal to newColorMarker, it's time to change color
-                int colorIndex;
-                int remainingStitches;
-                List<Point> stitchData;
-
-                while (!doneWithStitches)
-                {
-                    //reset variables
-                    xValue = 0;
-                    yValue = 0;
-                    stitchData = new List<Point>();
-                    currentBlock = new stitchBlock();
-
-                    blockType = fileIn.ReadInt16();
-                    if (blockType == 16716) 
-                        break;
-                    colorIndex = fileIn.ReadInt16();
-                    if (colorIndex == 16716) 
-                        break;
-                    remainingStitches = fileIn.ReadInt16();
-                    if (remainingStitches == 16716) 
-                        break;
-                    if (!isColorMarkerSet)
-                    {
-                        isColorMarkerSet = true;
-                        newColorMarker = blockType;
-                    }
-                    while (remainingStitches >= 0)
-                    {
-                        xValue = fileIn.ReadInt16();
-                        if (xValue == -32765  )
-                        {
-                            break;//drop out before we start eating into the next section 
-                        }
-                        else if (remainingStitches == 0 && xValue != -32765)//this is the one we should hit at the end of the stitch blocks
-                        {
-                            doneWithStitches = true;
-                            break;
-                        }
-                        else if (xValue == 16716 || xValue == 8224)
-                        {
-                            doneWithStitches = true;
-                            break;
-                        }
-                        yValue = fileIn.ReadInt16();
-                        if ( yValue == 16716 || yValue == 8224)
-                        {
-                            doneWithStitches = true;
-                            break;
-                        }
-                        stitchData.Add(new Point(xValue - translateStart.X, yValue + imageHeight - translateStart.Y));
-                        remainingStitches--;
-                    }
-
-                    currentBlock.stitches = new Point[stitchData.Count];
-                    stitchData.CopyTo(currentBlock.stitches);
-                    currentBlock.colorIndex = colorIndex;
-                    currentBlock.color = getColorFromIndex(colorIndex);
-                    currentBlock.stitchesTotal = stitchData.Count;
-                    blocks.Add(currentBlock);
-
-                }
-
-                //color index table
-                intPair tmpPair = new intPair();
-                //tmpPair.a = fileIn.ReadInt16();
-                tmpPair.a = xValue;//xValue should already contain the first value
-                tmpPair.b = fileIn.ReadInt16();
-                while (tmpPair.a != 0)
-                {
-                    colorTable.Add(tmpPair);
-                    tmpPair = new intPair();
-                    tmpPair.a = fileIn.ReadInt16();
-                    tmpPair.b = fileIn.ReadInt16();
-                }
-
-#if !DEBUG
-                if (!formatWarning) //only filter stitches if we think we understand the format
-                {
-                    blocks = filterStitches(blocks);
-                }
-#endif
-
 
                 fileIn.Close();
-                //_readyToUse = true;
                 readyStatus = statusEnum.Ready;
             }
             catch (System.IO.IOException ioex)
@@ -417,6 +271,218 @@ namespace PesFile
             //    {
             //        fileIn.Close();
             //    }
+            //}
+        }
+
+        void readCSewSeg(System.IO.BinaryReader file)
+        {
+            startStitches = fileIn.BaseStream.Position;
+
+            bool doneWithStitches = false;
+            int xValue = -100;
+            int yValue = -100;
+            bool startNewColor = true;
+            stitchBlock currentBlock;
+            int newColorMarker = -100;
+            bool isColorMarkerSet = false;
+            int blockType; //if this is equal to newColorMarker, it's time to change color
+            int colorIndex;
+            int remainingStitches;
+            List<Point> stitchData;
+
+            while (!doneWithStitches)
+            {
+                //reset variables
+                xValue = 0;
+                yValue = 0;
+                stitchData = new List<Point>();
+                currentBlock = new stitchBlock();
+
+                blockType = file.ReadInt16();
+                if (blockType == 16716)
+                    break;
+                colorIndex = file.ReadInt16();
+                if (colorIndex == 16716)
+                    break;
+                remainingStitches = file.ReadInt16();
+                if (remainingStitches == 16716)
+                    break;
+                if (!isColorMarkerSet)
+                {
+                    isColorMarkerSet = true;
+                    newColorMarker = blockType;
+                }
+                while (remainingStitches >= 0)
+                {
+                    xValue = file.ReadInt16();
+                    if (xValue == -32765)
+                    {
+                        break;//drop out before we start eating into the next section 
+                    }
+                    else if (remainingStitches == 0 && xValue != -32765)//this is the one we should hit at the end of the stitch blocks
+                    {
+                        doneWithStitches = true;
+                        break;
+                    }
+                    else if (xValue == 16716 || xValue == 8224)
+                    {
+                        doneWithStitches = true;
+                        break;
+                    }
+                    yValue = fileIn.ReadInt16();
+                    if (yValue == 16716 || yValue == 8224)
+                    {
+                        doneWithStitches = true;
+                        break;
+                    }
+                    stitchData.Add(new Point(xValue - translateStart.X, yValue + imageHeight - translateStart.Y));
+                    remainingStitches--;
+                }
+
+                currentBlock.stitches = new Point[stitchData.Count];
+                stitchData.CopyTo(currentBlock.stitches);
+                currentBlock.colorIndex = colorIndex;
+                currentBlock.color = getColorFromIndex(colorIndex);
+                currentBlock.stitchesTotal = stitchData.Count;
+                blocks.Add(currentBlock);
+
+            }
+
+            //color index table
+            intPair tmpPair = new intPair();
+            //tmpPair.a = fileIn.ReadInt16();
+            tmpPair.a = xValue;//xValue should already contain the first value
+            tmpPair.b = file.ReadInt16();
+            while (tmpPair.a != 0)
+            {
+                colorTable.Add(tmpPair);
+                tmpPair = new intPair();
+                tmpPair.a = file.ReadInt16();
+                tmpPair.b = file.ReadInt16();
+            }
+        }
+
+        void readCSewFigSeg(System.IO.BinaryReader file)
+        {
+            startStitches = fileIn.BaseStream.Position;
+
+            bool doneWithStitches = false;
+            int xValue = -100;
+            int yValue = -100;
+            //bool startNewColor = true;
+            stitchBlock currentBlock;
+            //int newColorMarker = -100;
+            //bool isColorMarkerSet = false;
+            int blockType; //if this is equal to newColorMarker, it's time to change color
+            int colorIndex = 0;
+            int remainingStitches;
+            List<Point> stitchData;
+            //bool colorChanged = false;
+            stitchData = new List<Point>();
+            currentBlock = new stitchBlock();
+
+            while (!doneWithStitches)
+            {
+                //reset variables
+                xValue = 0;
+                yValue = 0;
+
+                blockType = file.ReadInt16();
+                if (blockType == 16716)
+                    break;
+                colorIndex = file.ReadInt16();
+                if (colorIndex == 16716)
+                    break;
+                remainingStitches = file.ReadInt16();
+                if (remainingStitches == 16716)
+                    break;
+                //if (!isColorMarkerSet)
+                //{
+                //    isColorMarkerSet = true;
+                //    newColorMarker = blockType;
+                //}
+                //if (colorChanged)
+                //{
+
+                //}
+                while (remainingStitches >= 0)
+                {
+                    xValue = file.ReadInt16();
+                    if (xValue == -32765)
+                    {
+                        //file.ReadBytes(24);
+                        break;//drop out before we start eating into the next section 
+                    }
+                    if (remainingStitches == 0 && (xValue == 43 || xValue == 59 || xValue == 44 || xValue == 40 || xValue == 32))
+                    {
+                        file.ReadBytes(24);
+
+                        currentBlock.stitches = new Point[stitchData.Count];
+                        stitchData.CopyTo(currentBlock.stitches);
+                        currentBlock.colorIndex = colorIndex;
+                        currentBlock.color = getColorFromIndex(colorIndex);
+                        currentBlock.stitchesTotal = stitchData.Count;
+                        blocks.Add(currentBlock);
+                        stitchData = new List<Point>();
+                        currentBlock = new stitchBlock();
+
+                        break;
+                    }
+                    else if (remainingStitches == 0 && xValue != -32765)//this is the one we should hit at the end of the stitch blocks
+                    {
+                        doneWithStitches = true;
+                        //file.ReadBytes(24);
+                        break;
+                    }
+                    else if (xValue == 16716 || xValue == 8224)
+                    {
+                        doneWithStitches = true;
+                        break;
+                    }
+                    yValue = fileIn.ReadInt16();
+                    if (yValue == 16716 || yValue == 8224)
+                    {
+                        doneWithStitches = true;
+                        break;
+                    }
+                    if (yValue == -32765)
+                    {
+                        int skipafew=0;
+                        for (int x = 0; x < 4; x++)
+                        {
+                            skipafew = file.ReadInt16();
+                        }
+                        yValue = skipafew;
+                    }
+                    stitchData.Add(new Point(xValue - translateStart.X, yValue + imageHeight - translateStart.Y));
+                    remainingStitches--;
+                }
+
+                //file.ReadBytes(24);
+
+
+            }
+            if (stitchData.Count > 1)
+            {
+                currentBlock.stitches = new Point[stitchData.Count];
+                stitchData.CopyTo(currentBlock.stitches);
+                currentBlock.colorIndex = colorIndex;
+                currentBlock.color = getColorFromIndex(colorIndex);
+                currentBlock.stitchesTotal = stitchData.Count;
+                blocks.Add(currentBlock);
+            }
+
+            ////color index table
+            //intPair tmpPair = new intPair();
+            ////tmpPair.a = fileIn.ReadInt16();
+            //tmpPair.a = xValue;//xValue should already contain the first value
+            //tmpPair.b = file.ReadInt16();
+            //while (tmpPair.a != 0)
+            //{
+            //    colorTable.Add(tmpPair);
+            //    tmpPair = new intPair();
+            //    tmpPair.a = file.ReadInt16();
+            //    tmpPair.b = file.ReadInt16();
             //}
         }
 
@@ -699,42 +765,45 @@ namespace PesFile
                     outfile.WriteLine(name + "\t" + embPunchHeader[i].ToString());
                 }
             }
-            outfile.WriteLine("CSewSeg header");
-            for (int i = 0; i < sewSegHeader.Count; i++)
-            {
-                switch (i + 1)
-                {
-                    case 2:
-                        name = "start color";
-                        outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
-                        break;
-                    case 3:
-                        name = "starting stitches";
-                        outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
-                        break;
-                    case 4:
-                        name = "base x";
-                        outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
-                        break;
-                    case 5:
-                        name = "base y";
-                        outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString() + " (" + (sewSegHeader[i] + imageHeight).ToString() + ")");
-                        break;
-                    case 6:
-                        name = "start x";
-                        outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
-                        break;
-                    case 7:
-                        name = "start y";
-                        outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString() + " (" + (sewSegHeader[i] + imageHeight).ToString() + ")");
-                        break;
-                    default:
-                        name = (i + 1).ToString();
-                        outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
-                        break;
-                }
-                //outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
-            }
+            //if (sewSegHeader.Count > 0)
+            //{
+            //    outfile.WriteLine("CSewSeg header");
+            //}
+            //for (int i = 0; i < sewSegHeader.Count; i++)
+            //{
+            //    switch (i + 1)
+            //    {
+            //        case 2:
+            //            name = "start color";
+            //            outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
+            //            break;
+            //        case 3:
+            //            name = "starting stitches";
+            //            outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
+            //            break;
+            //        case 4:
+            //            name = "base x";
+            //            outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
+            //            break;
+            //        case 5:
+            //            name = "base y";
+            //            outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString() + " (" + (sewSegHeader[i] + imageHeight).ToString() + ")");
+            //            break;
+            //        case 6:
+            //            name = "start x";
+            //            outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
+            //            break;
+            //        case 7:
+            //            name = "start y";
+            //            outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString() + " (" + (sewSegHeader[i] + imageHeight).ToString() + ")");
+            //            break;
+            //        default:
+            //            name = (i + 1).ToString();
+            //            outfile.WriteLine(name + "\t" + sewSegHeader[i].ToString());
+            //            break;
+            //    }
+            //    //outfile.WriteLine(name + "\t" + csewsegHeader[i].ToString());
+            //}
             outfile.WriteLine("stitches start: " + startStitches.ToString());
             outfile.WriteLine("block info");
             outfile.WriteLine("number\tcolor\tstitches");
@@ -1007,6 +1076,15 @@ namespace PesFile
             xGraph = Graphics.FromImage(DrawArea);
             xGraph.TranslateTransform(threadThickness, threadThickness);
             //xGraph.FillRectangle(Brushes.White, 0, 0, DrawArea.Width, DrawArea.Height);
+            List<stitchBlock> tmpblocks;
+#if DEBUG
+            tmpblocks = blocks;
+#else
+            if (!formatWarning) //only filter stitches if we think we understand the format
+            {
+                tmpblocks = filterStitches(blocks);
+            }
+#endif
             for (int i = 0; i < blocks.Count; i++)
             {
                 if (blocks[i].stitches.Length > 1)//must have 2 points to make a line
