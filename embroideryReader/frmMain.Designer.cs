@@ -35,6 +35,7 @@ namespace embroideryReader
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsBitmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.printPreviewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,12 +58,11 @@ namespace embroideryReader
             this.panel2 = new System.Windows.Forms.Panel();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.printDocument1 = new System.Drawing.Printing.PrintDocument();
             this.printDialog1 = new System.Windows.Forms.PrintDialog();
             this.printPreviewDialog1 = new System.Windows.Forms.PrintPreviewDialog();
-            this.saveAsBitmapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -111,20 +111,27 @@ namespace embroideryReader
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.openToolStripMenuItem.Text = "Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            // 
+            // saveAsBitmapToolStripMenuItem
+            // 
+            this.saveAsBitmapToolStripMenuItem.Name = "saveAsBitmapToolStripMenuItem";
+            this.saveAsBitmapToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.saveAsBitmapToolStripMenuItem.Text = "Save as image...";
+            this.saveAsBitmapToolStripMenuItem.Click += new System.EventHandler(this.saveAsBitmapToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(167, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(163, 6);
             // 
             // printToolStripMenuItem
             // 
             this.printToolStripMenuItem.Enabled = false;
             this.printToolStripMenuItem.Name = "printToolStripMenuItem";
-            this.printToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.printToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.printToolStripMenuItem.Text = "Print...";
             this.printToolStripMenuItem.Click += new System.EventHandler(this.printToolStripMenuItem_Click);
             // 
@@ -132,19 +139,19 @@ namespace embroideryReader
             // 
             this.printPreviewToolStripMenuItem.Enabled = false;
             this.printPreviewToolStripMenuItem.Name = "printPreviewToolStripMenuItem";
-            this.printPreviewToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.printPreviewToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.printPreviewToolStripMenuItem.Text = "Print Preview...";
             this.printPreviewToolStripMenuItem.Click += new System.EventHandler(this.printPreviewToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(167, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(163, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -192,7 +199,7 @@ namespace embroideryReader
             // 
             this.rotateLeftToolStripMenuItem.Enabled = false;
             this.rotateLeftToolStripMenuItem.Name = "rotateLeftToolStripMenuItem";
-            this.rotateLeftToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.rotateLeftToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.rotateLeftToolStripMenuItem.Text = "Rotate left";
             this.rotateLeftToolStripMenuItem.Click += new System.EventHandler(this.rotateLeftToolStripMenuItem_Click);
             // 
@@ -200,7 +207,7 @@ namespace embroideryReader
             // 
             this.rotateRightToolStripMenuItem.Enabled = false;
             this.rotateRightToolStripMenuItem.Name = "rotateRightToolStripMenuItem";
-            this.rotateRightToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.rotateRightToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.rotateRightToolStripMenuItem.Text = "Rotate right";
             this.rotateRightToolStripMenuItem.Click += new System.EventHandler(this.rotateRightToolStripMenuItem_Click);
             // 
@@ -208,7 +215,7 @@ namespace embroideryReader
             // 
             this.refreshToolStripMenuItem.Enabled = false;
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.refreshToolStripMenuItem.Text = "Reset";
             this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
             // 
@@ -286,6 +293,13 @@ namespace embroideryReader
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(526, 17);
+            this.toolStripStatusLabel2.Spring = true;
+            this.toolStripStatusLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // printDocument1
             // 
             this.printDocument1.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument1_PrintPage);
@@ -303,21 +317,6 @@ namespace embroideryReader
             this.printPreviewDialog1.Icon = ((System.Drawing.Icon)(resources.GetObject("printPreviewDialog1.Icon")));
             this.printPreviewDialog1.Name = "printPreviewDialog1";
             this.printPreviewDialog1.Visible = false;
-            // 
-            // saveAsBitmapToolStripMenuItem
-            // 
-            this.saveAsBitmapToolStripMenuItem.Name = "saveAsBitmapToolStripMenuItem";
-            this.saveAsBitmapToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.saveAsBitmapToolStripMenuItem.Text = "Save as image...";
-            this.saveAsBitmapToolStripMenuItem.Click += new System.EventHandler(this.saveAsBitmapToolStripMenuItem_Click);
-            // 
-            // toolStripStatusLabel2
-            // 
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(557, 17);
-            this.toolStripStatusLabel2.Spring = true;
-            this.toolStripStatusLabel2.Text = "status label";
-            this.toolStripStatusLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // timer1
             // 
