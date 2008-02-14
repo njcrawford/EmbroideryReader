@@ -102,9 +102,17 @@ namespace PesFile
                         //pesHeaderLength = 185;//bytes;
                         colorWarning = true;
                         break;
+                    case "0055":
+                        colorWarning = true;
+                        formatWarning = true;
+                        break;
                     case "0060":
                         //pesHeaderLength = -1;//use search method
                         colorWarning = true;
+                        break;
+                    case "0070":
+                        colorWarning = true;
+                        formatWarning = true;
                         break;
                     default:
                         readyStatus = statusEnum.ReadError;
