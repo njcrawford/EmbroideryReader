@@ -1,11 +1,12 @@
 <html>
 <body>
 <pre>
+$Id$
 Most numerical values appear to be 16 bit ints and are shown as such in this document, unless otherwise noted.
 All characters appear to be ascii.
 
 #PES0001 (16 bytes in this section)
-1. address of section UNKNOWN01 start (this is a UInt32) (UNKNOWN01 is the name I gave it until I find out what it does)
+1. address of PEC section start (this is a UInt32)
 2. a value of 1 here seems to indicate design data is over 100KB long, or 0 for less than 100KB
 3. 1 (the rest of the fields in this section appear to be always the same; they also match the ending fields of the next section)
 4. 1
@@ -72,7 +73,7 @@ Start color table:
     (number of blocks)
     ...
     This block ends with 0 0 (00 00 in hex)
-After the color table should be 16716 (LA in char, 4C 41 in hex) which seems to signal the start of section UNKNOWN01
+After the color table should be 16716 (LA in char, 4C 41 in hex) which seems to signal the start of PEC section
 </pre>
 </body>
 </html>
