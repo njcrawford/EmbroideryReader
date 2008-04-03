@@ -198,6 +198,7 @@ namespace embroideryReader
                 rotateRightToolStripMenuItem.Enabled = true;
                 refreshToolStripMenuItem.Enabled = true;
                 showDebugInfoToolStripMenuItem.Enabled = true;
+                saveAsBitmapToolStripMenuItem.Enabled = true;
                 panel2.Select();
             }
             else
@@ -211,6 +212,7 @@ namespace embroideryReader
                 rotateRightToolStripMenuItem.Enabled = false;
                 refreshToolStripMenuItem.Enabled = false;
                 showDebugInfoToolStripMenuItem.Enabled = false;
+                saveAsBitmapToolStripMenuItem.Enabled = false;
             }
         }
 

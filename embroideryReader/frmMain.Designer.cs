@@ -142,6 +142,7 @@ namespace embroideryReader
             // 
             // saveAsBitmapToolStripMenuItem
             // 
+            this.saveAsBitmapToolStripMenuItem.Enabled = false;
             this.saveAsBitmapToolStripMenuItem.Name = "saveAsBitmapToolStripMenuItem";
             this.saveAsBitmapToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.saveAsBitmapToolStripMenuItem.Text = "Save as image...";
@@ -321,7 +322,7 @@ namespace embroideryReader
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(526, 17);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(557, 17);
             this.toolStripStatusLabel2.Spring = true;
             this.toolStripStatusLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
