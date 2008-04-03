@@ -52,12 +52,12 @@ namespace PesFile
     {
         System.IO.BinaryReader fileIn;
         //Random rnd = new Random();
-        int stitchCount = 0;
-        int stitchesLeft = 0;
-        int skipStitches = 0;
+        //int stitchCount = 0;
+        //int stitchesLeft = 0;
+        //int skipStitches = 0;
         int imageWidth;
         int imageHeight;
-        int lastColorIndex = -1;
+        //int lastColorIndex = -1;
         string _filename;
         public List<Int64> pesHeader = new List<Int64>();
         public List<Int16> embOneHeader = new List<short>();
@@ -126,7 +126,7 @@ namespace PesFile
                         //pesHeaderLength = 185;//bytes;
                         colorWarning = true;
                         break;
-                    case "0055":
+                    case "0055"://not sure if this one is real?
                         colorWarning = true;
                         formatWarning = true;
                         break;
@@ -177,8 +177,10 @@ namespace PesFile
                     tempstring += (char)tempbytes[ctr];
                 }
                 //List<Int16> pesHeader = new List<short>();
+                bool foundAClass = false;
                 if (tempstring.Contains("CEmbOne"))
                 {
+                    foundAClass = true;
                     fileIn.BaseStream.Position = restorePos;
                     int tempHeaderNum = 1;
                     while (fileIn.BaseStream.Position < restorePos + tempstring.IndexOf("CEmbOne"))
@@ -230,8 +232,9 @@ namespace PesFile
                     }
                     readCSewSeg(fileIn);
                 }
-                else if (tempstring.Contains("CEmbPunch"))
+                if (tempstring.Contains("CEmbPunch"))
                 {
+                    foundAClass = true;
                     formatWarning = true;
                     fileIn.BaseStream.Position = restorePos;
                     while (fileIn.BaseStream.Position < restorePos + tempstring.IndexOf("CEmbPunch"))
@@ -275,10 +278,23 @@ namespace PesFile
                     }
                     readCSewFigSeg(fileIn);
                 }
-                else
+                if (tempstring.Contains("CEmbLine"))
+                {
+                    //not yet supported
+                    foundAClass = true;
+                    formatWarning = true;
+                }
+                if (tempstring.Contains("CGroupObject"))
+                {
+                    //not yet supported; this seems to go with CEmbLine
+                    foundAClass = true;
+                    formatWarning = true;
+                }
+
+                if(!foundAClass)
                 {
                     readyStatus = statusEnum.ReadError;
-                    lastError = "Missing CEmbOne/CEmbPunch header";
+                    lastError = "No headers or classes found";
                     fileIn.Close();
                     return;
                 }
@@ -313,7 +329,7 @@ namespace PesFile
             bool doneWithStitches = false;
             int xValue = -100;
             int yValue = -100;
-            bool startNewColor = true;
+            //bool startNewColor = true;
             stitchBlock currentBlock;
             int newColorMarker = -100;
             bool isColorMarkerSet = false;
@@ -1116,19 +1132,23 @@ namespace PesFile
             {
                 tmpblocks = filterStitches(blocks);
             }
-#endif
-            for (int i = 0; i < blocks.Count; i++)
+            else
             {
-                if (blocks[i].stitches.Length > 1)//must have 2 points to make a line
+                tmpblocks = blocks;
+            }
+#endif
+            for (int i = 0; i < tmpblocks.Count; i++)
+            {
+                if (tmpblocks[i].stitches.Length > 1)//must have 2 points to make a line
                 {
                     //Color tempcolor = Color.FromArgb(127,blocks[i].color);
                     //Pen tempPen = new Pen(tempcolor, threadThickness);
-                    Pen tempPen = new Pen(blocks[i].color, threadThickness);
+                    Pen tempPen = new Pen(tmpblocks[i].color, threadThickness);
                     tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
                     tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
                     tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
                     xGraph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                    xGraph.DrawLines(tempPen, blocks[i].stitches);
+                    xGraph.DrawLines(tempPen, tmpblocks[i].stitches);
                 }
             }
             xGraph.Dispose();
