@@ -173,7 +173,8 @@ namespace embroideryReader
                     {
                     }
                 }
-                DrawArea = design.designToBitmap(threadThickness);
+                int threshold = Convert.ToInt32(settings.getValue("filter stitches threshold"));
+                DrawArea = design.designToBitmap(threadThickness, (settings.getValue("filter stitches") == "true"), threshold);
                 panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
                 panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
                 panel1.Invalidate();
@@ -520,16 +521,19 @@ namespace embroideryReader
                     {
                         threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
                     }
-                    catch (Exception ex)
-                    {
-                    }
+                    catch (Exception ex) { }
                 }
-                DrawArea = design.designToBitmap(threadThickness);
+                int threshold = Convert.ToInt32(settings.getValue("filter stitches threshold"));
+                DrawArea = design.designToBitmap(threadThickness, (settings.getValue("filter stitches") == "true"), threshold);
                 panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
                 panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
                 panel1.Invalidate();
 
-                if (design.getFormatWarning())
+                if (design.getClassWarning())
+                {
+                    toolStripStatusLabel1.Text = "This file contains a class that is not yet supported";
+                }
+                else if (design.getFormatWarning())
                 {
                     toolStripStatusLabel1.Text = "The format of this file is not completely supported";
                 }

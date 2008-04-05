@@ -77,6 +77,24 @@ namespace embroideryReader
                 {
                     txtThreadThickness.Text = "5";
                 }
+
+                if (settings.getValue("filter stitches") == "true")
+                {
+                    chkUglyStitches.Checked = true;
+                }
+                else
+                {
+                    chkUglyStitches.Checked = false;
+                }
+
+                if (settings.getValue("filter stitches threshold") != null)
+                {
+                    txtThreshold.Text= settings.getValue("filter stitches threshold");
+                }
+                else
+                {
+                    txtThreshold.Text = "120";
+                }
             }
         }
 
@@ -157,6 +175,27 @@ namespace embroideryReader
             catch (Exception ex)
             {
             }
+
+            if (chkUglyStitches.Checked)
+            {
+                settings.setValue("filter stitches", "true");
+            }
+            else
+            {
+                settings.setValue("filter stitches", "false");
+            }
+
+            int threshold = 120;
+            try
+            {
+                threshold = Convert.ToInt32(txtThreshold.Text);
+                if (threshold < 10)
+                {
+                    threshold = 10;
+                }
+                settings.setValue("filter stitches threshold", threshold.ToString());
+            }
+            catch (Exception ex) { }
         }
     }
 }
