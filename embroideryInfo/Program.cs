@@ -41,7 +41,7 @@ namespace embroideryInfo
                     if (args[0] == "--image" && args.Length > 1)
                     {
                         PesFile.PesFile design = new PesFile.PesFile(args[1]);
-                        Bitmap DrawArea = design.designToBitmap(5);
+                        Bitmap DrawArea = design.designToBitmap(5, false, 0);
                         Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
                         Graphics tempGraph = Graphics.FromImage(temp);
                         tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
