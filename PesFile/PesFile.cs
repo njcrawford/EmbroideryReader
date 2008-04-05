@@ -79,6 +79,8 @@ namespace PesFile
 
         private bool formatWarning = false;
 
+        private bool classWarning = false;
+
         //bool _readyToUse = false;
 
         public PesFile(string filename)
@@ -283,15 +285,17 @@ namespace PesFile
                     //not yet supported
                     foundAClass = true;
                     formatWarning = true;
+                    classWarning = true;
                 }
                 if (tempstring.Contains("CGroupObject"))
                 {
                     //not yet supported; this seems to go with CEmbLine
                     foundAClass = true;
                     formatWarning = true;
+                    classWarning = true;
                 }
 
-                if(!foundAClass)
+                if (!foundAClass)
                 {
                     readyStatus = statusEnum.ReadError;
                     lastError = "No headers or classes found";
@@ -495,7 +499,7 @@ namespace PesFile
                     }
                     if (yValue == -32765)
                     {
-                        int skipafew=0;
+                        int skipafew = 0;
                         for (int x = 0; x < 4; x++)
                         {
                             skipafew = file.ReadInt16();
@@ -534,7 +538,7 @@ namespace PesFile
             //}
         }
 
-        List<stitchBlock> filterStitches(List<stitchBlock> input)
+        List<stitchBlock> filterStitches(List<stitchBlock> input, int threshold)
         {
             List<stitchBlock> retval = new List<stitchBlock>();
             List<Point> tempStitchData = new List<Point>();
@@ -543,15 +547,21 @@ namespace PesFile
 
                 for (int i = 0; i < input[x].stitches.Length; i++)
                 {
-                    if (i > 0)
+                    if (i > 0)//need a previous point to check against, can't check the first
                     {
-                        if (Math.Abs(Math.Sqrt(Math.Pow(input[x].stitches[i].X - input[x].stitches[i - 1].X, 2) + Math.Pow(input[x].stitches[i].Y - input[x].stitches[i - 1].Y, 2))) < 105) //check distance between this point and the last one
+                        double diffx = Math.Abs(input[x].stitches[i].X - input[x].stitches[i - 1].X);
+                        double diffy = Math.Abs(input[x].stitches[i].Y - input[x].stitches[i - 1].Y);
+                        if (Math.Sqrt(Math.Pow(diffx, 2.0) + Math.Pow(diffy, 2.0)) < threshold) //check distance between this point and the last one
                         {
+                            if (tempStitchData.Count == 0 && i > 1)//first stitch of block gets left out without this, except for very first stitch
+                            {
+                                tempStitchData.Add(input[x].stitches[i - 1]);
+                            }
                             tempStitchData.Add(input[x].stitches[i]);
                         }
-                        else
+                        else//stitch is too far from the previous one
                         {
-                            if (tempStitchData.Count > 2)
+                            if (tempStitchData.Count > 2)//add the block and start a new one
                             {
                                 stitchBlock tempBlock = new stitchBlock();
                                 tempBlock.color = input[x].color;
@@ -561,7 +571,15 @@ namespace PesFile
                                 retval.Add(tempBlock);
                                 tempStitchData = new List<Point>();
                             }
+                            else//reset variables
+                            {
+                                tempStitchData = new List<Point>();
+                            }
                         }
+                    }
+                    else //just add the first one, don't have anything to compare against
+                    {
+                        tempStitchData.Add(input[x].stitches[i]);
                     }
                 }
                 if (tempStitchData.Count > 2)
@@ -907,6 +925,11 @@ namespace PesFile
             return formatWarning;
         }
 
+        public bool getClassWarning()
+        {
+            return classWarning;
+        }
+
         private Color getColorFromIndex(int index)
         {
             Color retval;// = Color.White;
@@ -1113,7 +1136,7 @@ namespace PesFile
             return retval;
         }
 
-        public Bitmap designToBitmap(Single threadThickness)
+        public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, int filterUglyStitchesThreshold)
         {
             Bitmap DrawArea;
             Graphics xGraph;
@@ -1128,9 +1151,9 @@ namespace PesFile
 #if DEBUG
             tmpblocks = blocks;
 #else
-            if (!formatWarning) //only filter stitches if we think we understand the format
+            if (filterUglyStitches && !formatWarning) //only filter stitches if we think we understand the format
             {
-                tmpblocks = filterStitches(blocks);
+                tmpblocks = filterStitches(blocks, filterUglyStitchesThreshold);
             }
             else
             {
