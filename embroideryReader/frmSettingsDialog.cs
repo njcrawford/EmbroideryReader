@@ -59,14 +59,19 @@ namespace embroideryReader
                 }
                 if (settings.getValue("thread thickness") != null)
                 {
-                    Single threadThickness = 5;
-                    try
+                    double threadThickness = 1;
+                    if (!Double.TryParse(settings.getValue("thread thickness"), out threadThickness))
                     {
-                        threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
+                        threadThickness = 5;
                     }
-                    catch (Exception ex)
-                    {
-                    }
+
+                    //try
+                    //{
+                    //    threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //}
                     if (threadThickness < 1)
                     {
                         threadThickness = 1;
@@ -162,19 +167,27 @@ namespace embroideryReader
                     settings.setValue("background color", "enabled", "no");
                 }
             }
-            Single threadThickness = 5;
-            try
+            double threadThickness = 5;
+            if (Double.TryParse(txtThreadThickness.Text, out threadThickness))
             {
-                threadThickness = Convert.ToSingle(txtThreadThickness.Text);
                 if (threadThickness < 1)
                 {
                     threadThickness = 1;
                 }
                 settings.setValue("thread thickness", threadThickness.ToString());
             }
-            catch (Exception ex)
-            {
-            }
+            //try
+            //{
+            //    threadThickness = Convert.ToSingle(txtThreadThickness.Text);
+            //    if (threadThickness < 1)
+            //    {
+            //        threadThickness = 1;
+            //    }
+            //    settings.setValue("thread thickness", threadThickness.ToString());
+            //}
+            //catch (Exception ex)
+            //{
+            //}
 
             if (chkUglyStitches.Checked)
             {
@@ -185,17 +198,25 @@ namespace embroideryReader
                 settings.setValue("filter stitches", "false");
             }
 
-            int threshold = 120;
-            try
+            double threshold = 120;
+            if (Double.TryParse(txtThreshold.Text, out threshold))
             {
-                threshold = Convert.ToInt32(txtThreshold.Text);
                 if (threshold < 10)
                 {
                     threshold = 10;
                 }
                 settings.setValue("filter stitches threshold", threshold.ToString());
             }
-            catch (Exception ex) { }
+            //try
+            //{
+            //    threshold = Convert.ToInt32(txtThreshold.Text);
+            //    if (threshold < 10)
+            //    {
+            //        threshold = 10;
+            //    }
+            //    settings.setValue("filter stitches threshold", threshold.ToString());
+            //}
+            //catch (Exception ex) { }
         }
     }
 }

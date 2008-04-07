@@ -132,6 +132,9 @@ namespace embroideryReader
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
+                    Console.WriteLine(ex.Message);
+#endif
                     retval = false;
                 }
             }
@@ -162,19 +165,29 @@ namespace embroideryReader
                 this.Text = System.IO.Path.GetFileName(filename) + " - Embroidery Reader";
                 //sizePanel2();
 
-                Single threadThickness = 5;
-                if (settings.getValue("thread thickness") != null)
+                double threadThickness = 5;
+                if (!Double.TryParse(settings.getValue("thread thickness"), out threadThickness))
                 {
-                    try
-                    {
-                        threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
-                    }
-                    catch (Exception ex)
-                    {
-                    }
+                    threadThickness = 5;
                 }
-                int threshold = Convert.ToInt32(settings.getValue("filter stitches threshold"));
-                DrawArea = design.designToBitmap(threadThickness, (settings.getValue("filter stitches") == "true"), threshold);
+                //if (settings.getValue("thread thickness") != null)
+                //{
+                //    try
+                //    {
+                //        threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //    }
+                //}
+
+                double threshold = 10;
+                if (!Double.TryParse(settings.getValue("filter stitches threshold"), out threshold))
+                {
+                    threshold = 120;
+                }
+                //int threshold = Convert.ToInt32(settings.getValue("filter stitches threshold"));
+                DrawArea = design.designToBitmap((float)threadThickness, (settings.getValue("filter stitches") == "true"), (int)threshold);
                 panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
                 panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
                 panel1.Invalidate();
@@ -514,17 +527,21 @@ namespace embroideryReader
                 //this.Text = System.IO.Path.GetFileName(filename) + " - Embroidery Reader";
                 //sizePanel2();
 
-                Single threadThickness = 5;
-                if (settings.getValue("thread thickness") != null)
+                double threadThickness = 5;
+                if (!Double.TryParse(settings.getValue("thread thickness"), out threadThickness))
                 {
-                    try
-                    {
-                        threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
-                    }
-                    catch (Exception ex) { }
+                    threadThickness = 5;
                 }
+                //if (settings.getValue("thread thickness") != null)
+                //{
+                //    try
+                //    {
+                //        threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
+                //    }
+                //    catch (Exception ex) { }
+                //}
                 int threshold = Convert.ToInt32(settings.getValue("filter stitches threshold"));
-                DrawArea = design.designToBitmap(threadThickness, (settings.getValue("filter stitches") == "true"), threshold);
+                DrawArea = design.designToBitmap((float)threadThickness, (settings.getValue("filter stitches") == "true"), (int)threshold);
                 panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
                 panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
                 panel1.Invalidate();
