@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryReader", "embroideryReader\embroideryReader.csproj", "{0A9A24AD-60F0-4664-BCC6-2B98B3E8B565}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "emroideryTester", "emroideryTester\emroideryTester.csproj", "{A80DF4D8-967D-4352-9E1D-F22D23236BE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryTester", "embroideryTester\embroideryTester.csproj", "{A80DF4D8-967D-4352-9E1D-F22D23236BE2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryInfo", "embroideryInfo\embroideryInfo.csproj", "{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}"
 EndProject
