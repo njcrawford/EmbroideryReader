@@ -5,3 +5,5 @@ frmSettingsDialog.cs
 frmSettingsDialog.Designer.cs
 frmSettingsDialog.resx
 Program.cs
+frmTextbox.cs
+frmTextbox.Designer.cs

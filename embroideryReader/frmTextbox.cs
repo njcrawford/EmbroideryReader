@@ -37,7 +37,7 @@ namespace embroideryReader
     {
         public frmTextbox()
         {
-            InitializeComponent();
+            InitializeComponent(); 
         }
 
         public void showText(string text)
