@@ -1,0 +1,54 @@
+<html>
+<head>
+    <title>CSewFigSeg</title>
+</head>
+<body>
+    <pre>Copyright (c)  2008 Nathan Crawford.
+  Permission is granted to copy, distribute and/or modify this document
+  under the terms of the GNU Free Documentation License, Version 1.2
+  or any later version published by the Free Software Foundation;
+  with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+  Texts.  A copy of the license is included in the Documentation Index page 
+  in the section entitled "GNU Free Documentation License".
+
+$Id$
+Most numerical values appear to be 16 bit signed ints and are shown as such in this document, unless otherwise noted.
+All characters appear to be ascii.
+
+This class appears to be very similar to CEmbOne, with additional info
+for color changes.
+
+CSewFigSeg 
+Start stitch blocks 
+Block:
+    (block type) 
+    (color index)
+    (number of stitches in this block)
+    (x value)
+    (y value)
+    (x value)
+    (y value)
+    (x value)
+    ...
+    When all the stitches in this block have been read, there will be a
+    block seperator/joiner with one of these values:
+    -32765 (03 80 in hex, 32771 as UInt16) Meaning another block is next.
+    OR
+    A smaller positive number, seems to be between 0 and 100 and seems to
+    indicate a color change. If this is the case, there will be 13 more
+    values (26 bytes), the last of which tells if there is another block or
+    not. (-32767 (01 80 in hex) for yes, -1 (00 FF in hex) for no) 
+    If there is another block coming, there will be another 24 values
+    (48 bytes), and then the next block will start. If not, there will be
+    1 more value (2 bytes) which seems to always be 0. This seems to be
+    a common ending to all the classes. (-1, 0)
+(block)
+(block seperator)
+(block)
+(block seperator)
+...
+when you get a block seperator that has the -1 value mentoined above, stitch blocks are done
+
+</pre>
+</body>
+</html>
