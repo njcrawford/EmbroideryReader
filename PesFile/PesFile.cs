@@ -294,6 +294,13 @@ namespace PesFile
                     formatWarning = true;
                     classWarning = true;
                 }
+                if(tempstring.Contains("CEmbCirc"))
+                {
+                    //not yet supported; found with CEmbPunch
+                    foundAClass = true;
+                    formatWarning = true;
+                    classWarning = true;
+                }
 
                 if (!foundAClass)
                 {
@@ -465,9 +472,21 @@ namespace PesFile
                         //file.ReadBytes(24);
                         break;//drop out before we start eating into the next section 
                     }
-                    if (remainingStitches == 0 && (xValue == 43 || xValue == 59 || xValue == 44 || xValue == 40 || xValue == 32))
+                    if (remainingStitches == 0)
                     {
+                        int junk2 = 0;
+                        junk2 = blocks.Count;
+
+                        //if (xValue == 43 || xValue == 22 || xValue == 40 || xValue == 20 || xValue == 38 || xValue == 0 || xValue == 80 || xValue == 43 || xValue == 59 || xValue == 44 || xValue == 40 || xValue == 32)
+                        //{
+                        //    //debug
+                        //    int junk=0; 
+                        //    junk++;
+                        //}
                         file.ReadBytes(24);
+                        if (file.ReadInt16() == -1)
+                            doneWithStitches = true;
+                        //file.ReadBytes(74);
 
                         currentBlock.stitches = new Point[stitchData.Count];
                         stitchData.CopyTo(currentBlock.stitches);
@@ -478,14 +497,16 @@ namespace PesFile
                         stitchData = new List<Point>();
                         currentBlock = new stitchBlock();
 
+                        file.ReadBytes(48);
+
                         break;
                     }
-                    else if (remainingStitches == 0 && xValue != -32765)//this is the one we should hit at the end of the stitch blocks
-                    {
-                        doneWithStitches = true;
-                        //file.ReadBytes(24);
-                        break;
-                    }
+                    //else if (remainingStitches == 0 && xValue != -32765)//this is the one we should hit at the end of the stitch blocks
+                    //{
+                    //    doneWithStitches = true;
+                    //    //file.ReadBytes(24);
+                    //    break;
+                    //}
                     else if (xValue == 16716 || xValue == 8224)
                     {
                         doneWithStitches = true;
@@ -497,15 +518,15 @@ namespace PesFile
                         doneWithStitches = true;
                         break;
                     }
-                    if (yValue == -32765)
-                    {
-                        int skipafew = 0;
-                        for (int x = 0; x < 4; x++)
-                        {
-                            skipafew = file.ReadInt16();
-                        }
-                        yValue = skipafew;
-                    }
+                    //if (yValue == -32765)
+                    //{
+                    //    int skipafew = 0;
+                    //    for (int x = 0; x < 4; x++)
+                    //    {
+                    //        skipafew = file.ReadInt16();
+                    //    }
+                    //    yValue = skipafew;
+                    //}
                     stitchData.Add(new Point(xValue - translateStart.X, yValue + imageHeight - translateStart.Y));
                     remainingStitches--;
                 }
