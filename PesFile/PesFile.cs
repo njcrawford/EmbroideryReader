@@ -301,6 +301,20 @@ namespace PesFile
                     formatWarning = true;
                     classWarning = true;
                 }
+                if (tempstring.Contains("CEmbNText"))
+                {
+                    //not yet supported
+                    foundAClass = true;
+                    formatWarning = true;
+                    classWarning = true;
+                }
+                if (tempstring.Contains("CTTFLetter"))
+                {
+                    //not yet supported
+                    foundAClass = true;
+                    formatWarning = true;
+                    classWarning = true;
+                }
 
                 if (!foundAClass)
                 {
