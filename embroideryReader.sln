@@ -32,6 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{1BA749B5-4
 	EndProjectSection
 	ProjectSection(SolutionItems) = preProject
 		docs\csewfigseg.html = docs\csewfigseg.html
+		docs\docsindex.html = docs\docsindex.html
 		docs\pes0001.html = docs\pes0001.html
 	EndProjectSection
 EndProject
