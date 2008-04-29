@@ -90,8 +90,10 @@ namespace PesFile
 
         private void OpenFile(string filename)
         {
+#if !DEBUG
             try
             {
+#endif
                 _filename = filename;
                 fileIn = new System.IO.BinaryReader(System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read));
 
@@ -108,224 +110,363 @@ namespace PesFile
                     fileIn.Close();
                     return;
                 }
-                pesNum = startFileSig.Substring(4);
-                //int pesHeaderLength = 0;
-                switch (pesNum)
+                int pecstart = fileIn.ReadInt32();
+
+                fileIn.BaseStream.Position = pecstart + 48;
+                int numColors = fileIn.ReadByte() +1;
+                List<byte> colorList = new List<byte>();
+                for (int x = 0; x < numColors; x++)
                 {
-                    case "0001":
-                        //pesHeaderLength = 8; //bytes
-                        break;
-                    case "0020":
-                        //pesHeaderLength = 17; //bytes
-                        break;
-                    case "0030":
-                        //pesHeaderLength = 19; //bytes
-                        break;
-                    case "0040":
-                        //this one was somehow forgotten in 1.1.0.x
-                        break;
-                    case "0050":
-                        //pesHeaderLength = 185;//bytes;
-                        colorWarning = true;
-                        break;
-                    case "0055"://not sure if this one is real?
-                        colorWarning = true;
-                        formatWarning = true;
-                        break;
-                    case "0060":
-                        //pesHeaderLength = -1;//use search method
-                        colorWarning = true;
-                        break;
-                    case "0070":
-                        colorWarning = true;
-                        formatWarning = true;
-                        break;
-                    default:
-                        readyStatus = statusEnum.ReadError;
-                        lastError = "Unknown PES number " + pesNum;
-                        fileIn.Close();
-                        return;
+                    colorList.Add(fileIn.ReadByte());
                 }
-                //if (pesHeaderLength > 0)
-                //{
-                //    for (int i = 0; i < pesHeaderLength; i++)
-                //    {
-                //        pesHeader.Add(fileIn.ReadInt16());
-                //    }
-                //    string embOneHeaderString = "";
-                //    for (int i = 0; i < 7; i++)//7 bytes
-                //    {
-                //        //message += fileIn.ReadChar();
-                //        embOneHeaderString += fileIn.ReadChar();
-                //    }
-                //    if (embOneHeaderString != "CEmbOne")//probably a corrupted file
-                //    {
-                //        readyStatus = statusEnum.ReadError;
-                //        lastError = "Missing CEmbOne header";
-                //        fileIn.Close();
-                //        return;
-                //    }
-                //}
-                //else
-                //{
-                long restorePos = fileIn.BaseStream.Position;
-                //char[] tempchars = fileIn.ReadChars(1024);
-                /*ReadChars has a problem reading some characters,
-                 *seems to skip them. Use ReadBytes instaed*/
-                byte[] tempbytes = fileIn.ReadBytes(10240);
-                string tempstring = "";
-                for (int ctr = 0; ctr < tempbytes.Length; ctr++)
+
+                fileIn.BaseStream.Position = pecstart + 532;
+                bool thisPartIsDone = false;
+                stitchBlock curBlock;
+                int prevX = 0;
+                int prevY = 0;
+                int maxX = 0;
+                int minX = 0;
+                int maxY = 0;
+                int minY = 0;
+                int colorNum = -1;
+                int colorIndex = 0;
+                List<Point> tempStitches = new List<Point>();
+                while (!thisPartIsDone)
                 {
-                    tempstring += (char)tempbytes[ctr];
-                }
-                //List<Int16> pesHeader = new List<short>();
-                bool foundAClass = false;
-                if (tempstring.Contains("CEmbOne"))
-                {
-                    foundAClass = true;
-                    fileIn.BaseStream.Position = restorePos;
-                    int tempHeaderNum = 1;
-                    while (fileIn.BaseStream.Position < restorePos + tempstring.IndexOf("CEmbOne"))
+                    byte val1;
+                    byte val2;
+                    val1 = fileIn.ReadByte();
+                    val2 = fileIn.ReadByte();
+                    if (val1 == 255 && val2 == 0)
                     {
-                        if (tempHeaderNum == 1)
+                        //end of stitches
+                        thisPartIsDone = true;
+
+                        //add the last block
+                        curBlock = new stitchBlock();
+                        curBlock.stitches = new Point[tempStitches.Count];
+                        tempStitches.CopyTo(curBlock.stitches);
+                        curBlock.stitchesTotal = tempStitches.Count;
+                        colorNum++;
+                        colorIndex = colorList[colorNum];
+                        curBlock.colorIndex = colorIndex;
+                        curBlock.color = getColorFromIndex(colorIndex);
+                        blocks.Add(curBlock);
+                    }
+                    else if (val1 == 254 && val2 == 176)
+                    {
+                        //color switch, start a new block
+
+                        curBlock = new stitchBlock();
+                        curBlock.stitches = new Point[tempStitches.Count];
+                        tempStitches.CopyTo(curBlock.stitches);
+                        curBlock.stitchesTotal = tempStitches.Count;
+                        colorNum++;
+                        colorIndex = colorList[colorNum];
+                        curBlock.colorIndex = colorIndex;
+                        curBlock.color = getColorFromIndex(colorIndex);
+                        blocks.Add(curBlock);
+
+                        tempStitches = new List<Point>();
+
+                        //read useless(?) byte
+                        fileIn.ReadByte();
+                    }
+                    else
+                    {
+                        int deltaX = 0;
+                        int deltaY = 0;
+                        if ((val1 & 128) == 128)//$80
                         {
-                            pesHeader.Add(fileIn.ReadUInt32());
+                            //this is a jump stitch
+                            deltaX = ((val1 & 15) * 256) + val2;
+                            if ((deltaX & 2048) == 2048) //$0800
+                            {
+                                deltaX = (int)(deltaX | 4294963200); //$FFFFF000
+                            }
+                            //read next byte for Y value
+                            val2 = fileIn.ReadByte();
                         }
                         else
                         {
-                            pesHeader.Add(fileIn.ReadInt16());
+                            //normal stitch
+                            deltaX = val1;
+                            if (deltaX > 63)
+                            {
+                                deltaX = deltaX - 128;
+                            }
                         }
-                        tempHeaderNum++;
-                    }
-                    fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CEmbOne") + 7;
-                    for (int i = 0; i < 33; i++) //read 66 bytes
-                    {
-                        Int16 tmpval;
-                        tmpval = fileIn.ReadInt16();
-                        embOneHeader.Add(tmpval);
-                        switch (i)
+
+                        if ((val2 & 128) == 128)//$80
                         {
-                            case 21:
-                                translateStart.X = tmpval;
-                                break;
-                            case 22:
-                                translateStart.Y = tmpval;
-                                break;
-                            case 23:
-                                imageWidth = tmpval;
-                                break;
-                            case 24:
-                                imageHeight = tmpval;
-                                break;
+                            //this is a jump stitch
+                            int val3 = fileIn.ReadByte();
+                            deltaY = ((val2 & 15) * 256) + val3;
+                            if ((deltaY & 2048) == 2048)
+                            {
+                                deltaY = (int)(deltaY | 4294963200);
+                            }
                         }
-
-                    }
-                    string sewSegHeader = "";
-                    for (int i = 0; i < 7; i++)//7 bytes
-                    {
-                        sewSegHeader += (char)fileIn.ReadByte();
-                    }
-                    if (sewSegHeader != "CSewSeg")
-                    {
-                        readyStatus = statusEnum.ReadError;
-                        lastError = "Missing CSewSeg header";
-                        fileIn.Close();
-                        return;
-                    }
-                    readCSewSeg(fileIn);
-                }
-                if (tempstring.Contains("CEmbPunch"))
-                {
-                    foundAClass = true;
-                    formatWarning = true;
-                    fileIn.BaseStream.Position = restorePos;
-                    while (fileIn.BaseStream.Position < restorePos + tempstring.IndexOf("CEmbPunch"))
-                    {
-                        pesHeader.Add(fileIn.ReadInt16());
-                    }
-                    fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CEmbPunch") + 9;
-                    for (int i = 0; i < 24; i++) //read 48 bytes
-                    {
-                        Int16 tmpval;
-                        tmpval = fileIn.ReadInt16();
-                        embPunchHeader.Add(tmpval);
-                        switch (i)
+                        else
                         {
-                            case 1:
-                                translateStart.X = tmpval;
-                                break;
-                            case 2:
-                                translateStart.Y = tmpval;
-                                break;
-                            case 3:
-                                imageWidth = tmpval;
-                                break;
-                            case 4:
-                                imageHeight = tmpval;
-                                break;
+                            //normal stitch
+                            deltaY = val2;
+                            if (deltaY > 63)
+                            {
+                                deltaY = deltaY - 128;
+                            }
+                        }
+                        tempStitches.Add(new Point(prevX + deltaX, prevY + deltaY));
+                        prevX = prevX + deltaX;
+                        prevY = prevY + deltaY;
+                        if (prevX > maxX)
+                        {
+                            maxX = prevX;
+                        }
+                        else if (prevX < minX)
+                        {
+                            minX = prevX;
                         }
 
+                        if (prevY > maxY)
+                        {
+                            maxY = prevY;
+                        }
+                        else if (prevY < minY)
+                        {
+                            minY = prevY;
+                        }
                     }
-                    string sewSegHeader = "";
-                    for (int i = 0; i < 10; i++)//10 bytes
-                    {
-                        sewSegHeader += (char)fileIn.ReadByte();
-                    }
-                    if (sewSegHeader != "CSewFigSeg")
-                    {
-                        readyStatus = statusEnum.ReadError;
-                        lastError = "Missing CSewFigSeg header";
-                        fileIn.Close();
-                        return;
-                    }
-                    readCSewFigSeg(fileIn);
                 }
-                if (tempstring.Contains("CEmbLine"))
-                {
-                    //not yet supported
-                    foundAClass = true;
-                    formatWarning = true;
-                    classWarning = true;
-                }
-                if (tempstring.Contains("CGroupObject"))
-                {
-                    //not yet supported; this seems to go with CEmbLine
-                    foundAClass = true;
-                    formatWarning = true;
-                    classWarning = true;
-                }
-                if(tempstring.Contains("CEmbCirc"))
-                {
-                    //not yet supported; found with CEmbPunch
-                    foundAClass = true;
-                    formatWarning = true;
-                    classWarning = true;
-                }
-                if (tempstring.Contains("CEmbNText"))
-                {
-                    //not yet supported
-                    foundAClass = true;
-                    formatWarning = true;
-                    classWarning = true;
-                }
-                if (tempstring.Contains("CTTFLetter"))
-                {
-                    //not yet supported
-                    foundAClass = true;
-                    formatWarning = true;
-                    classWarning = true;
-                }
-
-                if (!foundAClass)
-                {
-                    readyStatus = statusEnum.ReadError;
-                    lastError = "No headers or classes found";
-                    fileIn.Close();
-                    return;
-                }
-
-                fileIn.Close();
+                imageWidth = maxX - minX;
+                imageHeight = maxY - minY;
+                translateStart.X = -minX;
+                translateStart.Y = -minY;
                 readyStatus = statusEnum.Ready;
+
+
+
+
+                //        pesNum = startFileSig.Substring(4);
+                //        //int pesHeaderLength = 0;
+                //        switch (pesNum)
+                //        {
+                //            case "0001":
+                //                //pesHeaderLength = 8; //bytes
+                //                break;
+                //            case "0020":
+                //                //pesHeaderLength = 17; //bytes
+                //                break;
+                //            case "0030":
+                //                //pesHeaderLength = 19; //bytes
+                //                break;
+                //            case "0040":
+                //                //this one was somehow forgotten in 1.1.0.x
+                //                break;
+                //            case "0050":
+                //                //pesHeaderLength = 185;//bytes;
+                //                colorWarning = true;
+                //                break;
+                //            case "0055"://not sure if this one is real?
+                //                colorWarning = true;
+                //                formatWarning = true;
+                //                break;
+                //            case "0060":
+                //                //pesHeaderLength = -1;//use search method
+                //                colorWarning = true;
+                //                break;
+                //            case "0070":
+                //                colorWarning = true;
+                //                formatWarning = true;
+                //                break;
+                //            default:
+                //                readyStatus = statusEnum.ReadError;
+                //                lastError = "Unknown PES number " + pesNum;
+                //                fileIn.Close();
+                //                return;
+                //        }
+                //        //if (pesHeaderLength > 0)
+                //        //{
+                //        //    for (int i = 0; i < pesHeaderLength; i++)
+                //        //    {
+                //        //        pesHeader.Add(fileIn.ReadInt16());
+                //        //    }
+                //        //    string embOneHeaderString = "";
+                //        //    for (int i = 0; i < 7; i++)//7 bytes
+                //        //    {
+                //        //        //message += fileIn.ReadChar();
+                //        //        embOneHeaderString += fileIn.ReadChar();
+                //        //    }
+                //        //    if (embOneHeaderString != "CEmbOne")//probably a corrupted file
+                //        //    {
+                //        //        readyStatus = statusEnum.ReadError;
+                //        //        lastError = "Missing CEmbOne header";
+                //        //        fileIn.Close();
+                //        //        return;
+                //        //    }
+                //        //}
+                //        //else
+                //        //{
+                //        long restorePos = fileIn.BaseStream.Position;
+                //        //char[] tempchars = fileIn.ReadChars(1024);
+                //        /*ReadChars has a problem reading some characters,
+                //         *seems to skip them. Use ReadBytes instaed*/
+                //        byte[] tempbytes = fileIn.ReadBytes(10240);
+                //        string tempstring = "";
+                //        for (int ctr = 0; ctr < tempbytes.Length; ctr++)
+                //        {
+                //            tempstring += (char)tempbytes[ctr];
+                //        }
+                //        //List<Int16> pesHeader = new List<short>();
+                //        bool foundAClass = false;
+                //        if (tempstring.Contains("CEmbOne"))
+                //        {
+                //            foundAClass = true;
+                //            fileIn.BaseStream.Position = restorePos;
+                //            int tempHeaderNum = 1;
+                //            while (fileIn.BaseStream.Position < restorePos + tempstring.IndexOf("CEmbOne"))
+                //            {
+                //                if (tempHeaderNum == 1)
+                //                {
+                //                    pesHeader.Add(fileIn.ReadUInt32());
+                //                }
+                //                else
+                //                {
+                //                    pesHeader.Add(fileIn.ReadInt16());
+                //                }
+                //                tempHeaderNum++;
+                //            }
+                //            fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CEmbOne") + 7;
+                //            for (int i = 0; i < 33; i++) //read 66 bytes
+                //            {
+                //                Int16 tmpval;
+                //                tmpval = fileIn.ReadInt16();
+                //                embOneHeader.Add(tmpval);
+                //                switch (i)
+                //                {
+                //                    case 21:
+                //                        translateStart.X = tmpval;
+                //                        break;
+                //                    case 22:
+                //                        translateStart.Y = tmpval;
+                //                        break;
+                //                    case 23:
+                //                        imageWidth = tmpval;
+                //                        break;
+                //                    case 24:
+                //                        imageHeight = tmpval;
+                //                        break;
+                //                }
+
+                //            }
+                //            string sewSegHeader = "";
+                //            for (int i = 0; i < 7; i++)//7 bytes
+                //            {
+                //                sewSegHeader += (char)fileIn.ReadByte();
+                //            }
+                //            if (sewSegHeader != "CSewSeg")
+                //            {
+                //                readyStatus = statusEnum.ReadError;
+                //                lastError = "Missing CSewSeg header";
+                //                fileIn.Close();
+                //                return;
+                //            }
+                //            readCSewSeg(fileIn);
+                //        }
+                //        if (tempstring.Contains("CEmbPunch"))
+                //        {
+                //            foundAClass = true;
+                //            formatWarning = true;
+                //            fileIn.BaseStream.Position = restorePos;
+                //            while (fileIn.BaseStream.Position < restorePos + tempstring.IndexOf("CEmbPunch"))
+                //            {
+                //                pesHeader.Add(fileIn.ReadInt16());
+                //            }
+                //            fileIn.BaseStream.Position = restorePos + tempstring.IndexOf("CEmbPunch") + 9;
+                //            for (int i = 0; i < 24; i++) //read 48 bytes
+                //            {
+                //                Int16 tmpval;
+                //                tmpval = fileIn.ReadInt16();
+                //                embPunchHeader.Add(tmpval);
+                //                switch (i)
+                //                {
+                //                    case 1:
+                //                        translateStart.X = tmpval;
+                //                        break;
+                //                    case 2:
+                //                        translateStart.Y = tmpval;
+                //                        break;
+                //                    case 3:
+                //                        imageWidth = tmpval;
+                //                        break;
+                //                    case 4:
+                //                        imageHeight = tmpval;
+                //                        break;
+                //                }
+
+                //            }
+                //            string sewSegHeader = "";
+                //            for (int i = 0; i < 10; i++)//10 bytes
+                //            {
+                //                sewSegHeader += (char)fileIn.ReadByte();
+                //            }
+                //            if (sewSegHeader != "CSewFigSeg")
+                //            {
+                //                readyStatus = statusEnum.ReadError;
+                //                lastError = "Missing CSewFigSeg header";
+                //                fileIn.Close();
+                //                return;
+                //            }
+                //            readCSewFigSeg(fileIn);
+                //        }
+                //        if (tempstring.Contains("CEmbLine"))
+                //        {
+                //            //not yet supported
+                //            foundAClass = true;
+                //            formatWarning = true;
+                //            classWarning = true;
+                //        }
+                //        if (tempstring.Contains("CGroupObject"))
+                //        {
+                //            //not yet supported; this seems to go with CEmbLine
+                //            foundAClass = true;
+                //            formatWarning = true;
+                //            classWarning = true;
+                //        }
+                //        if(tempstring.Contains("CEmbCirc"))
+                //        {
+                //            //not yet supported; found with CEmbPunch
+                //            foundAClass = true;
+                //            formatWarning = true;
+                //            classWarning = true;
+                //        }
+                //        if (tempstring.Contains("CEmbNText"))
+                //        {
+                //            //not yet supported
+                //            foundAClass = true;
+                //            formatWarning = true;
+                //            classWarning = true;
+                //        }
+                //        if (tempstring.Contains("CTTFLetter"))
+                //        {
+                //            //not yet supported
+                //            foundAClass = true;
+                //            formatWarning = true;
+                //            classWarning = true;
+                //        }
+
+                //        if (!foundAClass)
+                //        {
+                //            readyStatus = statusEnum.ReadError;
+                //            lastError = "No headers or classes found";
+                //            fileIn.Close();
+                //            return;
+                //        }
+
+                //        fileIn.Close();
+                //        readyStatus = statusEnum.Ready;
+#if !DEBUG
             }
             catch (System.IO.IOException ioex)
             {
@@ -336,104 +477,105 @@ namespace PesFile
                     fileIn.Close();
                 }
             }
-            //catch (Exception ex)
-            //{
-            //    readyStatus = statusEnum.ReadError;
-            //    lastError = ex.Message;
-            //    if (fileIn!=null)
-            //    {
-            //        fileIn.Close();
-            //    }
-            //}
+            catch (Exception ex)
+            {
+                readyStatus = statusEnum.ReadError;
+                lastError = ex.Message;
+                if (fileIn != null)
+                {
+                    fileIn.Close();
+                }
+            }
+#endif
         }
 
-        void readCSewSeg(System.IO.BinaryReader file)
-        {
-            startStitches = fileIn.BaseStream.Position;
+        //void readCSewSeg(System.IO.BinaryReader file)
+        //{
+        //    startStitches = fileIn.BaseStream.Position;
 
-            bool doneWithStitches = false;
-            int xValue = -100;
-            int yValue = -100;
-            //bool startNewColor = true;
-            stitchBlock currentBlock;
-            int newColorMarker = -100;
-            bool isColorMarkerSet = false;
-            int blockType; //if this is equal to newColorMarker, it's time to change color
-            int colorIndex;
-            int remainingStitches;
-            List<Point> stitchData;
+        //    bool doneWithStitches = false;
+        //    int xValue = -100;
+        //    int yValue = -100;
+        //    //bool startNewColor = true;
+        //    stitchBlock currentBlock;
+        //    int newColorMarker = -100;
+        //    bool isColorMarkerSet = false;
+        //    int blockType; //if this is equal to newColorMarker, it's time to change color
+        //    int colorIndex;
+        //    int remainingStitches;
+        //    List<Point> stitchData;
 
-            while (!doneWithStitches)
-            {
-                //reset variables
-                xValue = 0;
-                yValue = 0;
-                stitchData = new List<Point>();
-                currentBlock = new stitchBlock();
+        //    while (!doneWithStitches)
+        //    {
+        //        //reset variables
+        //        xValue = 0;
+        //        yValue = 0;
+        //        stitchData = new List<Point>();
+        //        currentBlock = new stitchBlock();
 
-                blockType = file.ReadInt16();
-                if (blockType == 16716)
-                    break;
-                colorIndex = file.ReadInt16();
-                if (colorIndex == 16716)
-                    break;
-                remainingStitches = file.ReadInt16();
-                if (remainingStitches == 16716)
-                    break;
-                if (!isColorMarkerSet)
-                {
-                    isColorMarkerSet = true;
-                    newColorMarker = blockType;
-                }
-                while (remainingStitches >= 0)
-                {
-                    xValue = file.ReadInt16();
-                    if (xValue == -32765)
-                    {
-                        break;//drop out before we start eating into the next section 
-                    }
-                    else if (remainingStitches == 0 && xValue != -32765)//this is the one we should hit at the end of the stitch blocks
-                    {
-                        doneWithStitches = true;
-                        break;
-                    }
-                    else if (xValue == 16716 || xValue == 8224)
-                    {
-                        doneWithStitches = true;
-                        break;
-                    }
-                    yValue = fileIn.ReadInt16();
-                    if (yValue == 16716 || yValue == 8224)
-                    {
-                        doneWithStitches = true;
-                        break;
-                    }
-                    stitchData.Add(new Point(xValue - translateStart.X, yValue + imageHeight - translateStart.Y));
-                    remainingStitches--;
-                }
+        //        blockType = file.ReadInt16();
+        //        if (blockType == 16716)
+        //            break;
+        //        colorIndex = file.ReadInt16();
+        //        if (colorIndex == 16716)
+        //            break;
+        //        remainingStitches = file.ReadInt16();
+        //        if (remainingStitches == 16716)
+        //            break;
+        //        if (!isColorMarkerSet)
+        //        {
+        //            isColorMarkerSet = true;
+        //            newColorMarker = blockType;
+        //        }
+        //        while (remainingStitches >= 0)
+        //        {
+        //            xValue = file.ReadInt16();
+        //            if (xValue == -32765)
+        //            {
+        //                break;//drop out before we start eating into the next section 
+        //            }
+        //            else if (remainingStitches == 0 && xValue != -32765)//this is the one we should hit at the end of the stitch blocks
+        //            {
+        //                doneWithStitches = true;
+        //                break;
+        //            }
+        //            else if (xValue == 16716 || xValue == 8224)
+        //            {
+        //                doneWithStitches = true;
+        //                break;
+        //            }
+        //            yValue = fileIn.ReadInt16();
+        //            if (yValue == 16716 || yValue == 8224)
+        //            {
+        //                doneWithStitches = true;
+        //                break;
+        //            }
+        //            stitchData.Add(new Point(xValue - translateStart.X, yValue + imageHeight - translateStart.Y));
+        //            remainingStitches--;
+        //        }
 
-                currentBlock.stitches = new Point[stitchData.Count];
-                stitchData.CopyTo(currentBlock.stitches);
-                currentBlock.colorIndex = colorIndex;
-                currentBlock.color = getColorFromIndex(colorIndex);
-                currentBlock.stitchesTotal = stitchData.Count;
-                blocks.Add(currentBlock);
+        //        currentBlock.stitches = new Point[stitchData.Count];
+        //        stitchData.CopyTo(currentBlock.stitches);
+        //        currentBlock.colorIndex = colorIndex;
+        //        currentBlock.color = getColorFromIndex(colorIndex);
+        //        currentBlock.stitchesTotal = stitchData.Count;
+        //        blocks.Add(currentBlock);
 
-            }
+        //    }
 
-            //color index table
-            intPair tmpPair = new intPair();
-            //tmpPair.a = fileIn.ReadInt16();
-            tmpPair.a = xValue;//xValue should already contain the first value
-            tmpPair.b = file.ReadInt16();
-            while (tmpPair.a != 0)
-            {
-                colorTable.Add(tmpPair);
-                tmpPair = new intPair();
-                tmpPair.a = file.ReadInt16();
-                tmpPair.b = file.ReadInt16();
-            }
-        }
+        //    //color index table
+        //    intPair tmpPair = new intPair();
+        //    //tmpPair.a = fileIn.ReadInt16();
+        //    tmpPair.a = xValue;//xValue should already contain the first value
+        //    tmpPair.b = file.ReadInt16();
+        //    while (tmpPair.a != 0)
+        //    {
+        //        colorTable.Add(tmpPair);
+        //        tmpPair = new intPair();
+        //        tmpPair.a = file.ReadInt16();
+        //        tmpPair.b = file.ReadInt16();
+        //    }
+        //}
 
         void readCSewFigSeg(System.IO.BinaryReader file)
         {
@@ -1180,7 +1322,7 @@ namespace PesFile
             //panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
             //panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
             xGraph = Graphics.FromImage(DrawArea);
-            xGraph.TranslateTransform(threadThickness, threadThickness);
+            xGraph.TranslateTransform(threadThickness+translateStart.X, threadThickness+translateStart.Y);
             //xGraph.FillRectangle(Brushes.White, 0, 0, DrawArea.Width, DrawArea.Height);
             List<stitchBlock> tmpblocks;
 #if DEBUG
