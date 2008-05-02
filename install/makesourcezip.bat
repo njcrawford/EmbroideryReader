@@ -1,1 +1,1 @@
-7z.exe a -tzip -r test.zip ..\*
+7z.exe a -tzip -r %1 ..\*
