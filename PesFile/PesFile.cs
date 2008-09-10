@@ -1156,7 +1156,7 @@ namespace PesFile
                     retval = Color.FromArgb(112, 188, 31);
                     break;
                 case 15:
-                    retval = Color.FromArgb(145, 95, 172);
+                    retval = Color.FromArgb(186, 152, 0);
                     break;
                 case 16:
                     retval = Color.FromArgb(168, 168, 168);
