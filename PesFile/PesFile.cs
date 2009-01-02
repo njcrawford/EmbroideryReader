@@ -183,7 +183,7 @@ namespace PesFile
                             deltaX = ((val1 & 15) * 256) + val2;
                             if ((deltaX & 2048) == 2048) //$0800
                             {
-                                deltaX = (int)(deltaX | 4294963200); //$FFFFF000
+                                deltaX = deltaX - 4096;
                             }
                             //read next byte for Y value
                             val2 = fileIn.ReadByte();
@@ -205,7 +205,7 @@ namespace PesFile
                             deltaY = ((val2 & 15) * 256) + val3;
                             if ((deltaY & 2048) == 2048)
                             {
-                                deltaY = (int)(deltaY | 4294963200);
+                                deltaY = deltaY - 4096;
                             }
                         }
                         else
