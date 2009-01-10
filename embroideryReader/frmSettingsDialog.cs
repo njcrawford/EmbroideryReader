@@ -1,7 +1,7 @@
 /*
-Embridery Reader - an application to view .pes embroidery designs
+Embroidery Reader - an application to view .pes embroidery designs
 
-Copyright (C) 2008  Nathan Crawford
+Copyright (C) 2009  Nathan Crawford
  
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 02111-1307, USA.
 
 A copy of the full GPL 2 license can be found in the docs directory.
-You can contact me at http://www.njcrawford.com/contact.html.
+You can contact me at http://www.njcrawford.com/contact.php.
 */
 
 
@@ -65,13 +65,6 @@ namespace embroideryReader
                         threadThickness = 5;
                     }
 
-                    //try
-                    //{
-                    //    threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
-                    //}
-                    //catch (Exception ex)
-                    //{
-                    //}
                     if (threadThickness < 1)
                     {
                         threadThickness = 1;
@@ -113,23 +106,6 @@ namespace embroideryReader
             this.Close();
         }
 
-        //public void ShowDialog()
-        //{
-        //public 
-        //if (settings.getValue("background color", "enabled") == "yes" &&
-        //    frmMain.checkColorFromStrings(
-        //    settings.getValue("background color", "red"),
-        //    settings.getValue("background color", "green"),
-        //    settings.getValue("background color", "blue")))
-        //{
-        //    lblColor.BackColor = frmMain.makeColorFromStrings(
-        //        settings.getValue("background color", "red"),
-        //        settings.getValue("background color", "green"),
-        //        settings.getValue("background color", "blue"));
-        //}
-        //this.Show();
-        //}
-
         private void btnColor_Click(object sender, EventArgs e)
         {
             colorDialog1.Color = lblColor.BackColor;
@@ -146,7 +122,6 @@ namespace embroideryReader
             {
                 lblColor.BackColor = Color.FromKnownColor(KnownColor.Control);
                 colorChanged = true;
-                //settings.setValue("background color", "enabled", "no");
             }
         }
 
@@ -176,18 +151,6 @@ namespace embroideryReader
                 }
                 settings.setValue("thread thickness", threadThickness.ToString());
             }
-            //try
-            //{
-            //    threadThickness = Convert.ToSingle(txtThreadThickness.Text);
-            //    if (threadThickness < 1)
-            //    {
-            //        threadThickness = 1;
-            //    }
-            //    settings.setValue("thread thickness", threadThickness.ToString());
-            //}
-            //catch (Exception ex)
-            //{
-            //}
 
             if (chkUglyStitches.Checked)
             {
@@ -207,16 +170,6 @@ namespace embroideryReader
                 }
                 settings.setValue("filter stitches threshold", threshold.ToString());
             }
-            //try
-            //{
-            //    threshold = Convert.ToInt32(txtThreshold.Text);
-            //    if (threshold < 10)
-            //    {
-            //        threshold = 10;
-            //    }
-            //    settings.setValue("filter stitches threshold", threshold.ToString());
-            //}
-            //catch (Exception ex) { }
         }
     }
 }

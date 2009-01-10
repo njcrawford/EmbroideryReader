@@ -1,7 +1,7 @@
 /*
-Embridery Reader - an application to view .pes embroidery designs
+Embroidery Reader - an application to view .pes embroidery designs
 
-Copyright (C) 2008  Nathan Crawford
+Copyright (C) 2009  Nathan Crawford
  
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 02111-1307, USA.
 
 A copy of the full GPL 2 license can be found in the docs directory.
-You can contact me at http://www.njcrawford.com/contact.html.
+You can contact me at http://www.njcrawford.com/contact.php.
 */
 
 
@@ -49,21 +49,6 @@ namespace embroideryReader
             InitializeComponent();
             args = Environment.GetCommandLineArgs();
         }
-
-        //private void button1_Click(object sender, EventArgs e)
-        //{
-        //    string filename;
-        //    openFileDialog1.ShowDialog();
-        //    filename = openFileDialog1.FileName;
-        //    if (!System.IO.File.Exists(filename))
-        //    {
-        //        return;
-        //    }
-        //    else
-        //    {
-        //        openFile(filename);
-        //    }
-        //}
 
         private void checkSettings()
         {
@@ -106,15 +91,9 @@ namespace embroideryReader
 
         public static bool checkColorFromStrings(string red, string green, string blue)
         {
-            //string redString;
-            //string greenString;
-            //string blueString;
             byte redByte;
             byte greenByte;
             byte blueByte;
-            //red = settings.getValue("background color", "red");
-            //greenString = settings.getValue("background color", "green");
-            //blueString = settings.getValue("background color", "blue");
             bool retval = false;
             if (String.IsNullOrEmpty(red) || String.IsNullOrEmpty(green) || String.IsNullOrEmpty(blue))
             {
@@ -127,7 +106,6 @@ namespace embroideryReader
                     redByte = Convert.ToByte(red);
                     greenByte = Convert.ToByte(green);
                     blueByte = Convert.ToByte(blue);
-                    //this.BackColor = Color.FromArgb(redByte, greenByte, blueByte);
                     retval = true;
                 }
                 catch (Exception ex)
@@ -170,23 +148,12 @@ namespace embroideryReader
                 {
                     threadThickness = 5;
                 }
-                //if (settings.getValue("thread thickness") != null)
-                //{
-                //    try
-                //    {
-                //        threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //    }
-                //}
 
                 double threshold = 10;
                 if (!Double.TryParse(settings.getValue("filter stitches threshold"), out threshold))
                 {
                     threshold = 120;
                 }
-                //int threshold = Convert.ToInt32(settings.getValue("filter stitches threshold"));
                 DrawArea = design.designToBitmap((float)threadThickness, (settings.getValue("filter stitches") == "true"), (int)threshold);
                 panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
                 panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
@@ -263,46 +230,9 @@ namespace embroideryReader
         {
             if (DrawArea != null)
             {
-                //e.Graphics.ScaleTransform(0.1f, 0.1f);
-                //e.Graphics.PageUnit = GraphicsUnit.Millimeter;
                 e.Graphics.DrawImage(DrawArea, 0, 0);
             }
         }
-
-        //public void designToBitmap()
-        //{
-        //    Graphics xGraph;
-        //    Single threadThickness = 5;
-        //    if (settings.getValue("thread thickness") != null)
-        //    {
-        //        try
-        //        {
-        //            threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //        }
-        //    }
-        //    DrawArea = new Bitmap(design.GetWidth() + (int)(threadThickness * 2), design.GetHeight() + (int)(threadThickness * 2));
-        //    panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
-        //    panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
-        //    xGraph = Graphics.FromImage(DrawArea);
-        //    xGraph.TranslateTransform(threadThickness, threadThickness);
-        //    for (int i = 0; i < design.blocks.Count; i++)
-        //    {
-        //        if (design.blocks[i].stitches.Length > 1)//must have 2 points to make a line
-        //        {
-        //            Pen tempPen = new Pen(design.blocks[i].color, threadThickness);
-        //            tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
-        //            tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
-        //            tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
-        //            xGraph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-        //            xGraph.DrawLines(tempPen, design.blocks[i].stitches);
-        //        }
-        //    }
-        //    xGraph.Dispose();
-        //    panel1.Invalidate();
-        //}
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -367,46 +297,8 @@ namespace embroideryReader
 
         private string currentVersion()
         {
-            //Assembly myAsm = Assembly.GetCallingAssembly();
-            //AssemblyName aName = myAsm.GetName();
             return Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
-
-
-
-        //[ComImport]
-        //[Guid("BB2E617C-0920-11d1-9A0B-00C04FC2D6C1")]
-        //[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        //public interface IExtractImage
-        //{
-        //    [PreserveSig]
-        //    long GetLocation(
-        //        [Out]
-        //    IntPtr pszPathBuffer,
-        //        int cch,
-        //        ref int pdwPriority,
-        //        ref SIZE prgSize,
-        //        int dwRecClrDepth,
-        //        ref int pdwFlags);
-
-        //    [PreserveSig]
-        //    int Extract([Out]IntPtr phBmpThumbnail);
-        //}
-
-
-        //[ComImport]
-        //[Guid("953BB1EE-93B4-11d1-98A3-00C04FB687DA")]
-        //[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        //public interface IExtractImage2 : IExtractImage
-        //{
-        //    int GetDateStamp([In, Out]ref System.Runtime.InteropServices.ComTypes.FILETIME pDateStamp);
-        //}
-
-        //public struct SIZE
-        //{
-        //    public long cx;
-        //    public long cy;
-        //}
 
         private void saveDebugInfoToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -427,32 +319,6 @@ namespace embroideryReader
             }
         }
 
-        //private void Form1_ResizeEnd(object sender, EventArgs e)
-        //{
-        //panel2.Top = 32;
-        //panel2.Left = 0;
-        //panel2.Height = this.Height - 50;
-        //panel2.Width = this.Width - 50;
-        //}
-
-        //private void Form1_Resize(object sender, EventArgs e)
-        //{
-        //panel2.Height = this.Height - 75;
-        //panel2.Width = this.Width-8;
-        //sizePanel2();
-        //}
-
-        //private void sizePanel2()
-        //{
-        //panel2.Height = this.Height - 73;
-        //panel2.Width = this.Width - 8;
-        //panel2.Height = this.Height - (statusStrip1.Height + menuStrip1.Height + 33);
-        //panel2.Top = menuStrip1.Bottom;
-        //panel2.Height = statusStrip1.Top - menuStrip1.Bottom;
-        //panel2.Width = this.Width - 8;
-        //panel2.Width = panel3.Right;
-        //}
-
         private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmSettingsDialog tempForm = new frmSettingsDialog();
@@ -468,34 +334,20 @@ namespace embroideryReader
         {
             if (printDialog1.ShowDialog() == DialogResult.OK)
             {
-                //MessageBox.Show("It's OK!");
                 printDocument1.Print();
             }
-            //printDocument1.Print();
         }
 
         private void printDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
         {
             if (DrawArea != null)
             {
-                //e.Graphics.DrawImage(DrawArea, 30, 30);
-                //RectangleF tempRect = new RectangleF(0,0,DrawArea.Width,DrawArea.Height);
-                //tempRect.X = 0;
-                //tempRect.Y = 0;
-                //tempRect.Width = DrawArea.Width;
-                //tempRect.Height = DrawArea.Height;
-                //float dpiX = e.Graphics.DpiX;
-                //float dpiY = e.Graphics.DpiY;
                 float dpiX = 100;
                 float dpiY = 100;
                 double mmPerInch = 0.03937007874015748031496062992126;
-                //MessageBox.Show((dpiX * mmPerInch * 0.1).ToString());
-                //e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                 e.Graphics.ScaleTransform((float)(dpiX * mmPerInch * 0.1), (float)(dpiY * mmPerInch * 0.1));
 
-                //e.Graphics.ScaleTransform(0.1f, 0.1f);
                 e.Graphics.DrawImage(DrawArea, 30, 30);
-                //e.Graphics.DrawRectangle(Pens.Black, 20, 20, 100, 100);
             }
         }
 
@@ -515,7 +367,6 @@ namespace embroideryReader
                 tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
                 tempGraph.DrawImageUnscaled(DrawArea, 0, 0);
                 tempGraph.Dispose();
-                //temp = System.Drawing.Imaging.PixelFormat.Format24bppRgb;
                 Clipboard.SetImage(temp);
             }
         }
@@ -524,22 +375,11 @@ namespace embroideryReader
         {
             if (design != null && design.getStatus() == PesFile.statusEnum.Ready)
             {
-                //this.Text = System.IO.Path.GetFileName(filename) + " - Embroidery Reader";
-                //sizePanel2();
-
                 double threadThickness = 5;
                 if (!Double.TryParse(settings.getValue("thread thickness"), out threadThickness))
                 {
                     threadThickness = 5;
                 }
-                //if (settings.getValue("thread thickness") != null)
-                //{
-                //    try
-                //    {
-                //        threadThickness = Convert.ToSingle(settings.getValue("thread thickness"));
-                //    }
-                //    catch (Exception ex) { }
-                //}
                 int threshold = Convert.ToInt32(settings.getValue("filter stitches threshold"));
                 DrawArea = design.designToBitmap((float)threadThickness, (settings.getValue("filter stitches") == "true"), (int)threshold);
                 panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
@@ -562,11 +402,6 @@ namespace embroideryReader
                 {
                     toolStripStatusLabel1.Text = "";
                 }
-                //copyToolStripMenuItem.Enabled = true;
-                //saveDebugInfoToolStripMenuItem.Enabled = true;
-                //printPreviewToolStripMenuItem.Enabled = true;
-                //printToolStripMenuItem.Enabled = true;
-                //panel2.Select();
             }
         }
 
