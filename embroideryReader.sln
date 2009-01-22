@@ -36,6 +36,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{1BA749B5-4
 		docs\pes0001.html = docs\pes0001.html
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryThumbs", "embroideryThumbs\embroideryThumbs.csproj", "{978B855C-C9CD-4A5E-A335-9ED8DD3E001A}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +64,10 @@ Global
 		{66EF662E-F52C-4104-9C15-A14266D8F3B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66EF662E-F52C-4104-9C15-A14266D8F3B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66EF662E-F52C-4104-9C15-A14266D8F3B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{978B855C-C9CD-4A5E-A335-9ED8DD3E001A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{978B855C-C9CD-4A5E-A335-9ED8DD3E001A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{978B855C-C9CD-4A5E-A335-9ED8DD3E001A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{978B855C-C9CD-4A5E-A335-9ED8DD3E001A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
