@@ -1,4 +1,4 @@
-svn export http://dell/newrepos/EmbroideryReader/trunk trunktemp
+svn export http://medium/newrepos/EmbroideryReader/trunk trunktemp
 cd trunktemp\install
 BuildInstaller.exe
 move embreadsetup*.exe ..\..\
