@@ -1,8 +1,8 @@
-svn export http://dell/newrepos/EmbroideryReader/trunk trunktemp
-cd trunktemp\install
-BuildInstaller.exe
-move embreadsetup*.exe ..\..\
-move embroideryReader*.zip ..\..\
-cd ..\..\
-rmdir /Q /S trunktemp
+svn export http://medium/newrepos/EmbroideryReader/trunk source-zip
+echo "Check source-zip folder, make sure there are no unwanted files"
 pause
+BuildInstaller.exe
+rmdir /Q /S source-zip
+move embreadsetup*.exe upload-me\
+move embroideryReader*.zip upload-me\
+copy update.ini upload-me\
