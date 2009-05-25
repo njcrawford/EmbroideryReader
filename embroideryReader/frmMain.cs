@@ -54,9 +54,9 @@ namespace embroideryReader
         {
             string updateLoc;
             updateLoc = settings.getValue("update location");
-            if (String.IsNullOrEmpty(updateLoc))
+            if (String.IsNullOrEmpty(updateLoc) || updateLoc == "http://www.njcrawford.com/embreader/")
             {
-                settings.setValue("update location", "http://www.njcrawford.com/embreader/");
+                settings.setValue("update location", "http://www.njcrawford.com/embroidery-reader/");
             }
             if (settings.getValue("background color", "enabled") == "yes")
             {
@@ -241,23 +241,14 @@ namespace embroideryReader
 
         private void checkForUpdateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-            //bool isNewerVersion = false;
             nc_Updater.IniFileUpdater updater = new nc_Updater.IniFileUpdater(settings.getValue("update location"));
-            //UpdateTester.nc_Update updater = new UpdateTester.nc_Update("http://www.google.com/");
-            //char[] sep = { '.' };
-            //string[] upVersion = updater.VersionAvailable().Split(sep);
-            //string[] curVersion = currentVersion().Split(sep);
-            //for (int i = 0; i < 4; i++)
-            //{
-            //    if (Convert.ToInt32( upVersion[i]) > Convert.ToInt32(curVersion[i]))
-            //    {
-            //        isNewerVersion = true;
-            //        break;
-            //    }
-            //}
-            //if (isNewerVersion)
-            if (updater.IsUpdateAvailable() && settings.getValue("update location") != null)
+
+            // this shouldn't be able to happen, the update location is checked at form load
+            if(settings.getValue("update location") == null)
+            {
+                MessageBox.Show("Cannot check for update because the 'update location'" + Environment.NewLine + "setting has been removed from the settings file.");
+            }
+            else if (updater.IsUpdateAvailable())
             {
                 if (MessageBox.Show("Version " + updater.VersionAvailable() + " is available." + Environment.NewLine + "You have version " + currentVersion() + ". Would you like to go to the Embroidery Reader website to download it?", "New version available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
