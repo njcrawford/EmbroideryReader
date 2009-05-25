@@ -96,7 +96,7 @@ Section "Associate with .PES files"
 
 
 	# Tell shell to use this for thumbnails
-	//StrCmp $DoThumbs 0 +3
+	;StrCmp $DoThumbs 0 +3
 	WriteRegStr HKCR ".pes\ShellEx" "" ""
 	WriteRegStr HKCR ".pes\ShellEx\{BB2E617C-0920-11d1-9A0B-00C04FC2D6C1}" "" "{7E3EF3E8-39D4-4150-9EFF-58C71A1F4F9E}"
 
