@@ -242,6 +242,7 @@ namespace embroideryReader
         private void checkForUpdateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             nc_Updater.IniFileUpdater updater = new nc_Updater.IniFileUpdater(settings.getValue("update location"));
+            updater.waitForInfo();
 
             // this shouldn't be able to happen, the update location is checked at form load
             if(settings.getValue("update location") == null)
@@ -254,7 +255,7 @@ namespace embroideryReader
                 {
                     try
                     {
-                        System.Diagnostics.Process.Start(settings.getValue("update location"));
+                        System.Diagnostics.Process.Start(updater.getMoreInfoURL());
                     }
                     catch (Exception ex)
                     {
