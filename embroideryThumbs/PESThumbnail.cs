@@ -100,6 +100,10 @@ namespace embroideryThumbs
 
         public void GetClassID(out Guid pClassID)
         {
+            System.IO.StreamWriter logfile = new System.IO.StreamWriter("C:\thumbs-log.txt", true);
+            logfile.WriteLine("Called GetClassID");
+            logfile.Close();
+
             // not implemented, but won't compile without this
             pClassID = new Guid("7E3EF3E8-39D4-4150-9EFF-58C71A1F4F9E");
         }
@@ -111,6 +115,10 @@ namespace embroideryThumbs
 
         public void Load([In, MarshalAs(UnmanagedType.LPWStr)] string pszFileName, uint dwMode)
         {
+            System.IO.StreamWriter logfile = new System.IO.StreamWriter("C:\thumbs-log.txt", true);
+            logfile.WriteLine("Called Load filename: " + pszFileName);
+            logfile.Close();
+
             if(pszFileName.Substring(pszFileName.Length - 4).ToLower() == ".pes")
             {
                 designFile = new PesFile.PesFile(pszFileName);
@@ -139,6 +147,10 @@ namespace embroideryThumbs
 
         public unsafe void Extract(out IntPtr phBmpThumbnail)
         {
+            System.IO.StreamWriter logfile = new System.IO.StreamWriter("C:\thumbs-log.txt", true);
+            logfile.WriteLine("Called Extract");
+            logfile.Close();
+             
             System.Drawing.Bitmap designBitmap = designFile.designToBitmap(3, false, 0);
 
             IntPtr hBmp = designBitmap.GetHbitmap();
