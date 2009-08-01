@@ -249,9 +249,13 @@ namespace embroideryReader
             {
                 MessageBox.Show("Cannot check for update because the 'update location'" + Environment.NewLine + "setting has been removed from the settings file.");
             }
+            else if (updater.GetLastError() != "")
+            {
+                MessageBox.Show("Encountered an error while checking for updates: " + updater.GetLastError());
+            }
             else if (updater.IsUpdateAvailable())
             {
-                if (MessageBox.Show("Version " + updater.VersionAvailable() + " was released on " + updater.getReleaseDate().ToStringShortDate() + "." + Environment.NewLine + "You have version " + currentVersion() + ". Would you like to go to the Embroidery Reader website to download or find out more about the new version?", "New version available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (MessageBox.Show("Version " + updater.VersionAvailable() + " was released on " + updater.getReleaseDate().ToShortDateString() + "." + Environment.NewLine + "You have version " + currentVersion() + ". Would you like to go to the Embroidery Reader website to download or find out more about the new version?", "New version available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     try
                     {
@@ -270,10 +274,6 @@ namespace embroideryReader
                     //    Environment.Exit(0);
                     //}
                 }
-            }
-            else if (updater.GetLastError() != "")
-            {
-                MessageBox.Show("Encountered an error while checking for updates: " + updater.GetLastError());
             }
             else
             {
