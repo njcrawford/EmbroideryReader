@@ -36,8 +36,8 @@ namespace embroideryReader
     public partial class frmSettingsDialog : Form
     {
         private bool colorChanged = false;
-        private nc_settings.IniFile _settings;
-        public nc_settings.IniFile settings
+        private NJCrawford.IniFile _settings;
+        public NJCrawford.IniFile settings
         {
             get
             {

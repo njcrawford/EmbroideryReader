@@ -41,7 +41,7 @@ namespace embroideryReader
         private Pen drawPen = Pens.Black;
         private Bitmap DrawArea;
         private PesFile.PesFile design;
-        private nc_settings.IniFile settings = new nc_settings.IniFile("embroideryreader.ini");
+        private NJCrawford.IniFile settings = new NJCrawford.IniFile("embroideryreader.ini");
 
 
         public frmMain()
@@ -54,9 +54,9 @@ namespace embroideryReader
         {
             string updateLoc;
             updateLoc = settings.getValue("update location");
-            if (String.IsNullOrEmpty(updateLoc) || updateLoc == "http://www.njcrawford.com/embreader/")
+            if (String.IsNullOrEmpty(updateLoc) || updateLoc == "http://www.njcrawford.com/embreader/" || updateLoc == "http://www.njcrawford.com/embroidery-reader/")
             {
-                settings.setValue("update location", "http://www.njcrawford.com/embroidery-reader/");
+                settings.setValue("update location", "http://www.njcrawford.com/embroidery-reader/update.ini");
             }
             if (settings.getValue("background color", "enabled") == "yes")
             {
@@ -241,7 +241,7 @@ namespace embroideryReader
 
         private void checkForUpdateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            nc_Updater.IniFileUpdater updater = new nc_Updater.IniFileUpdater(settings.getValue("update location"));
+            NJCrawford.IniFileUpdater updater = new NJCrawford.IniFileUpdater(settings.getValue("update location"));
             updater.waitForInfo();
 
             // this shouldn't be able to happen, the update location is checked at form load
