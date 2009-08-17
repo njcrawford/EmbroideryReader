@@ -51,6 +51,7 @@ namespace embroideryReader
         private const string SETTING_THREAD_THICKNESS = "thread thickness";
         private const string SETTING_FILTER_STITCHES_THRESHOLD = "filter stitches threshold";
         private const string SETTING_LAST_SAVE_IMAGE_LOCATION = "last save image location";
+        private const string SETTING_FILTER_STITCHES = "filter stitches";
 
         private const string UPDATE_URL = "http://www.njcrawford.com/embroidery-reader/update.ini";
 
@@ -163,7 +164,7 @@ namespace embroideryReader
                 {
                     threshold = 120;
                 }
-                DrawArea = design.designToBitmap((float)threadThickness, (settings.getValue("filter stitches") == "true"), (int)threshold);
+                DrawArea = design.designToBitmap((float)threadThickness, (settings.getValue(SETTING_FILTER_STITCHES) == "true"), (int)threshold);
                 panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
                 panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
                 panel1.Invalidate();
@@ -374,7 +375,7 @@ namespace embroideryReader
                     threadThickness = 5;
                 }
                 int threshold = Convert.ToInt32(settings.getValue(SETTING_FILTER_STITCHES_THRESHOLD));
-                DrawArea = design.designToBitmap((float)threadThickness, (settings.getValue("filter stitches") == "true"), (int)threshold);
+                DrawArea = design.designToBitmap((float)threadThickness, (settings.getValue(SETTING_FILTER_STITCHES) == "true"), (int)threshold);
                 panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
                 panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
                 panel1.Invalidate();
