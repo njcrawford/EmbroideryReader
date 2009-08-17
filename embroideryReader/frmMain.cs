@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 02111-1307, USA.
 
 A copy of the full GPL 2 license can be found in the docs directory.
-You can contact me at http://www.njcrawford.com/contact.php.
+You can contact me at http://www.njcrawford.com/contact/.
 */
 
 
@@ -43,6 +43,17 @@ namespace embroideryReader
         private PesFile.PesFile design;
         private NJCrawford.IniFile settings = new NJCrawford.IniFile("embroideryreader.ini");
 
+        private const string SETTING_LAST_FOLDER = "last open file folder";
+        private const string SETTING_BG_COLOR_SECTION = "background color";
+        private const string SETTING_BG_COLOR_RED = "red";
+        private const string SETTING_BG_COLOR_GREEN = "green";
+        private const string SETTING_BG_COLOR_BLUE = "blue";
+        private const string SETTING_THREAD_THICKNESS = "thread thickness";
+        private const string SETTING_FILTER_STITCHES_THRESHOLD = "filter stitches threshold";
+        private const string SETTING_LAST_SAVE_IMAGE_LOCATION = "last save image location";
+
+        private const string UPDATE_URL = "http://www.njcrawford.com/embroidery-reader/update.ini";
+
 
         public frmMain()
         {
@@ -52,21 +63,19 @@ namespace embroideryReader
 
         private void checkSettings()
         {
-            string updateLoc;
-            updateLoc = settings.getValue("update location");
-            if (String.IsNullOrEmpty(updateLoc) || updateLoc == "http://www.njcrawford.com/embreader/" || updateLoc == "http://www.njcrawford.com/embroidery-reader/")
+            if (settings.getValue("update location") != null)
             {
-                settings.setValue("update location", "http://www.njcrawford.com/embroidery-reader/update.ini");
+                settings.setValue("update location", null); //remove the update location value from the file
             }
-            if (settings.getValue("background color", "enabled") == "yes")
+            if (settings.getValue(SETTING_BG_COLOR_SECTION, "enabled") == "yes")
             {
-                if (checkColorFromStrings(settings.getValue("background color", "red"),
-                                          settings.getValue("background color", "green"),
-                                          settings.getValue("background color", "blue")))
+                if (checkColorFromStrings(settings.getValue(SETTING_BG_COLOR_SECTION, SETTING_BG_COLOR_RED),
+                                          settings.getValue(SETTING_BG_COLOR_SECTION, SETTING_BG_COLOR_GREEN),
+                                          settings.getValue(SETTING_BG_COLOR_SECTION, SETTING_BG_COLOR_BLUE)))
                 {
-                    this.BackColor = makeColorFromStrings(settings.getValue("background color", "red"),
-                                                          settings.getValue("background color", "green"),
-                                                          settings.getValue("background color", "blue"));
+                    this.BackColor = makeColorFromStrings(settings.getValue(SETTING_BG_COLOR_SECTION, SETTING_BG_COLOR_RED),
+                                                          settings.getValue(SETTING_BG_COLOR_SECTION, SETTING_BG_COLOR_GREEN),
+                                                          settings.getValue(SETTING_BG_COLOR_SECTION, SETTING_BG_COLOR_BLUE));
                 }
                 else
                 {
@@ -144,13 +153,13 @@ namespace embroideryReader
                 //sizePanel2();
 
                 double threadThickness = 5;
-                if (!Double.TryParse(settings.getValue("thread thickness"), out threadThickness))
+                if (!Double.TryParse(settings.getValue(SETTING_THREAD_THICKNESS), out threadThickness))
                 {
                     threadThickness = 5;
                 }
 
                 double threshold = 10;
-                if (!Double.TryParse(settings.getValue("filter stitches threshold"), out threshold))
+                if (!Double.TryParse(settings.getValue(SETTING_FILTER_STITCHES_THRESHOLD), out threshold))
                 {
                     threshold = 120;
                 }
@@ -184,7 +193,12 @@ namespace embroideryReader
             }
             else
             {
-                MessageBox.Show("An error occured while reading the file:" + Environment.NewLine + design.getLastError());
+                string message = "An error occured while reading the file:" + Environment.NewLine + design.getLastError();
+                if (design.getStatus() == PesFile.statusEnum.ParseError)
+                {
+                    message += Environment.NewLine + "This file is either corrupt or not a valid PES file.";
+                }
+                MessageBox.Show(message);
                 copyToolStripMenuItem.Enabled = false;
                 saveDebugInfoToolStripMenuItem.Enabled = false;
                 printPreviewToolStripMenuItem.Enabled = false;
@@ -200,9 +214,9 @@ namespace embroideryReader
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string filename;
-            if (settings.getValue("last open file folder") != null)
+            if (settings.getValue(SETTING_LAST_FOLDER) != null)
             {
-                openFileDialog1.InitialDirectory = settings.getValue("last open file folder");
+                openFileDialog1.InitialDirectory = settings.getValue(SETTING_LAST_FOLDER);
             }
             openFileDialog1.FileName = "";
             openFileDialog1.Filter = "Embroidery Files (*.pes)|*.pes|All Files (*.*)|*.*";
@@ -215,7 +229,7 @@ namespace embroideryReader
                 }
                 else
                 {
-                    settings.setValue("last open file folder", System.IO.Path.GetDirectoryName(filename));
+                    settings.setValue(SETTING_LAST_FOLDER, System.IO.Path.GetDirectoryName(filename));
                     openFile(filename);
                 }
             }
@@ -241,15 +255,10 @@ namespace embroideryReader
 
         private void checkForUpdateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NJCrawford.IniFileUpdater updater = new NJCrawford.IniFileUpdater(settings.getValue("update location"));
+            NJCrawford.UpdateCheck updater = new NJCrawford.UpdateCheck(UPDATE_URL, null, null);
             updater.waitForInfo();
 
-            // this shouldn't be able to happen, the update location is checked at form load
-            if(settings.getValue("update location") == null)
-            {
-                MessageBox.Show("Cannot check for update because the 'update location'" + Environment.NewLine + "setting has been removed from the settings file.");
-            }
-            else if (updater.GetLastError() != "")
+            if (updater.GetLastError() != "")
             {
                 MessageBox.Show("Encountered an error while checking for updates: " + updater.GetLastError());
             }
@@ -265,14 +274,6 @@ namespace embroideryReader
                     {
                         MessageBox.Show("An error occured while trying to open the webpage:" + Environment.NewLine + ex.ToString());
                     }
-                    //if (!updater.InstallUpdate())
-                    //{
-                    //    MessageBox.Show("Update failed, error message: " + updater.GetLastError());
-                    //}
-                    //else
-                    //{
-                    //    Environment.Exit(0);
-                    //}
                 }
             }
             else
@@ -336,8 +337,8 @@ namespace embroideryReader
             {
                 float dpiX = 100;
                 float dpiY = 100;
-                double mmPerInch = 0.03937007874015748031496062992126;
-                e.Graphics.ScaleTransform((float)(dpiX * mmPerInch * 0.1), (float)(dpiY * mmPerInch * 0.1));
+                double inchesPerMM = 0.03937007874015748031496062992126;
+                e.Graphics.ScaleTransform((float)(dpiX * inchesPerMM * 0.1), (float)(dpiY * inchesPerMM * 0.1));
 
                 e.Graphics.DrawImage(DrawArea, 30, 30);
             }
@@ -368,11 +369,11 @@ namespace embroideryReader
             if (design != null && design.getStatus() == PesFile.statusEnum.Ready)
             {
                 double threadThickness = 5;
-                if (!Double.TryParse(settings.getValue("thread thickness"), out threadThickness))
+                if (!Double.TryParse(settings.getValue(SETTING_THREAD_THICKNESS), out threadThickness))
                 {
                     threadThickness = 5;
                 }
-                int threshold = Convert.ToInt32(settings.getValue("filter stitches threshold"));
+                int threshold = Convert.ToInt32(settings.getValue(SETTING_FILTER_STITCHES_THRESHOLD));
                 DrawArea = design.designToBitmap((float)threadThickness, (settings.getValue("filter stitches") == "true"), (int)threshold);
                 panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
                 panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
@@ -457,9 +458,9 @@ namespace embroideryReader
                 tempGraph.Dispose();
                 saveFileDialog1.FileName = "";
                 saveFileDialog1.Filter = "Bitmap (*.bmp)|*.bmp|PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|TIFF (*.tif)|*.tif|All Files (*.*)|*.*";
-                if (settings.getValue("last save image location") != null)
+                if (settings.getValue(SETTING_LAST_SAVE_IMAGE_LOCATION) != null)
                 {
-                    saveFileDialog1.InitialDirectory = settings.getValue("last save image location");
+                    saveFileDialog1.InitialDirectory = settings.getValue(SETTING_LAST_SAVE_IMAGE_LOCATION);
                 }
                 if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                 {
@@ -477,7 +478,7 @@ namespace embroideryReader
                     }
                     temp.Save(filename, format);
                     showStatus("Image saved", 5000);
-                    settings.setValue("last save image location", System.IO.Path.GetDirectoryName(filename));
+                    settings.setValue(SETTING_LAST_SAVE_IMAGE_LOCATION, System.IO.Path.GetDirectoryName(filename));
                 }
             }
         }
