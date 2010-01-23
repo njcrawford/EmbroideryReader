@@ -1,7 +1,7 @@
 /*
 Embroidery Reader - an application to view .pes embroidery designs
 
-Copyright (C) 2009  Nathan Crawford
+Copyright (C) 2010 Nathan Crawford
  
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 02111-1307, USA.
 
 A copy of the full GPL 2 license can be found in the docs directory.
-You can contact me at http://www.njcrawford.com/contact/.
+You can contact me at http://www.njcrawford.com/contact
 */
 
 
@@ -41,19 +41,9 @@ namespace embroideryReader
         private Pen drawPen = Pens.Black;
         private Bitmap DrawArea;
         private PesFile.PesFile design;
-        private NJCrawford.IniFile settings = new NJCrawford.IniFile("embroideryreader.ini");
+        private EmbroideryReaderSettings settings = new EmbroideryReaderSettings();
 
-        private const string SETTING_LAST_FOLDER = "last open file folder";
-        private const string SETTING_BG_COLOR_SECTION = "background color";
-        private const string SETTING_BG_COLOR_RED = "red";
-        private const string SETTING_BG_COLOR_GREEN = "green";
-        private const string SETTING_BG_COLOR_BLUE = "blue";
-        private const string SETTING_THREAD_THICKNESS = "thread thickness";
-        private const string SETTING_FILTER_STITCHES_THRESHOLD = "filter stitches threshold";
-        private const string SETTING_LAST_SAVE_IMAGE_LOCATION = "last save image location";
-        private const string SETTING_FILTER_STITCHES = "filter stitches";
-
-        private const string UPDATE_URL = "http://www.njcrawford.com/embroidery-reader/update.ini";
+        private const String APP_TITLE = "Embroidery Reader";
 
 
         public frmMain()
@@ -64,35 +54,13 @@ namespace embroideryReader
 
         private void checkSettings()
         {
-            if (settings.getValue("update location") != null)
-            {
-                settings.setValue("update location", null); //remove the update location value from the file
-            }
-            if (settings.getValue(SETTING_BG_COLOR_SECTION, "enabled") == "yes")
-            {
-                if (checkColorFromStrings(settings.getValue(SETTING_BG_COLOR_SECTION, SETTING_BG_COLOR_RED),
-                                          settings.getValue(SETTING_BG_COLOR_SECTION, SETTING_BG_COLOR_GREEN),
-                                          settings.getValue(SETTING_BG_COLOR_SECTION, SETTING_BG_COLOR_BLUE)))
-                {
-                    this.BackColor = makeColorFromStrings(settings.getValue(SETTING_BG_COLOR_SECTION, SETTING_BG_COLOR_RED),
-                                                          settings.getValue(SETTING_BG_COLOR_SECTION, SETTING_BG_COLOR_GREEN),
-                                                          settings.getValue(SETTING_BG_COLOR_SECTION, SETTING_BG_COLOR_BLUE));
-                }
-                else
-                {
-                    this.BackColor = Color.FromKnownColor(KnownColor.Control);
-                }
-            }
-            else
-            {
-                this.BackColor = Color.FromKnownColor(KnownColor.Control);
-            }
+            this.BackColor = settings.backgroundColor;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             checkSettings();
-            this.Text = "Embroidery Reader";
+            this.Text = APP_TITLE;
             if (args.Length > 1)
             {
                 openFile(args[1]);
@@ -150,23 +118,11 @@ namespace embroideryReader
             design = new PesFile.PesFile(filename);
             if (design.getStatus() == PesFile.statusEnum.Ready)
             {
-                this.Text = System.IO.Path.GetFileName(filename) + " - Embroidery Reader";
-                //sizePanel2();
+                this.Text = System.IO.Path.GetFileName(filename) + " - " + APP_TITLE;
 
-                double threadThickness = 5;
-                if (!Double.TryParse(settings.getValue(SETTING_THREAD_THICKNESS), out threadThickness))
-                {
-                    threadThickness = 5;
-                }
-
-                double threshold = 10;
-                if (!Double.TryParse(settings.getValue(SETTING_FILTER_STITCHES_THRESHOLD), out threshold))
-                {
-                    threshold = 120;
-                }
-                DrawArea = design.designToBitmap((float)threadThickness, (settings.getValue(SETTING_FILTER_STITCHES) == "true"), (int)threshold);
-                panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
-                panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
+                DrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), (int)settings.filterStitchesThreshold);
+                panel1.Width = design.GetWidth() + (int)(settings.threadThickness * 2);
+                panel1.Height = design.GetHeight() + (int)(settings.threadThickness * 2);
                 panel1.Invalidate();
 
                 if (design.getFormatWarning())
@@ -215,9 +171,9 @@ namespace embroideryReader
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string filename;
-            if (settings.getValue(SETTING_LAST_FOLDER) != null)
+            if (settings.lastOpenFileFolder != null)
             {
-                openFileDialog1.InitialDirectory = settings.getValue(SETTING_LAST_FOLDER);
+                openFileDialog1.InitialDirectory = settings.lastOpenFileFolder;
             }
             openFileDialog1.FileName = "";
             openFileDialog1.Filter = "Embroidery Files (*.pes)|*.pes|All Files (*.*)|*.*";
@@ -230,7 +186,7 @@ namespace embroideryReader
                 }
                 else
                 {
-                    settings.setValue(SETTING_LAST_FOLDER, System.IO.Path.GetDirectoryName(filename));
+                    settings.lastOpenFileFolder = System.IO.Path.GetDirectoryName(filename);
                     openFile(filename);
                 }
             }
@@ -316,10 +272,10 @@ namespace embroideryReader
         private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmSettingsDialog tempForm = new frmSettingsDialog();
-            tempForm.settings = settings;
+            tempForm.settingsToModify = settings;
             if (tempForm.ShowDialog() == DialogResult.OK)
             {
-                settings = tempForm.settings;
+                settings = tempForm.settingsToModify;
                 checkSettings();
             }
         }
@@ -369,15 +325,9 @@ namespace embroideryReader
         {
             if (design != null && design.getStatus() == PesFile.statusEnum.Ready)
             {
-                double threadThickness = 5;
-                if (!Double.TryParse(settings.getValue(SETTING_THREAD_THICKNESS), out threadThickness))
-                {
-                    threadThickness = 5;
-                }
-                int threshold = Convert.ToInt32(settings.getValue(SETTING_FILTER_STITCHES_THRESHOLD));
-                DrawArea = design.designToBitmap((float)threadThickness, (settings.getValue(SETTING_FILTER_STITCHES) == "true"), (int)threshold);
-                panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
-                panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
+                DrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), (int)settings.filterStitchesThreshold);
+                panel1.Width = design.GetWidth() + (int)(settings.threadThickness * 2);
+                panel1.Height = design.GetHeight() + (int)(settings.threadThickness * 2);
                 panel1.Invalidate();
 
                 if (design.getClassWarning())
@@ -459,9 +409,9 @@ namespace embroideryReader
                 tempGraph.Dispose();
                 saveFileDialog1.FileName = "";
                 saveFileDialog1.Filter = "Bitmap (*.bmp)|*.bmp|PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|TIFF (*.tif)|*.tif|All Files (*.*)|*.*";
-                if (settings.getValue(SETTING_LAST_SAVE_IMAGE_LOCATION) != null)
+                if (settings.lastSaveImageLocation != null)
                 {
-                    saveFileDialog1.InitialDirectory = settings.getValue(SETTING_LAST_SAVE_IMAGE_LOCATION);
+                    saveFileDialog1.InitialDirectory = settings.lastSaveImageLocation;
                 }
                 if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                 {
@@ -479,7 +429,7 @@ namespace embroideryReader
                     }
                     temp.Save(filename, format);
                     showStatus("Image saved", 5000);
-                    settings.setValue(SETTING_LAST_SAVE_IMAGE_LOCATION, System.IO.Path.GetDirectoryName(filename));
+                    settings.lastSaveImageLocation = System.IO.Path.GetDirectoryName(filename);
                 }
             }
         }

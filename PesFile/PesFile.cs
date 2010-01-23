@@ -250,7 +250,7 @@ namespace PesFile
             }
             catch (Exception ex)
             {
-                readyStatus = statusEnum.ReadError;
+                readyStatus = statusEnum.ParseError;
                 lastError = ex.Message;
                 if (fileIn != null)
                 {
