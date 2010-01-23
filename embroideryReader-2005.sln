@@ -1,25 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryReader", "embroideryReader\embroideryReader.csproj", "{0A9A24AD-60F0-4664-BCC6-2B98B3E8B565}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryReader", "embroideryReader\embroideryReader-2005.csproj", "{0A9A24AD-60F0-4664-BCC6-2B98B3E8B565}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryTester", "embroideryTester\embroideryTester.csproj", "{A80DF4D8-967D-4352-9E1D-F22D23236BE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryTester", "embroideryTester\embroideryTester-2005.csproj", "{A80DF4D8-967D-4352-9E1D-F22D23236BE2}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryInfo", "embroideryInfo\embroideryInfo.csproj", "{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryInfo", "embroideryInfo\embroideryInfo-2005.csproj", "{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PesFile", "PesFile\PesFile.csproj", "{66EF662E-F52C-4104-9C15-A14266D8F3B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PesFile", "PesFile\PesFile-2005.csproj", "{66EF662E-F52C-4104-9C15-A14266D8F3B8}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"
@@ -36,7 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{1BA749B5-4
 		docs\pes0001.html = docs\pes0001.html
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryThumbs", "embroideryThumbs\embroideryThumbs.csproj", "{978B855C-C9CD-4A5E-A335-9ED8DD3E001A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryThumbs", "embroideryThumbs\embroideryThumbs-2005.csproj", "{978B855C-C9CD-4A5E-A335-9ED8DD3E001A}"
 	ProjectSection(WebsiteProperties) = preProject
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.Debug = "False"

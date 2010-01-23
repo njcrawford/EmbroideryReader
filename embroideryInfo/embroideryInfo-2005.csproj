@@ -38,7 +38,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PesFile\PesFile.csproj">
+    <ProjectReference Include="..\PesFile\PesFile-2005.csproj">
       <Project>{66EF662E-F52C-4104-9C15-A14266D8F3B8}</Project>
       <Name>PesFile</Name>
     </ProjectReference>

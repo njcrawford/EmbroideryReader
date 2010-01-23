@@ -4,11 +4,12 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A80DF4D8-967D-4352-9E1D-F22D23236BE2}</ProjectGuid>
+    <ProjectGuid>{0A9A24AD-60F0-4664-BCC6-2B98B3E8B565}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>embroideryTester</RootNamespace>
-    <AssemblyName>embroideryTester</AssemblyName>
+    <RootNamespace>embroideryReader</RootNamespace>
+    <AssemblyName>embroideryReader</AssemblyName>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -26,27 +27,56 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="IniFile, Version=1.2.1.11, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\IniFile.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="UpdateCheck, Version=0.2.0.35, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\UpdateCheck.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="frmMain.Designer.cs">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmSettingsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSettingsDialog.Designer.cs">
+      <DependentUpon>frmSettingsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmTextbox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmTextbox.Designer.cs">
+      <DependentUpon>frmTextbox.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
+    <EmbeddedResource Include="frmMain.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>Form1.cs</DependentUpon>
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSettingsDialog.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>frmSettingsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmTextbox.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>frmTextbox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -56,7 +86,6 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -69,10 +98,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PesFile\PesFile-2005.csproj">
+    <ProjectReference Include="..\PesFile\PesFile.csproj">
       <Project>{66EF662E-F52C-4104-9C15-A14266D8F3B8}</Project>
       <Name>PesFile</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -82,4 +114,8 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>"$(ProjectDir)\IncrementVersionNumber.exe" --postbuild</PostBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)\IncrementVersionNumber.exe" --prebuild</PreBuildEvent>
+  </PropertyGroup>
 </Project>
