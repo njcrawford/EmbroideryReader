@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Embroidery Reader")]
-[assembly: AssemblyCopyright("Copyright © Nathan Crawford 2009")]
+[assembly: AssemblyCopyright("Copyright © Nathan Crawford 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -54,5 +54,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("3.1.0.16")]
-[assembly: AssemblyFileVersion("3.1.0.16")]
+[assembly: AssemblyVersion("1.3.0.17")]
+[assembly: AssemblyFileVersion("1.3.0.17")]

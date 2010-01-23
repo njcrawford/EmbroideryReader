@@ -65,6 +65,7 @@
       <DependentUpon>frmTextbox.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="EmbroideryReaderSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="frmMain.resx">
       <SubType>Designer</SubType>

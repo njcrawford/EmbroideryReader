@@ -212,7 +212,7 @@ namespace embroideryReader
 
         private void checkForUpdateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NJCrawford.UpdateCheck updater = new NJCrawford.UpdateCheck(UPDATE_URL, null, null);
+            NJCrawford.UpdateCheck updater = new NJCrawford.UpdateCheck(settings.updateLocation, null, null);
             updater.waitForInfo();
 
             if (updater.GetLastError() != "")

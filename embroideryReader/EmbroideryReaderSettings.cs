@@ -31,7 +31,7 @@ namespace embroideryReader
 {
     public class EmbroideryReaderSettings
     {
-        private nc_settings.IniFile settings;
+        private NJCrawford.IniFile settings;
 
         private const String SETTING_UPDATE_LOCATION = "update location";
 
@@ -56,12 +56,15 @@ namespace embroideryReader
         private const String VALUE_TRUE = "true";
         private const String VALUE_FALSE = "false";
 
+        private const String UPDATE_URL = "http://www.njcrawford.com/updates/embroidery-reader.ini";
+        private const String SETTINGS_FILENAME = "embroideryreader.ini";
+
         public EmbroideryReaderSettings()
         {
-            settings = new nc_settings.IniFile("embroideryreader.ini");
-            if (String.IsNullOrEmpty(updateLocation))
+            settings = new NJCrawford.IniFile(SETTINGS_FILENAME);
+            if (!String.IsNullOrEmpty(updateLocation))
             {
-                updateLocation = "http://www.njcrawford.com/updates/embroidery-reader.ini";
+                settings.setValue(SETTING_UPDATE_LOCATION, null);
             }
         }
 
@@ -69,11 +72,7 @@ namespace embroideryReader
         {
             get
             {
-                return settings.getValue(SETTING_UPDATE_LOCATION);
-            }
-            set
-            {
-                settings.setValue(SETTING_UPDATE_LOCATION, value);
+                return UPDATE_URL;
             }
         }
 
