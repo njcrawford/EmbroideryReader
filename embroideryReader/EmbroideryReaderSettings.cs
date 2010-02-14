@@ -33,6 +33,7 @@ namespace embroideryReader
     {
         private NJCrawford.IniFile settings;
 
+        // obsolete, but leaving here for historical purposes
         private const String SETTING_UPDATE_LOCATION = "update location";
 
         private const String SECTION_BACKGROUND_COLOR = "background color";
@@ -58,16 +59,78 @@ namespace embroideryReader
 
         private const String UPDATE_URL = "http://www.njcrawford.com/updates/embroidery-reader.ini";
         private const String SETTINGS_FILENAME = "embroideryreader.ini";
+        private const String SETTINGS_PATH_COMPANY = "NJCrawford Software";
+        private const String SETTINGS_PATH_APP_NAME = "Embroidery Reader";
 
         public EmbroideryReaderSettings()
         {
-            settings = new NJCrawford.IniFile(SETTINGS_FILENAME);
-            if (!String.IsNullOrEmpty(updateLocation))
+            string settingsPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            settingsPath = System.IO.Path.Combine(settingsPath, SETTINGS_PATH_COMPANY);
+            settingsPath = System.IO.Path.Combine(settingsPath, SETTINGS_PATH_APP_NAME);
+            if (!System.IO.Directory.Exists(settingsPath))
             {
-                settings.setValue(SETTING_UPDATE_LOCATION, null);
+                System.IO.Directory.CreateDirectory(settingsPath);
+            }
+            settingsPath = System.IO.Path.Combine(settingsPath, SETTINGS_FILENAME);
+            // new settings file in application data folder
+            settings = new NJCrawford.IniFile(settingsPath);
+
+            if (!System.IO.File.Exists(settingsPath))
+            {
+                // Old settings file stored in installation folder
+                // breaks on Windows 7. 
+                NJCrawford.IniFile oldSettings = new NJCrawford.IniFile(SETTINGS_FILENAME);
+
+                // copy useful settings from old file to new
+                if (!String.IsNullOrEmpty(oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED)))
+                {
+                    settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED));
+                }
+
+                if (!String.IsNullOrEmpty(oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_RED)))
+                {
+                    settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_RED, oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_RED));
+                }
+
+                if (!String.IsNullOrEmpty(oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN)))
+                {
+                    settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN, oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN));
+                }
+
+                if (!String.IsNullOrEmpty(oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE)))
+                {
+                    settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE, oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE));
+                }
+
+                if (!String.IsNullOrEmpty(oldSettings.getValue(SETTING_FILTER_STITCHES)))
+                {
+                    settings.setValue(SETTING_FILTER_STITCHES, oldSettings.getValue(SETTING_FILTER_STITCHES));
+                }
+
+                if (!String.IsNullOrEmpty(oldSettings.getValue(SETTING_FILTER_STITCHES_THRESHOLD)))
+                {
+                    settings.setValue(SETTING_FILTER_STITCHES_THRESHOLD, oldSettings.getValue(SETTING_FILTER_STITCHES_THRESHOLD));
+                }
+
+                if (!String.IsNullOrEmpty(oldSettings.getValue(SETTING_THREAD_THICKNESS)))
+                {
+                    settings.setValue(SETTING_THREAD_THICKNESS, oldSettings.getValue(SETTING_THREAD_THICKNESS));
+                }
+
+                if (!String.IsNullOrEmpty(oldSettings.getValue(SETTING_LAST_OPEN_FILE_FOLDER)))
+                {
+                    settings.setValue(SETTING_LAST_OPEN_FILE_FOLDER, oldSettings.getValue(SETTING_LAST_OPEN_FILE_FOLDER));
+                }
+
+                if (!String.IsNullOrEmpty(oldSettings.getValue(SETTING_LAST_SAVE_IMAGE_LOCATION)))
+                {
+                    settings.setValue(SETTING_LAST_SAVE_IMAGE_LOCATION, oldSettings.getValue(SETTING_LAST_SAVE_IMAGE_LOCATION));
+                }
             }
         }
 
+        // This is no longer in the settings file, but keeping it here so I
+        // don't have to re-write every reference to it.
         public String updateLocation
         {
             get
