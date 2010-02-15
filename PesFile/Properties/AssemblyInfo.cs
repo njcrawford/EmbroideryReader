@@ -1,7 +1,7 @@
 /*
 Embridery Reader - an application to view .pes embroidery designs
 
-Copyright (C) 2008  Nathan Crawford
+Copyright (C) 2010  Nathan Crawford
  
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 02111-1307, USA.
 
 A copy of the full GPL 2 license can be found in the docs directory.
-You can contact me at http://www.njcrawford.com/contact.html.
+You can contact me at http://www.njcrawford.com/contact.
 */
 
 using System.Reflection;
@@ -34,7 +34,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("PesFile")]
-[assembly: AssemblyCopyright("Copyright © Nathan Crawford 2009")]
+[assembly: AssemblyCopyright("Copyright © Nathan Crawford 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -55,5 +55,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.1.0.5")]
-[assembly: AssemblyFileVersion("1.1.0.5")]
+[assembly: AssemblyVersion("1.1.1.0")]
+[assembly: AssemblyFileVersion("1.1.1.0")]
