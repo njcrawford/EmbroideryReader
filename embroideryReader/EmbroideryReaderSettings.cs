@@ -75,13 +75,13 @@ namespace embroideryReader
             // new settings file in application data folder
             settings = new NJCrawford.IniFile(settingsPath);
 
-            if (!System.IO.File.Exists(settingsPath))
+            // if the new file doesn't exist but the old one does, copy useful settings from old file to new
+            if (!System.IO.File.Exists(settingsPath) && System.IO.File.Exists(SETTINGS_FILENAME))
             {
-                // Old settings file stored in installation folder
-                // breaks on Windows 7. 
+                // Old settings file stored in installation folder breaks on 
+                // Windows 7. 
                 NJCrawford.IniFile oldSettings = new NJCrawford.IniFile(SETTINGS_FILENAME);
 
-                // copy useful settings from old file to new
                 if (!String.IsNullOrEmpty(oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED)))
                 {
                     settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED));
@@ -129,8 +129,8 @@ namespace embroideryReader
             }
         }
 
-        // This is no longer in the settings file, but keeping it here so I
-        // don't have to re-write every reference to it.
+        // This is no longer in the settings file, but I'm keeping it here because
+        // I can't think of a better place to put it yet.
         public String updateLocation
         {
             get
