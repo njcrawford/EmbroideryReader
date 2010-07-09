@@ -33,7 +33,7 @@ namespace embroideryReader
     {
         private NJCrawford.IniFile settings;
 
-        // obsolete, but leaving here for historical purposes
+        // update location is obsolete, but leaving here for historical purposes
         private const String SETTING_UPDATE_LOCATION = "update location";
 
         private const String SECTION_BACKGROUND_COLOR = "background color";
@@ -50,6 +50,9 @@ namespace embroideryReader
         private const String SETTING_LAST_OPEN_FILE_FOLDER = "last open file folder";
 
         private const String SETTING_LAST_SAVE_IMAGE_LOCATION = "last save image location";
+	
+	private const String SETTING_WINDOW_WIDTH = "window width";
+	private const String SETTING_WINDOW_HEIGHT = "window height";
 
         private const String VALUE_YES = "yes";
         private const String VALUE_NO = "no";
@@ -277,6 +280,30 @@ namespace embroideryReader
             set
             {
                 settings.setValue(SETTING_LAST_SAVE_IMAGE_LOCATION, value);
+            }
+        }
+
+	public int windowWidth
+	{
+            get
+	    {
+		return settings.getValue(SETTING_WINDOW_WIDTH);
+	    }
+	    set
+	    {
+	        settings.setValue(SETTING_WINDOW_WIDTH, value);
+	    }
+	}
+
+	public int windowHeight
+        {
+            get
+            {
+                return settings.getValue(SETTING_WINDOW_HEIGHT);
+            }
+            set
+            {
+                settings.setValue(SETTING_WINDOW_HEIGHT, value);
             }
         }
     }

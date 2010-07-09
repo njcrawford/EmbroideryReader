@@ -55,6 +55,8 @@ namespace embroideryReader
         private void checkSettings()
         {
             this.BackColor = settings.backgroundColor;
+            this.Width = settings.windowWidth;
+            this.Height = settings.windowHeight;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -242,6 +244,8 @@ namespace embroideryReader
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            settings.windowWidth = this.Width;
+            settings.windowHeight = this.Height;
             settings.save();
         }
 
