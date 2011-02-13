@@ -95,7 +95,9 @@
   </Target>
   -->
   <PropertyGroup>
-    <PreBuildEvent>"$(ProjectDir)\IncrementVersionNumber.exe" --prebuild</PreBuildEvent>
-    <PostBuildEvent>"$(ProjectDir)\IncrementVersionNumber.exe" --postbuild</PostBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
