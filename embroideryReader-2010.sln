@@ -1,0 +1,70 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C# Express 2008
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{1BA749B5-4B20-4C6A-AAE0-57F3A718B6E7}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryReader-2008", "embroideryReader\embroideryReader-2008.csproj", "{0A9A24AD-60F0-4664-BCC6-2B98B3E8B565}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryTester-2008", "embroideryTester\embroideryTester-2008.csproj", "{A80DF4D8-967D-4352-9E1D-F22D23236BE2}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryInfo-2008", "embroideryInfo\embroideryInfo-2008.csproj", "{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PesFile-2008", "PesFile\PesFile-2008.csproj", "{66EF662E-F52C-4104-9C15-A14266D8F3B8}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryThumbs-2008", "embroideryThumbs\embroideryThumbs-2008.csproj", "{978B855C-C9CD-4A5E-A335-9ED8DD3E001A}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0A9A24AD-60F0-4664-BCC6-2B98B3E8B565}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A9A24AD-60F0-4664-BCC6-2B98B3E8B565}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A9A24AD-60F0-4664-BCC6-2B98B3E8B565}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A9A24AD-60F0-4664-BCC6-2B98B3E8B565}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A80DF4D8-967D-4352-9E1D-F22D23236BE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A80DF4D8-967D-4352-9E1D-F22D23236BE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A80DF4D8-967D-4352-9E1D-F22D23236BE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A80DF4D8-967D-4352-9E1D-F22D23236BE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66EF662E-F52C-4104-9C15-A14266D8F3B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66EF662E-F52C-4104-9C15-A14266D8F3B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66EF662E-F52C-4104-9C15-A14266D8F3B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66EF662E-F52C-4104-9C15-A14266D8F3B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{978B855C-C9CD-4A5E-A335-9ED8DD3E001A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{978B855C-C9CD-4A5E-A335-9ED8DD3E001A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{978B855C-C9CD-4A5E-A335-9ED8DD3E001A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{978B855C-C9CD-4A5E-A335-9ED8DD3E001A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
