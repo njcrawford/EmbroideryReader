@@ -51,8 +51,8 @@ namespace embroideryReader
 
         private const String SETTING_LAST_SAVE_IMAGE_LOCATION = "last save image location";
 	
-	private const String SETTING_WINDOW_WIDTH = "window width";
-	private const String SETTING_WINDOW_HEIGHT = "window height";
+        private const String SETTING_WINDOW_WIDTH = "window width";
+        private const String SETTING_WINDOW_HEIGHT = "window height";
 
         private const String VALUE_YES = "yes";
         private const String VALUE_NO = "no";
@@ -283,27 +283,39 @@ namespace embroideryReader
             }
         }
 
-	public int windowWidth
-	{
+        public int windowWidth
+        {
             get
-	    {
-		return settings.getValue(SETTING_WINDOW_WIDTH);
-	    }
-	    set
-	    {
-	        settings.setValue(SETTING_WINDOW_WIDTH, value);
-	    }
-	}
+	        {
+                Int32 retval;
+                string temp = settings.getValue(SETTING_WINDOW_WIDTH);
+                if(!Int32.TryParse(temp, out retval))
+                {
+                    retval = 300;
+                }
+		        return retval;
+	        }
+	        set
+	        {
+	            settings.setValue(SETTING_WINDOW_WIDTH, value.ToString());
+	        }
+        }
 
-	public int windowHeight
+        public int windowHeight
         {
             get
             {
-                return settings.getValue(SETTING_WINDOW_HEIGHT);
+                Int32 retval;
+                string temp = settings.getValue(SETTING_WINDOW_HEIGHT);
+                if (!Int32.TryParse(temp, out retval))
+                {
+                    retval = 300;
+                }
+                return retval;
             }
             set
             {
-                settings.setValue(SETTING_WINDOW_HEIGHT, value);
+                settings.setValue(SETTING_WINDOW_HEIGHT, value.ToString());
             }
         }
     }
