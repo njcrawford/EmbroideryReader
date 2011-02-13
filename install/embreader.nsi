@@ -15,7 +15,7 @@
 Name "Embroidery Reader"
 
 ; The file to write
-OutFile "${outfile}"
+OutFile "embroideryReadervvv-setup.exe"
 
 ; The default installation directory
 InstallDir "$PROGRAMFILES\Embroidery Reader"
@@ -37,7 +37,7 @@ UninstPage instfiles
 ;--------------------------------
 
 ; The stuff to install
-Section "Embroidery Reader ${VERSION} (required)"
+Section "Embroidery Reader (required)"
 
   SectionIn RO
 
@@ -48,11 +48,10 @@ Section "Embroidery Reader ${VERSION} (required)"
   SetOutPath $INSTDIR
   
   ; Put file there
-   File "embroideryReader.exe"
-   File "nc_settings.dll"
-   File "PesFile.dll"
-   File "nc_Updater.dll"
-   File "embroideryThumbs.dll"
+  File "embroideryReader.exe"
+  File "IniFile.dll"
+  File "PesFile.dll"
+  File "UpdateCheck.dll"
   
   ; Write the installation path into the registry
   WriteRegStr HKLM "SOFTWARE\Embroidery Reader" "Install_Dir" "$INSTDIR"
@@ -85,7 +84,6 @@ Section "Associate with .PES files"
     WriteRegStr HKCR ".pes" "backup_val" $1
 "${Index}-NoBackup:"
   WriteRegStr HKCR ".pes" "" "EmbroideryDesign"
-  WriteRegStr HKCR ".pes" "PerceivedType" "image"
   ReadRegStr $0 HKCR "EmbroideryDesign" ""
   StrCmp $0 "" 0 "${Index}-Skip"
 	WriteRegStr HKCR "EmbroideryDesign" "" "Embroidery Design File"
@@ -93,33 +91,6 @@ Section "Associate with .PES files"
 	WriteRegStr HKCR "EmbroideryDesign\DefaultIcon" "" "$INSTDIR\embroideryReader.exe,0"
 "${Index}-Skip:"
   WriteRegStr HKCR "EmbroideryDesign\shell\open\command" "" '$INSTDIR\embroideryReader.exe "%1"'
-
-
-
-	# Tell shell to use this for thumbnails
-	;StrCmp $DoThumbs 0 +3
-	WriteRegStr HKCR ".pes\ShellEx" "" ""
-	WriteRegStr HKCR ".pes\ShellEx\{BB2E617C-0920-11d1-9A0B-00C04FC2D6C1}" "" "{7E3EF3E8-39D4-4150-9EFF-58C71A1F4F9E}"
-
-	# Add thumbnail extractor classes
-	WriteRegStr HKCR "PESIcon.Extractor" "" "Embroidery Design Thumbnail Extractor"
-	WriteRegStr HKCR "PESIcon.Extractor\CLSID" "" "{7E3EF3E8-39D4-4150-9EFF-58C71A1F4F9E}"
-	WriteRegStr HKCR "PESIcon.Extractor\CurVer" "" "PESIcon.Extractor.1"
-	WriteRegStr HKCR "PESIcon.Extractor.1" "" "Embroidery Design Thumbnail Extractor"
-	WriteRegStr HKCR "PESIcon.Extractor.1\CLSID" "" "{7E3EF3E8-39D4-4150-9EFF-58C71A1F4F9E}"
-
-	# Add CLSID
-	WriteRegStr HKCR "CLSID\{7E3EF3E8-39D4-4150-9EFF-58C71A1F4F9E}" "" "Embroidery Design Thumbnail Extractor"
-	WriteRegStr HKCR "CLSID\{7E3EF3E8-39D4-4150-9EFF-58C71A1F4F9E}\InProcServer32" "" "$INSTDIR\embroideryThumbs.dll"
-	WriteRegStr HKCR "CLSID\{7E3EF3E8-39D4-4150-9EFF-58C71A1F4F9E}\InProcServer32" "ThreadingModel" "Apartment"
-	WriteRegStr HKCR "CLSID\{7E3EF3E8-39D4-4150-9EFF-58C71A1F4F9E}\ProgId" "" "PESIcon.Extractor.1"
-	WriteRegStr HKCR "CLSID\{7E3EF3E8-39D4-4150-9EFF-58C71A1F4F9E}\VersionIndependantProgId" "" "PESIcon.Extractor"
-	
-	# Add to shell approved extensions list
-	WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Approved" "{7E3EF3E8-39D4-4150-9EFF-58C71A1F4F9E}" "Embroidery Design Thumbnail Extractor"
-
-	# Cause explorer shell to reload settings
-	#System::Call "shell32::SHChangeNotify(i,i,i,i) (${SHCNE_ASSOCCHANGED}, ${SHCNF_FLUSH}, 0, 0)"
  
   System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
 !undef Index
@@ -158,15 +129,16 @@ Section "Uninstall"
   ; Remove files and uninstaller
   Delete $INSTDIR\embroideryReader.exe
   Delete $INSTDIR\uninstall.exe
-  Delete $INSTDIR\nc_settings.dll
-  Delete $INSTDIR\embroideryreader.ini
   Delete $INSTDIR\PesFile.dll
-  Delete $INSTDIR\nc_Updater.dll
-  Delete $INSTDIR\embroideryThumbs.dll
+  Delete $INSTDIR\UpdateCheck.dll
+  Delete $INSTDIR\IniFile.dll
 
   ; Remove obsolete files from previous versions, if they exist
   Delete $INSTDIR\UpdateInstaller.exe
   RMDir "$INSTDIR\update"
+  Delete $INSTDIR\nc_settings.dll
+  Delete $INSTDIR\embroideryreader.ini
+  Delete $INSTDIR\nc_Updater.dll
 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Embroidery Reader\*.*"
