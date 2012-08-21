@@ -237,6 +237,9 @@ namespace PesFile
                 translateStart.Y = -minY;
                 readyStatus = statusEnum.Ready;
 
+                // Close the file
+                fileIn.Close();
+
 #if !DEBUG
             }
             catch (System.IO.IOException ioex)
