@@ -47,6 +47,76 @@ namespace PesFile
         public int a;
         public int b;
     }
+    
+    public class PesColors
+    {
+    	public static int[][] colorMap = new int[65][];
+    	
+    	colorValues[1] = new int[] {14, 31, 124};
+    	colorValues[2] = new int[] {10, 85, 163};
+    	colorValues[3] = new int[] {48, 135, 119};
+    	colorValues[4] = new int[] {75, 107, 175};
+    	colorValues[5] = new int[] {237, 23, 31};
+    	colorValues[6] = new int[] {209, 92, 0};
+    	colorValues[7] = new int[] {145, 54, 151};
+    	colorValues[8] = new int[] {228, 154, 203};
+    	colorValues[9] = new int[] {145, 95, 172};
+    	colorValues[10] = new int[] {157, 214, 125};
+    	colorValues[11] = new int[] {232, 169, 0};
+    	colorValues[12] = new int[] {254, 186, 53};
+    	colorValues[13] = new int[] {255, 255, 0};
+    	colorValues[14] = new int[] {112, 188, 31};
+    	colorValues[15] = new int[] {186, 152, 0};
+    	colorValues[16] = new int[] {168, 168, 168};
+    	colorValues[17] = new int[] {123, 111, 0};
+    	colorValues[18] = new int[] {255, 255, 179};
+    	colorValues[19] = new int[] {79, 85, 86};
+    	colorValues[20] = new int[] {0, 0, 0};
+    	colorValues[21] = new int[] {11, 61, 145};
+    	colorValues[22] = new int[] {119, 1, 118};
+    	colorValues[23] = new int[] {41, 49, 51};
+    	colorValues[24] = new int[] {42, 19, 1};
+    	colorValues[25] = new int[] {246, 74, 138};
+    	colorValues[26] = new int[] {178, 118, 36};
+    	colorValues[27] = new int[] {252, 187, 196};
+    	colorValues[28] = new int[] {254, 55, 15};
+    	colorValues[29] = new int[] {240, 240, 240};
+    	colorValues[30] = new int[] {106, 28, 138};
+    	colorValues[31] = new int[] {168, 221, 196};
+    	colorValues[32] = new int[] {37, 132, 187};
+    	colorValues[33] = new int[] {254, 179, 67};
+    	colorValues[34] = new int[] {255, 240, 141};
+    	colorValues[35] = new int[] {208, 166, 96};
+    	colorValues[36] = new int[] {209, 84, 0};
+    	colorValues[37] = new int[] {102, 186, 73};
+    	colorValues[38] = new int[] {19, 74, 70};
+    	colorValues[39] = new int[] {135, 135, 135};
+    	colorValues[40] = new int[] {216, 202, 198};
+    	colorValues[41] = new int[] {67, 86, 7};
+    	colorValues[42] = new int[] {254, 227, 197};
+    	colorValues[43] = new int[] {249, 147, 188};
+    	colorValues[44] = new int[] {0, 56, 34};
+    	colorValues[45] = new int[] {178, 175, 212};
+    	colorValues[46] = new int[] {104, 106, 176};
+    	colorValues[47] = new int[] {239, 227, 185};
+    	colorValues[48] = new int[] {247, 56, 102};
+    	colorValues[49] = new int[] {181, 76, 100};
+    	colorValues[50] = new int[] {19, 43, 26};
+    	colorValues[51] = new int[] {199, 1, 85};
+    	colorValues[52] = new int[] {254, 158, 50};
+    	colorValues[53] = new int[] {168, 222, 235};
+    	colorValues[54] = new int[] {0, 103, 26};
+    	colorValues[55] = new int[] {78, 41, 144};
+    	colorValues[56] = new int[] {47, 126, 32};
+    	colorValues[57] = new int[] {253, 217, 222};
+    	colorValues[58] = new int[] {255, 217, 17};
+    	colorValues[59] = new int[] {9, 91, 166};
+    	colorValues[60] = new int[] {240, 249, 112};
+    	colorValues[61] = new int[] {227, 243, 91};
+    	colorValues[62] = new int[] {255, 200, 100};
+    	colorValues[63] = new int[] {255, 200, 150};
+    	colorValues[64] = new int[] {255, 200, 200};
+    }
 
     public class PesFile
     {
@@ -545,8 +615,21 @@ namespace PesFile
 
         private Color getColorFromIndex(int index)
         {
-            Color retval;// = Color.White;
-            switch (index)
+            //Color retval;// = Color.White;
+            if(index >= 1 && index <= 64)
+            {
+            	return Color.FromArgb(
+            		PesColors.colorMap[index][0],
+            		PesColors.colorMap[index][1],
+            		PesColors.colorMap[index][2]
+            	);
+            }
+            else
+            {
+            	return Color.White;
+                colorWarning = true;
+            }
+            /*switch (index)
             {
                 case 1:
                     retval = Color.FromArgb(14, 31, 124);
@@ -745,7 +828,7 @@ namespace PesFile
                     colorWarning = true;
                     break;
             }
-            return retval;
+            return retval;*/
         }
 
         public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, int filterUglyStitchesThreshold)
