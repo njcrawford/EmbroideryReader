@@ -1,0 +1,62 @@
+update location	posizione dell'aggiornamento
+background color	colore di sfondo
+enabled	abilitato
+red	rosso
+green	verde
+blue	blu
+filter stitches	filtra punti di ricamo
+filter stitches threshold	filtra soglia punti di ricamo
+thread thickness	spessore del filo
+last open file folder	cartella dell'ultimo file aperto
+last save image location	posizione dell'ultima immagine salvata
+window width	larghezza della finestra
+window height	altezza della finestra
+yes	sì
+The format of this file is not completely supported	Il formato di questo file non è pienamente supportato
+Colors shown for this design may be inaccurate	I colori mostrati per questo progetto potrebbero non essere precisi
+An error occured while reading the file:	Si è verificato un errore durante la lettura del file:
+This file is either corrupt or not a valid PES file.	Questo file è corrotto oppure non è un file PES valido.
+Embroidery Files (*.pes)|*.pes|All Files (*.*)|*.*	Files Embroidery (*.pes)|*.pes|Tutti i File (*.*)|*.*
+EmbroideryReader version 	Versione EmbroideryReader
+Encountered an error while checking for updates: 	Si è verificato un errore durante il controllo degli aggiornamenti: 
+Version 	Versione 
+An error occured while trying to open the webpage:	Si è verificato un errore durante l'apertura della pagina web:
+No updates are available right now.	Nessun aggiornamento disponibile al momento.
+There was an error while saving debug info:	Si è verificato un errore durante il salvataggio delle informazioni di debug:
+No design loaded.	Nessun progetto caricato.
+This file contains a class that is not yet supported	Questo file contiene una classe che non è ancora supportata
+Bitmap (*.bmp)|*.bmp|PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|TIFF (*.tif)|*.tif|All Files (*.*)|*.*	Bitmap (*.bmp)|*.bmp|PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|TIFF (*.tif)|*.tif|Tutti i File (*.*)|*.*
+Image saved	Immagine salvata
+Open...	Apri...
+Save as image...	Salva come immagine...
+Print...	Stampa...
+Print Preview...	Anteprima di stampa...
+Exit	Esci
+Edit	Modifica
+Copy	Copia
+Preferences...	Preferenze...
+View	Visualizza
+Rotate left	Ruota a destra
+Rotate right	Ruota a sinistra
+Reset	Reimposta
+Help	Aiuto
+Check for update	Controlla aggiornamenti
+Save design debug info	Salva le informazioni di debug del progetto
+Show design debug info	Mostra le informazioni di debug del progetto
+About	Informazioni su...
+Pick Color...	Scegli colore...
+Background Color	Colore di sfondo
+Reset Color	Reimposta colore
+Cancel	Annulla
+Thread thickness:	Spessore del filo:
+pixels	pixel
+Background	Sfondo
+Stitch drawing	Tracciamento dei punti di ricamo
+Remove \'ugly\' stitches	Rimuovi i punti di ricamo \'orrendi\'
+Ugly Length:	Lunghezza di un punto orrendo:
+Embroidery Reader Settings	Impostazioni di Embroidery Reader
+Latest versoin is	L\'ultima versione è la
+you have version	stai utilizzando la versione
+This program reads and displays embroidery designs from .PES files	Questo programma legge e visualizza progetti di ricamo da files .PES
+
+"Version " + updater.VersionAvailable() + " was released on " + updater.getReleaseDate().ToShortDateString() + "." + Environment.NewLine + "You have version " + currentVersion() + ". Would you like to go to the Embroidery Reader website to download or find out more about the new version?", "New version available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)	"Il " + updater.getReleaseDate().ToShortDateString() + " è stata rilasciata la versione " + updater.VersionAvailable() + "." + Environment.NewLine + "Stai utilizzando la versione " + currentVersion() + ". Vuoi andare al sito di Embroidery Reader per scaricare la nuova versione o per saperne di più?", "Nuova versione disponibile"
