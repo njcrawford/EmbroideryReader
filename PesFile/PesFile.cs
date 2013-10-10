@@ -641,8 +641,8 @@ namespace PesFile
             }
             else
             {
+             colorWarning = true;
             	return Color.White;
-                colorWarning = true;
             }
         }
 
