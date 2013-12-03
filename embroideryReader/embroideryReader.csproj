@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0A9A24AD-60F0-4664-BCC6-2B98B3E8B565}</ProjectGuid>
+    <ProjectGuid>{91B4187B-F1FB-40AD-BFBA-2DF2790965DB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>embroideryReader</RootNamespace>
@@ -123,12 +123,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PesFile\PesFile-2010.csproj">
-      <Project>{66EF662E-F52C-4104-9C15-A14266D8F3B8}</Project>
-      <Name>PesFile</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +141,12 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PesFile\PesFile.csproj">
+      <Project>{DBF6F9B8-D00A-4BC0-BECF-EE4081F22375}</Project>
+      <Name>PesFile</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

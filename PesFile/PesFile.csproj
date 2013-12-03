@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1E3B0E33-E0BC-41C1-B1B3-7CADD39BE362}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{DBF6F9B8-D00A-4BC0-BECF-EE4081F22375}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>embroideryInfo</RootNamespace>
-    <AssemblyName>embroideryInfo</AssemblyName>
+    <RootNamespace>PesFile</RootNamespace>
+    <AssemblyName>PesFile</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -57,14 +57,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="PesFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PesFile\PesFile-2010.csproj">
-      <Project>{66EF662E-F52C-4104-9C15-A14266D8F3B8}</Project>
-      <Name>PesFile</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -91,4 +85,8 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>"$(ProjectDir)IncrementVersionNumber.exe" --postbuild</PostBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)IncrementVersionNumber.exe" --prebuild</PreBuildEvent>
+  </PropertyGroup>
 </Project>
