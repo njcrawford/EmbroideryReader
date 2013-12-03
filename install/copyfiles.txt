@@ -1,4 +1,4 @@
 ..\embroideryReader\bin\Release\embroideryReader.exe
-..\embroideryReader\nc_settings.dll
-..\embroideryReader\nc_Updater.dll
+..\embroideryReader\IniFile.dll
+..\embroideryReader\UpdateCheck.dll
 ..\PesFile\bin\Release\PesFile.dll
