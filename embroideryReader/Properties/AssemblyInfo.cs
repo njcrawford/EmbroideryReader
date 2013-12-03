@@ -1,4 +1,4 @@
-/*
+﻿/*
 Embridery Reader - an application to view .pes embroidery designs
 
 Copyright (C) 2011  Nathan Crawford
@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Embroidery Reader")]
-[assembly: AssemblyCopyright("Copyright © Nathan Crawford 2011")]
+[assembly: AssemblyCopyright("Copyright © Nathan Crawford 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -54,5 +54,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.5.0.0")]
-[assembly: AssemblyFileVersion("1.5.0.0")]
+[assembly: AssemblyVersion("1.5.1.0")]
+[assembly: AssemblyFileVersion("1.5.1.0")]
