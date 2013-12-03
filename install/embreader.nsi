@@ -17,6 +17,9 @@ Name "Embroidery Reader"
 ; The file to write
 OutFile "embroideryReadervvv-setup.exe"
 
+; Request admin privileges
+RequestExecutionLevel admin
+
 ; The default installation directory
 InstallDir "$PROGRAMFILES\Embroidery Reader"
 ; Registry key to check for directory (so if you install again, it will 
@@ -38,7 +41,21 @@ UninstPage instfiles
 
 ; The stuff to install
 Section "Embroidery Reader (required)"
+  # call userInfo plugin to get user info.  The plugin puts the result in the stack
+  userInfo::getAccountType
+   
+  # pop the result from the stack into $0
+  pop $0
+ 
+  # compare the result with the string "Admin" to see if the user is admin.
+  # If match, jump 3 lines down.
+  strCmp $0 "Admin" +3
+ 
+  # if there is not a match, print message and return
+  messageBox MB_OK "Embroidery Reader requires administrator privileges to install."
+  return
 
+  SetShellVarContext all
   SectionIn RO
 
   ;check for .net 2
@@ -67,7 +84,7 @@ SectionEnd
 
 ; Optional section (can be disabled by the user)
 Section "Start Menu Shortcuts"
-
+  SetShellVarContext all
   CreateDirectory "$SMPROGRAMS\Embroidery Reader"
   CreateShortCut "$SMPROGRAMS\Embroidery Reader\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   CreateShortCut "$SMPROGRAMS\Embroidery Reader\Embroidery Reader.lnk" "$INSTDIR\embroideryReader.exe" "" "$INSTDIR\embroideryReader.exe" 0
@@ -75,7 +92,7 @@ Section "Start Menu Shortcuts"
 SectionEnd
 
 Section "Associate with .PES files"
- 
+  SetShellVarContext all
   ; back up old value of .pes
 !define Index "Line${__LINE__}"
   ReadRegStr $1 HKCR ".pes" ""
@@ -102,7 +119,7 @@ SectionEnd
 ; Uninstaller
 
 Section "Uninstall"
-  
+  SetShellVarContext all
 ;start of restore script
 !define Index "Line${__LINE__}"
   ReadRegStr $1 HKCR ".pes" ""
@@ -126,13 +143,6 @@ Section "Uninstall"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Embroidery Reader"
   DeleteRegKey HKLM "SOFTWARE\Embroidery Reader"
 
-  ; Remove files and uninstaller
-  Delete $INSTDIR\embroideryReader.exe
-  Delete $INSTDIR\uninstall.exe
-  Delete $INSTDIR\PesFile.dll
-  Delete $INSTDIR\UpdateCheck.dll
-  Delete $INSTDIR\IniFile.dll
-
   ; Remove obsolete files from previous versions, if they exist
   Delete $INSTDIR\UpdateInstaller.exe
   RMDir "$INSTDIR\update"
@@ -143,9 +153,14 @@ Section "Uninstall"
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Embroidery Reader\Uninstall.lnk"
   Delete "$SMPROGRAMS\Embroidery Reader\Embroidery Reader.lnk"
-
-  ; Remove directories used
   RMDir "$SMPROGRAMS\Embroidery Reader"
+
+  ; Remove files and uninstaller
+  Delete $INSTDIR\embroideryReader.exe
+  Delete $INSTDIR\PesFile.dll
+  Delete $INSTDIR\UpdateCheck.dll
+  Delete $INSTDIR\IniFile.dll
+  Delete $INSTDIR\uninstall.exe
   RMDir "$INSTDIR"
 
 SectionEnd
