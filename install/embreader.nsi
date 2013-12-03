@@ -141,7 +141,8 @@ Section "Uninstall"
   Delete $INSTDIR\nc_Updater.dll
 
   ; Remove shortcuts, if any
-  Delete "$SMPROGRAMS\Embroidery Reader\*.*"
+  Delete "$SMPROGRAMS\Embroidery Reader\Uninstall.lnk"
+  Delete "$SMPROGRAMS\Embroidery Reader\Embroidery Reader.lnk"
 
   ; Remove directories used
   RMDir "$SMPROGRAMS\Embroidery Reader"
