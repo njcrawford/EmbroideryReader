@@ -303,7 +303,7 @@
             "{836E08B8-0285-4809-BA42-01DB6754A45D}:_0709AC01B5D54E6D8FD7A40D2C411446"
             {
             "Name" = "8:Previous Install"
-            "Condition" = "8:OLD_INSTALL <> null"
+            "Condition" = "8:OLD_INSTALL = null"
             "Message" = "8:Embroidery Reader 1.5.0 or earlier is installed. Please remove previous versions of Embroidery Reader and run the installer again."
             "InstallUrl" = "8:"
             }
@@ -314,8 +314,8 @@
             {
             "Name" = "8:Find old installs"
             "Root" = "2:1"
-            "RegKey" = "8:Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Embroidery Reader\\DisplayName"
-            "Value" = "8:Embroidery Reader"
+            "RegKey" = "8:Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Embroidery Reader"
+            "Value" = "8:DisplayName"
             "Property" = "8:OLD_INSTALL"
             }
         }
@@ -327,9 +327,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Installer"
+        "ProductName" = "8:Embroidery Reader"
         "ProductCode" = "8:{52DBACE5-86D0-4B2E-8427-5217463E8836}"
-        "PackageCode" = "8:{DE056A86-A76A-4DB7-8BF0-A7DD67CC2AD2}"
+        "PackageCode" = "8:{CCB6A056-F4B4-4204-9B61-46C93DCA2A0F}"
         "UpgradeCode" = "8:{CE1642E2-5EE0-454F-B7DF-5C9C92D6D40D}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -337,7 +337,7 @@
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
         "ProductVersion" = "8:1.6.0"
-        "Manufacturer" = "8:Nathan Crawford"
+        "Manufacturer" = "8:NJCrawford Software"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.njcrawford.com/contact/"
         "Title" = "8:Embroidery Reader Installer"
@@ -346,8 +346,8 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:http://www.njcrawford.com/"
-        "ARPPRODUCTICON" = "8:"
-        "ARPIconIndex" = "3:0"
+        "ARPPRODUCTICON" = "8:_C9EE96902F03442C98B3D1E4D4141407"
+        "ARPIconIndex" = "3:32512"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:0"
@@ -455,12 +455,12 @@
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
+            "IconIndex" = "3:32512"
             "Transitive" = "11:FALSE"
             "Target" = "8:_C9EE96902F03442C98B3D1E4D4141407"
             "Folder" = "8:_EF56293375A34AE586FD3C3A3A9F1405"
             "WorkingFolder" = "8:_9F4A293A076D47A8852C5CEE8B08045A"
-            "Icon" = "8:"
+            "Icon" = "8:_C9EE96902F03442C98B3D1E4D4141407"
             "Feature" = "8:"
             }
         }
