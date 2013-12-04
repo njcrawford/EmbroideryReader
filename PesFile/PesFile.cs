@@ -153,6 +153,56 @@ namespace PesFile
             OpenFile(filename);
         }
 
+        // Returns an Int16 representation of the 12 bit signed int contained in
+        // high and low bytes
+        private Int16 get12Bit2sComplement(byte high, byte low)
+        {
+            Int32 retval;
+
+            // Get the bottom 4 bits of the high byte
+            retval = high & 0x0f;
+
+            // Shift those bits up where they belong
+            retval = retval << 8;
+
+            // Add in the bottom 8 bits
+            retval += low;
+
+            // Check for a negative number (check if 12th bit is 1)
+            if ((retval & 0x0800) == 0x0800)
+            {
+                // Make the number negative by subtracting 4096, which is the
+                // number of values a 12 bit integer can represent.
+                // This is a shortcut for getting the 2's complement value.
+                retval -= 4096;
+            }
+
+            return (Int16)retval;
+        }
+
+        // Returns a signed byte representation of the 7 bit signed int contained
+        // in b.
+        private SByte get7Bit2sComplement(byte b)
+        {
+            SByte retval;
+
+            // Check for a negative number (check if 7th bit is 1)
+            if ((b & 0x40) == 0x40)
+            {
+                // Make the number negative by subtracting 128, which is the
+                // number of values a 7 bit integer can represent.
+                // This is a shortcut for getting the 2's complement value.
+                retval = (SByte)(b - 128);
+            }
+            else
+            {
+                // Positive number - no modification needed
+                retval = (SByte)b;
+            }
+
+            return retval;
+        }
+
         private void OpenFile(string filename)
         {
 #if !DEBUG
@@ -212,7 +262,7 @@ namespace PesFile
                     byte val2;
                     val1 = fileIn.ReadByte();
                     val2 = fileIn.ReadByte();
-                    if (val1 == 255 && val2 == 0)
+                    if (val1 == 0xff && val2 == 0x00)
                     {
                         //end of stitches
                         thisPartIsDone = true;
@@ -228,7 +278,7 @@ namespace PesFile
                         curBlock.color = getColorFromIndex(colorIndex);
                         blocks.Add(curBlock);
                     }
-                    else if (val1 == 254 && val2 == 176)
+                    else if (val1 == 0xfe && val2 == 0xb0)
                     {
                         //color switch, start a new block
 
@@ -253,46 +303,28 @@ namespace PesFile
                         int deltaY = 0;
                         if ((val1 & 0x80) == 0x80)
                         {
-                            //this is a jump stitch
-                            deltaX = ((val1 & 0x0f) << 8) + val2;
-                            /* dead code? bit we're checking is masked out in previous line
-                            if ((deltaX & 0x0800) == 0x0800)
-                            {
-                                deltaX = deltaX - 4096;
-                            }
-                            */
+                            //this is a jump stitch (more than 64 pixels away?)
+                            deltaX = get12Bit2sComplement(val1, val2);
+
                             //read next byte for Y value
                             val2 = fileIn.ReadByte();
                         }
                         else
                         {
                             //normal stitch
-                            deltaX = val1;
-                            if (deltaX > 63)
-                            {
-                                deltaX = deltaX - 128;
-                            }
+                            deltaX = get7Bit2sComplement(val1);
                         }
 
-                        if ((val2 & 0x08) == 0x80)
+                        if ((val2 & 0x80) == 0x80)
                         {
-                            //this is a jump stitch
-                            int val3 = fileIn.ReadByte();
-                            deltaY = ((val2 & 0x0f) << 8) + val3;
-                            /* dead code? bit we're checking is masked out in previous line
-                            if ((deltaY & 0x0800) == 0x0800)
-                            {
-                                deltaY = deltaY - 4096;
-                            }*/
+                            //this is a jump stitch (more than 64 pixels away?)
+                            byte val3 = fileIn.ReadByte();
+                            deltaY = get12Bit2sComplement(val2, val3);
                         }
                         else
                         {
                             //normal stitch
-                            deltaY = val2;
-                            if (deltaY > 63)
-                            {
-                                deltaY = deltaY - 128;
-                            }
+                            deltaY = get7Bit2sComplement(val2);
                         }
                         tempStitches.Add(new Point(prevX + deltaX, prevY + deltaY));
                         prevX = prevX + deltaX;
