@@ -187,7 +187,7 @@ namespace PesFile
             SByte retval;
 
             // Ignore the 8th bit. (make sure it's 0)
-            b &= 0xf7;
+            b &= 0x7f;
 
             // Check for a negative number (check if 7th bit is 1)
             if ((b & 0x40) == 0x40)
