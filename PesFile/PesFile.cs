@@ -1,7 +1,7 @@
 /*
 Embroidery Reader - an application to view .pes embroidery designs
 
-Copyright (C) 2011  Nathan Crawford
+Copyright (C) 2013  Nathan Crawford
  
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -185,6 +185,9 @@ namespace PesFile
         private SByte get7Bit2sComplement(byte b)
         {
             SByte retval;
+
+            // Ignore the 8th bit. (make sure it's 0)
+            b &= 0xf7;
 
             // Check for a negative number (check if 7th bit is 1)
             if ((b & 0x40) == 0x40)
