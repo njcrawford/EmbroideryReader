@@ -1,7 +1,7 @@
 /*
 Embroidery Reader - an application to view .pes embroidery designs
 
-Copyright (C) 2011 Nathan Crawford
+Copyright (C) 2013 Nathan Crawford
  
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -53,6 +53,8 @@ namespace embroideryReader
 	
         private const String SETTING_WINDOW_WIDTH = "window width";
         private const String SETTING_WINDOW_HEIGHT = "window height";
+
+        private const String SETTING_DRAW_GRID = "draw background grid";
 
         private const String VALUE_YES = "yes";
         private const String VALUE_NO = "no";
@@ -129,6 +131,12 @@ namespace embroideryReader
                 {
                     settings.setValue(SETTING_LAST_SAVE_IMAGE_LOCATION, oldSettings.getValue(SETTING_LAST_SAVE_IMAGE_LOCATION));
                 }
+            }
+
+            // Default to background grid enabled
+            if (settings.getValue(SETTING_DRAW_GRID) == null)
+            {
+                settings.setValue(SETTING_DRAW_GRID, VALUE_TRUE);
             }
         }
 
@@ -316,6 +324,23 @@ namespace embroideryReader
             set
             {
                 settings.setValue(SETTING_WINDOW_HEIGHT, value.ToString());
+            }
+        }
+
+        public bool drawBackgroundGrid
+        {
+            get
+            {
+                return (settings.getValue(SETTING_DRAW_GRID) == VALUE_TRUE);
+            }
+            set
+            {
+                String output = VALUE_FALSE;
+                if (value)
+                {
+                    output = VALUE_TRUE;
+                }
+                settings.setValue(SETTING_DRAW_GRID, output);
             }
         }
     }

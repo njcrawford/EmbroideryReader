@@ -558,14 +558,29 @@ namespace PesFile
             }
         }
 
-        public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, double filterUglyStitchesThreshold)
+        public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, double filterUglyStitchesThreshold, bool includeGrid)
         {
             Bitmap DrawArea;
             Graphics xGraph;
+            int imageWidth = GetWidth() + (int)(threadThickness * 2);
+            int imageHeight = GetHeight() + (int)(threadThickness * 2);
+            int gridSize = 10;
 
-            DrawArea = new Bitmap(GetWidth() + (int)(threadThickness * 2), GetHeight() + (int)(threadThickness * 2));
-
+            DrawArea = new Bitmap(imageWidth, imageHeight);
             xGraph = Graphics.FromImage(DrawArea);
+            if (includeGrid)
+            {
+                for (int xStart = 0; (xStart * gridSize) < imageWidth; xStart++)
+                {
+                    for (int yStart = 0; (yStart * gridSize) < imageHeight; yStart++)
+                    {
+                        if ((xStart % 2) == (yStart % 2))
+                        {
+                            xGraph.FillRectangle(Brushes.Gray, (xStart * gridSize), (yStart * gridSize), gridSize, gridSize);
+                        }
+                    }
+                }
+            }
             xGraph.TranslateTransform(threadThickness+translateStart.X, threadThickness+translateStart.Y);
             //xGraph.FillRectangle(Brushes.White, 0, 0, DrawArea.Width, DrawArea.Height);
 

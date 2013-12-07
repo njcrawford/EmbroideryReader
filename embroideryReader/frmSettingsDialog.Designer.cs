@@ -39,10 +39,11 @@ namespace embroideryReader
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.chkUglyStitches = new System.Windows.Forms.CheckBox();
-            this.txtThreshold = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txtThreshold = new System.Windows.Forms.TextBox();
+            this.chkUglyStitches = new System.Windows.Forms.CheckBox();
+            this.chkDrawGrid = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -80,7 +81,7 @@ namespace embroideryReader
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(171, 190);
+            this.btnOK.Location = new System.Drawing.Point(171, 208);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 3;
@@ -91,7 +92,7 @@ namespace embroideryReader
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(252, 190);
+            this.btnCancel.Location = new System.Drawing.Point(252, 208);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 4;
@@ -138,6 +139,7 @@ namespace embroideryReader
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.chkDrawGrid);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.txtThreshold);
@@ -147,10 +149,35 @@ namespace embroideryReader
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Location = new System.Drawing.Point(12, 97);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(315, 87);
+            this.groupBox2.Size = new System.Drawing.Size(315, 105);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Stitch drawing";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(57, 58);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(67, 13);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "Ugly Length:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(168, 58);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(33, 13);
+            this.label3.TabIndex = 10;
+            this.label3.Text = "pixels";
+            // 
+            // txtThreshold
+            // 
+            this.txtThreshold.Location = new System.Drawing.Point(130, 55);
+            this.txtThreshold.Name = "txtThreshold";
+            this.txtThreshold.Size = new System.Drawing.Size(32, 20);
+            this.txtThreshold.TabIndex = 9;
             // 
             // chkUglyStitches
             // 
@@ -162,30 +189,15 @@ namespace embroideryReader
             this.chkUglyStitches.Text = "Remove \'ugly\' stitches";
             this.chkUglyStitches.UseVisualStyleBackColor = true;
             // 
-            // txtThreshold
+            // chkDrawGrid
             // 
-            this.txtThreshold.Location = new System.Drawing.Point(130, 55);
-            this.txtThreshold.Name = "txtThreshold";
-            this.txtThreshold.Size = new System.Drawing.Size(32, 20);
-            this.txtThreshold.TabIndex = 9;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(168, 58);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(33, 13);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "pixels";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(57, 58);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(67, 13);
-            this.label4.TabIndex = 11;
-            this.label4.Text = "Ugly Length:";
+            this.chkDrawGrid.AutoSize = true;
+            this.chkDrawGrid.Location = new System.Drawing.Point(7, 79);
+            this.chkDrawGrid.Name = "chkDrawGrid";
+            this.chkDrawGrid.Size = new System.Drawing.Size(131, 17);
+            this.chkDrawGrid.TabIndex = 12;
+            this.chkDrawGrid.Text = "Draw background grid";
+            this.chkDrawGrid.UseVisualStyleBackColor = true;
             // 
             // frmSettingsDialog
             // 
@@ -193,7 +205,7 @@ namespace embroideryReader
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(339, 225);
+            this.ClientSize = new System.Drawing.Size(339, 244);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancel);
@@ -228,5 +240,6 @@ namespace embroideryReader
         private System.Windows.Forms.TextBox txtThreshold;
         private System.Windows.Forms.CheckBox chkUglyStitches;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.CheckBox chkDrawGrid;
     }
 }

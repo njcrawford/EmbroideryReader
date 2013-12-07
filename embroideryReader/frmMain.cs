@@ -1,7 +1,7 @@
 /*
 Embroidery Reader - an application to view .pes embroidery designs
 
-Copyright (C) 2011 Nathan Crawford
+Copyright (C) 2013 Nathan Crawford
  
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -111,6 +111,14 @@ namespace embroideryReader
             }
         }
 
+        private void updateDesignImage()
+        {
+            DrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, settings.drawBackgroundGrid);
+            panel1.Width = design.GetWidth() + (int)(settings.threadThickness * 2);
+            panel1.Height = design.GetHeight() + (int)(settings.threadThickness * 2);
+            panel1.Invalidate();
+        }
+
         private void openFile(string filename)
         {
             if (!System.IO.File.Exists(filename))
@@ -122,10 +130,7 @@ namespace embroideryReader
             {
                 this.Text = System.IO.Path.GetFileName(filename) + " - " + APP_TITLE;
 
-                DrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold);
-                panel1.Width = design.GetWidth() + (int)(settings.threadThickness * 2);
-                panel1.Height = design.GetHeight() + (int)(settings.threadThickness * 2);
-                panel1.Invalidate();
+                updateDesignImage();
 
                 if (design.getFormatWarning())
                 {
@@ -300,7 +305,7 @@ namespace embroideryReader
                 float dpiY = 100;
                 double inchesPerMM = 0.03937007874015748031496062992126;
                 e.Graphics.ScaleTransform((float)(dpiX * inchesPerMM * 0.1), (float)(dpiY * inchesPerMM * 0.1));
-
+                Bitmap tempDrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, false);
                 e.Graphics.DrawImage(DrawArea, 30, 30);
             }
         }
@@ -329,10 +334,7 @@ namespace embroideryReader
         {
             if (design != null && design.getStatus() == PesFile.statusEnum.Ready)
             {
-                DrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), (int)settings.filterStitchesThreshold);
-                panel1.Width = design.GetWidth() + (int)(settings.threadThickness * 2);
-                panel1.Height = design.GetHeight() + (int)(settings.threadThickness * 2);
-                panel1.Invalidate();
+                updateDesignImage();
 
                 if (design.getClassWarning())
                 {

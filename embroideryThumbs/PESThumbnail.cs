@@ -1,7 +1,7 @@
 /*
 Embroidery Reader - an application to view .pes embroidery designs
 
-Copyright (C) 2011  Nathan Crawford
+Copyright (C) 2013  Nathan Crawford
  
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -175,7 +175,7 @@ namespace embroideryThumbs
             logfile.WriteLine("Called Extract");
             logfile.Close();
              
-            System.Drawing.Bitmap designBitmap = designFile.designToBitmap(3, false, 0);
+            System.Drawing.Bitmap designBitmap = designFile.designToBitmap(3, false, 0, false);
 
             IntPtr hBmp = designBitmap.GetHbitmap();
 
