@@ -56,6 +56,7 @@ namespace embroideryReader
 
         private const String SETTING_DRAW_GRID = "draw background grid";
 
+        // YES and NO are deprecated in favor of TRUE and FALSE
         private const String VALUE_YES = "yes";
         private const String VALUE_NO = "no";
 
@@ -138,6 +139,16 @@ namespace embroideryReader
             {
                 settings.setValue(SETTING_DRAW_GRID, VALUE_TRUE);
             }
+
+            // Update deprecated settings
+            if (settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED) == VALUE_YES)
+            {
+                settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, VALUE_TRUE);
+            }
+            else if (settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED) == VALUE_NO)
+            {
+                settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, VALUE_FALSE);
+            }
         }
 
         // This is no longer in the settings file, but I'm keeping it here because
@@ -154,14 +165,14 @@ namespace embroideryReader
         {
             get
             {
-                return (settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED) == VALUE_YES);
+                return (settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED) == VALUE_TRUE);
             }
             set
             {
-                String output = VALUE_NO;
+                String output = VALUE_TRUE;
                 if (value)
                 {
-                    output = VALUE_YES;
+                    output = VALUE_TRUE;
                 }
                 settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, output);
             }
