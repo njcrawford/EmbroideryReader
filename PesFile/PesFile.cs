@@ -225,28 +225,40 @@ namespace PesFile
                         int deltaY = 0;
                         if ((val1 & 0x80) == 0x80)
                         {
-                            //this is a jump stitch (more than 64 pixels away?)
+                            // This is a 12-bit int. Allows for needle movement
+                            // of up to +2047 or -2048.
                             deltaX = get12Bit2sComplement(val1, val2);
 
-                            //read next byte for Y value
-                            val2 = fileIn.ReadByte();
+                            // The X value used both bytes, so read next byte
+                            // for Y value.
+                            val1 = fileIn.ReadByte();
                         }
                         else
                         {
-                            //normal stitch
+                            // This is a 7-bit int. Allows for needle movement
+                            // of up to +63 or -64.
                             deltaX = get7Bit2sComplement(val1);
+
+                            // The X value only used 1 byte, so copy the second
+                            // to to the first for Y value.
+                            val1 = val2;
                         }
 
-                        if ((val2 & 0x80) == 0x80)
+                        if ((val1 & 0x80) == 0x80)
                         {
-                            //this is a jump stitch (more than 64 pixels away?)
-                            byte val3 = fileIn.ReadByte();
-                            deltaY = get12Bit2sComplement(val2, val3);
+                            // This is a 12-bit int. Allows for needle movement
+                            // of up to +2047 or -2048.
+                            // Read in the next byte to get the full value
+                            val2 = fileIn.ReadByte();
+                            deltaY = get12Bit2sComplement(val1, val2);
                         }
                         else
                         {
-                            //normal stitch
-                            deltaY = get7Bit2sComplement(val2);
+                            // This is a 7-bit int. Allows for needle movement
+                            // of up to +63 or -64.
+                            deltaY = get7Bit2sComplement(val1);
+                            // Finished reading data for this stitch, no more
+                            // bytes needed.
                         }
                         tempStitches.Add(
                             new Stitch(
