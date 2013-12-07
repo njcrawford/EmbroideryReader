@@ -57,9 +57,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PesColors.cs" />
     <Compile Include="PesFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stitch.cs" />
+    <Compile Include="StitchBlock.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

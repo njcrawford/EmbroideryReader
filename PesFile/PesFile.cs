@@ -31,94 +31,10 @@ namespace PesFile
 {
     public enum statusEnum { NotOpen, IOError, ParseError, Ready };
 
-    public class stitchBlock
-    {
-        public Color color;
-        public Int32 colorIndex;
-        public Int32 stitchesTotal;
-        public Stitch[] stitches;
-        public stitchBlock()
-        {
-            color = System.Drawing.Color.Black;
-        }
-    }
-
     public struct intPair
     {
         public int a;
         public int b;
-    }
-    
-    public class PesColors
-    {
-        public static int[,] colorMap = new int[,] {
-            //red  grn  blu
-    	    {  0,   0,   0}, // 0 Not used
-    	    { 14,  31, 124}, // 1 
-    	    { 10,  85, 163}, // 2
-    	    { 48, 135, 119}, // 3
-    	    { 75, 107, 175}, // 4
-    	    {237,  23,  31}, // 5
-    	    {209,  92,   0}, // 6
-    	    {145,  54, 151}, // 7
-    	    {228, 154, 203}, // 8
-    	    {145,  95, 172}, // 9
-    	    {157, 214, 125}, // 10
-    	    {232, 169,   0}, // 11
-    	    {254, 186,  53}, // 12
-    	    {255, 255,   0}, // 13
-    	    {112, 188,  31}, // 14
-    	    {186, 152,   0}, // 15
-    	    {168, 168, 168}, // 16
-    	    {123, 111,   0}, // 17
-    	    {255, 255, 179}, // 18
-    	    { 79,  85,  86}, // 19
-    	    {  0,   0,   0}, // 20
-    	    { 11,  61, 145}, // 21
-    	    {119,   1, 118}, // 22
-    	    { 41,  49,  51}, // 23
-    	    { 42,  19,   1}, // 24
-    	    {246,  74, 138}, // 25
-    	    {178, 118,  36}, // 26
-    	    {252, 187, 196}, // 27
-    	    {254,  55,  15}, // 28
-    	    {240, 240, 240}, // 29
-    	    {106,  28, 138}, // 30
-    	    {168, 221, 196}, // 31
-    	    { 37, 132, 187}, // 32
-    	    {254, 179,  67}, // 33
-    	    {255, 240, 141}, // 34
-    	    {208, 166,  96}, // 35
-    	    {209,  84,   0}, // 36
-    	    {102, 186,  73}, // 37
-    	    { 19,  74,  70}, // 38
-    	    {135, 135, 135}, // 39
-    	    {216, 202, 198}, // 40
-    	    { 67,  86,   7}, // 41
-    	    {254, 227, 197}, // 42
-    	    {249, 147, 188}, // 43
-    	    {  0,  56,  34}, // 44
-    	    {178, 175, 212}, // 45
-    	    {104, 106, 176}, // 46
-    	    {239, 227, 185}, // 47
-    	    {247,  56, 102}, // 48
-    	    {181,  76, 100}, // 49
-    	    { 19,  43,  26}, // 50
-    	    {199,   1,  85}, // 51
-    	    {254, 158,  50}, // 52
-    	    {168, 222, 235}, // 53
-    	    {  0, 103,  26}, // 54
-    	    { 78,  41, 144}, // 55
-    	    { 47, 126,  32}, // 56
-    	    {253, 217, 222}, // 57
-    	    {255, 217,  17}, // 58
-    	    {  9,  91, 166}, // 59
-    	    {240, 249, 112}, // 60
-    	    {227, 243,  91}, // 61
-    	    {255, 200, 100}, // 62
-    	    {255, 200, 150}, // 63
-    	    {255, 200, 200} // 64
-        };
     }
 
     public class PesFile
@@ -132,7 +48,7 @@ namespace PesFile
         public List<Int16> sewSegHeader = new List<short>();
         public List<Int16> embPunchHeader = new List<short>();
         public List<Int16> sewFigSegHeader = new List<short>();
-        public List<stitchBlock> blocks = new List<stitchBlock>();
+        public List<StitchBlock> blocks = new List<StitchBlock>();
         public List<intPair> colorTable = new List<intPair>();
         private statusEnum readyStatus = statusEnum.NotOpen;
         Int64 startStitches = 0;
@@ -240,6 +156,7 @@ namespace PesFile
                 
                 int pecstart = fileIn.ReadInt32();
 
+                // Read number of colors in this design
                 fileIn.BaseStream.Position = pecstart + 48;
                 int numColors = fileIn.ReadByte() +1;
                 List<byte> colorList = new List<byte>();
@@ -248,9 +165,10 @@ namespace PesFile
                     colorList.Add(fileIn.ReadByte());
                 }
 
+                // Read stitch data
                 fileIn.BaseStream.Position = pecstart + 532;
                 bool thisPartIsDone = false;
-                stitchBlock curBlock;
+                StitchBlock curBlock;
                 int prevX = 0;
                 int prevY = 0;
                 int maxX = 0;
@@ -272,7 +190,7 @@ namespace PesFile
                         thisPartIsDone = true;
 
                         //add the last block
-                        curBlock = new stitchBlock();
+                        curBlock = new StitchBlock();
                         curBlock.stitches = new Stitch[tempStitches.Count];
                         tempStitches.CopyTo(curBlock.stitches);
                         curBlock.stitchesTotal = tempStitches.Count;
@@ -286,7 +204,7 @@ namespace PesFile
                     {
                         //color switch, start a new block
 
-                        curBlock = new stitchBlock();
+                        curBlock = new StitchBlock();
                         curBlock.stitches = new Stitch[tempStitches.Count];
                         tempStitches.CopyTo(curBlock.stitches);
                         curBlock.stitchesTotal = tempStitches.Count;
@@ -613,7 +531,6 @@ namespace PesFile
 
         private Color getColorFromIndex(int index)
         {
-            //Color retval;// = Color.White;
             if(index >= 1 && index <= 64)
             {
             	return Color.FromArgb(
