@@ -212,12 +212,15 @@ namespace PesFile
                         colorIndex = colorList[colorNum];
                         curBlock.colorIndex = colorIndex;
                         curBlock.color = getColorFromIndex(colorIndex);
+                        //read useless(?) byte
+                        // The value of this 'useless' byte seems to alternate
+                        // between 2 and 1 for every other block. The only
+                        // exception I've noted is the last block which appears
+                        // to always be 0.
+                        curBlock.unknownStartByte = fileIn.ReadByte();
                         blocks.Add(curBlock);
 
                         tempStitches = new List<Stitch>();
-
-                        //read useless(?) byte
-                        byte useless = fileIn.ReadByte();
                     }
                     else
                     {
@@ -426,11 +429,14 @@ namespace PesFile
             }
         }
 
-        public void saveDebugInfo()
+        // Returns the path of the file it saved debug info to
+        public string saveDebugInfo()
         {
-            System.IO.StreamWriter outfile = new System.IO.StreamWriter(System.IO.Path.ChangeExtension(_filename, ".txt"));
+            string retval = System.IO.Path.ChangeExtension(_filename, ".txt");
+            System.IO.StreamWriter outfile = new System.IO.StreamWriter(retval);
             outfile.Write(getDebugInfo());
             outfile.Close();
+            return retval;
         }
 
         public string getDebugInfo()
@@ -506,9 +512,10 @@ namespace PesFile
                 for (int blocky = 0; blocky < blocks.Count; blocky++)
                 {
                     outfile.WriteLine("block " + (blocky + 1).ToString() + " start");
+                    outfile.WriteLine("unknown start byte: " + blocks[blocky].unknownStartByte.ToString("X2"));
                     for (int stitchy = 0; stitchy < blocks[blocky].stitches.Length; stitchy++)
                     {
-                        outfile.WriteLine(blocks[blocky].stitches[stitchy].ToString());
+                        outfile.WriteLine(blocks[blocky].stitches[stitchy].a.ToString() + " - " + blocks[blocky].stitches[stitchy].b.ToString());
                     }
                 }
             }

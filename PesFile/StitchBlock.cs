@@ -12,6 +12,7 @@ namespace PesFile
         public Int32 colorIndex;
         public Int32 stitchesTotal;
         public Stitch[] stitches;
+        public byte unknownStartByte;
         public StitchBlock()
         {
             color = System.Drawing.Color.Black;

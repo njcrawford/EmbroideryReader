@@ -265,7 +265,8 @@ namespace embroideryReader
             {
                 try
                 {
-                    design.saveDebugInfo();
+                    string debugFile = design.saveDebugInfo();
+                    MessageBox.Show("Saved debug info to " + debugFile);
                 }
                 catch (Exception ex)
                 {
