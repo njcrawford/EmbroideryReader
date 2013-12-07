@@ -30,12 +30,13 @@ using System.Drawing;
 namespace PesFile
 {
     public enum statusEnum { NotOpen, IOError, ParseError, Ready };
+
     public class stitchBlock
     {
         public Color color;
         public Int32 colorIndex;
         public Int32 stitchesTotal;
-        public Point[] stitches;
+        public Stitch[] stitches;
         public stitchBlock()
         {
             color = System.Drawing.Color.Black;
@@ -258,7 +259,7 @@ namespace PesFile
                 int minY = 0;
                 int colorNum = -1;
                 int colorIndex = 0;
-                List<Point> tempStitches = new List<Point>();
+                List<Stitch> tempStitches = new List<Stitch>();
                 while (!thisPartIsDone)
                 {
                     byte val1;
@@ -272,7 +273,7 @@ namespace PesFile
 
                         //add the last block
                         curBlock = new stitchBlock();
-                        curBlock.stitches = new Point[tempStitches.Count];
+                        curBlock.stitches = new Stitch[tempStitches.Count];
                         tempStitches.CopyTo(curBlock.stitches);
                         curBlock.stitchesTotal = tempStitches.Count;
                         colorNum++;
@@ -286,7 +287,7 @@ namespace PesFile
                         //color switch, start a new block
 
                         curBlock = new stitchBlock();
-                        curBlock.stitches = new Point[tempStitches.Count];
+                        curBlock.stitches = new Stitch[tempStitches.Count];
                         tempStitches.CopyTo(curBlock.stitches);
                         curBlock.stitchesTotal = tempStitches.Count;
                         colorNum++;
@@ -295,10 +296,10 @@ namespace PesFile
                         curBlock.color = getColorFromIndex(colorIndex);
                         blocks.Add(curBlock);
 
-                        tempStitches = new List<Point>();
+                        tempStitches = new List<Stitch>();
 
                         //read useless(?) byte
-                        fileIn.ReadByte();
+                        byte useless = fileIn.ReadByte();
                     }
                     else
                     {
@@ -329,7 +330,12 @@ namespace PesFile
                             //normal stitch
                             deltaY = get7Bit2sComplement(val2);
                         }
-                        tempStitches.Add(new Point(prevX + deltaX, prevY + deltaY));
+                        tempStitches.Add(
+                            new Stitch(
+                                new Point(prevX, prevY),
+                                new Point(prevX + deltaX, prevY + deltaY)
+                            )
+                        );
                         prevX = prevX + deltaX;
                         prevY = prevY + deltaY;
                         if (prevX > maxX)
@@ -468,64 +474,6 @@ namespace PesFile
             }
         }*/
 
-        List<stitchBlock> filterStitches(List<stitchBlock> input, int threshold)
-        {
-            List<stitchBlock> retval = new List<stitchBlock>();
-            List<Point> tempStitchData = new List<Point>();
-            for (int x = 0; x < input.Count; x++)
-            {
-
-                for (int i = 0; i < input[x].stitches.Length; i++)
-                {
-                    if (i > 0)//need a previous point to check against, can't check the first
-                    {
-                        double diffx = Math.Abs(input[x].stitches[i].X - input[x].stitches[i - 1].X);
-                        double diffy = Math.Abs(input[x].stitches[i].Y - input[x].stitches[i - 1].Y);
-                        if (Math.Sqrt(Math.Pow(diffx, 2.0) + Math.Pow(diffy, 2.0)) < threshold) //check distance between this point and the last one
-                        {
-                            if (tempStitchData.Count == 0 && i > 1)//first stitch of block gets left out without this, except for very first stitch
-                            {
-                                tempStitchData.Add(input[x].stitches[i - 1]);
-                            }
-                            tempStitchData.Add(input[x].stitches[i]);
-                        }
-                        else//stitch is too far from the previous one
-                        {
-                            if (tempStitchData.Count > 2)//add the block and start a new one
-                            {
-                                stitchBlock tempBlock = new stitchBlock();
-                                tempBlock.color = input[x].color;
-                                tempBlock.colorIndex = input[x].colorIndex;
-                                tempBlock.stitches = new Point[tempStitchData.Count];
-                                tempStitchData.CopyTo(tempBlock.stitches);
-                                retval.Add(tempBlock);
-                                tempStitchData = new List<Point>();
-                            }
-                            else//reset variables
-                            {
-                                tempStitchData = new List<Point>();
-                            }
-                        }
-                    }
-                    else //just add the first one, don't have anything to compare against
-                    {
-                        tempStitchData.Add(input[x].stitches[i]);
-                    }
-                }
-                if (tempStitchData.Count > 2)
-                {
-                    stitchBlock tempBlock = new stitchBlock();
-                    tempBlock.color = input[x].color;
-                    tempBlock.colorIndex = input[x].colorIndex;
-                    tempBlock.stitches = new Point[tempStitchData.Count];
-                    tempStitchData.CopyTo(tempBlock.stitches);
-                    retval.Add(tempBlock);
-                    tempStitchData = new List<Point>();
-                }
-            }
-            return retval;
-        }
-
         public int GetWidth()
         {
             return imageWidth;
@@ -630,7 +578,7 @@ namespace PesFile
                     outfile.WriteLine("block " + (blocky + 1).ToString() + " start");
                     for (int stitchy = 0; stitchy < blocks[blocky].stitches.Length; stitchy++)
                     {
-                        outfile.WriteLine(blocks[blocky].stitches[stitchy].X.ToString() + ", " + blocks[blocky].stitches[stitchy].Y.ToString());
+                        outfile.WriteLine(blocks[blocky].stitches[stitchy].ToString());
                     }
                 }
             }
@@ -681,40 +629,35 @@ namespace PesFile
             }
         }
 
-        public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, int filterUglyStitchesThreshold)
+        public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, double filterUglyStitchesThreshold)
         {
             Bitmap DrawArea;
             Graphics xGraph;
 
             DrawArea = new Bitmap(GetWidth() + (int)(threadThickness * 2), GetHeight() + (int)(threadThickness * 2));
-            //panel1.Width = design.GetWidth() + (int)(threadThickness * 2);
-            //panel1.Height = design.GetHeight() + (int)(threadThickness * 2);
+
             xGraph = Graphics.FromImage(DrawArea);
             xGraph.TranslateTransform(threadThickness+translateStart.X, threadThickness+translateStart.Y);
             //xGraph.FillRectangle(Brushes.White, 0, 0, DrawArea.Width, DrawArea.Height);
-            List<stitchBlock> tmpblocks;
-#if DEBUG
-            tmpblocks = blocks;
-#else
-            if (filterUglyStitches && !formatWarning) //only filter stitches if we think we understand the format
+
+            for (int i = 0; i < blocks.Count; i++)
             {
-                tmpblocks = filterStitches(blocks, filterUglyStitchesThreshold);
-            }
-            else
-            {
-                tmpblocks = blocks;
-            }
-#endif
-            for (int i = 0; i < tmpblocks.Count; i++)
-            {
-                if (tmpblocks[i].stitches.Length > 1)//must have 2 points to make a line
+                Pen tempPen = new Pen(blocks[i].color, threadThickness);
+                tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+                tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+                tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
+                xGraph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                foreach (Stitch thisStitch in blocks[i].stitches)
                 {
-                    Pen tempPen = new Pen(tmpblocks[i].color, threadThickness);
-                    tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
-                    tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
-                    tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
-                    xGraph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                    xGraph.DrawLines(tempPen, tmpblocks[i].stitches);
+                    if (filterUglyStitches && !formatWarning) // Only filter stitches if we think we understand the format
+                    {
+                        if (thisStitch.calcLength() > filterUglyStitchesThreshold)
+                        {
+                            // This stitch is too long, so skip it
+                            continue;
+                        }
+                    }
+                    xGraph.DrawLine(tempPen, thisStitch.a, thisStitch.b);
                 }
             }
             xGraph.Dispose();

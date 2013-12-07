@@ -122,7 +122,7 @@ namespace embroideryReader
             {
                 this.Text = System.IO.Path.GetFileName(filename) + " - " + APP_TITLE;
 
-                DrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), (int)settings.filterStitchesThreshold);
+                DrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold);
                 panel1.Width = design.GetWidth() + (int)(settings.threadThickness * 2);
                 panel1.Height = design.GetHeight() + (int)(settings.threadThickness * 2);
                 panel1.Invalidate();

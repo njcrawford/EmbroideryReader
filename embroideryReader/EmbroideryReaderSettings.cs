@@ -235,10 +235,10 @@ namespace embroideryReader
         {
             get
             {
-                int threshold = 120;
+                double threshold = 64;
                 if (settings.getValue(SETTING_FILTER_STITCHES_THRESHOLD) != null)
                 {
-                    if (Int32.TryParse(settings.getValue(SETTING_FILTER_STITCHES_THRESHOLD), out threshold))
+                    if (Double.TryParse(settings.getValue(SETTING_FILTER_STITCHES_THRESHOLD), out threshold))
                     {
                         if (threshold < 10)
                         {

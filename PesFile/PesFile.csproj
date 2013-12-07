@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="PesFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Stitch.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
