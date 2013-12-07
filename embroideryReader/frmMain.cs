@@ -45,6 +45,7 @@ namespace embroideryReader
 
         private const String APP_TITLE = "Embroidery Reader";
 
+        private Translation translation;
 
         public frmMain()
         {
@@ -67,6 +68,8 @@ namespace embroideryReader
             {
                 openFile(args[1]);
             }
+
+            loadTranslatedStrings(settings.translation);
         }
 
         public static bool checkColorFromStrings(string red, string green, string blue)
@@ -134,11 +137,11 @@ namespace embroideryReader
 
                 if (design.getFormatWarning())
                 {
-                    toolStripStatusLabel1.Text = "The format of this file is not completely supported";
+                    toolStripStatusLabel1.Text = translation.GetTranslatedString(Translation.StringID.UNSUPPORTED_FORMAT); // "The format of this file is not completely supported";
                 }
                 else if (design.getColorWarning())
                 {
-                    toolStripStatusLabel1.Text = "Colors shown for this design may be inaccurate";
+                    toolStripStatusLabel1.Text = translation.GetTranslatedString(Translation.StringID.COLOR_WARNING); // "Colors shown for this design may be inaccurate"
                 }
                 else
                 {
@@ -157,10 +160,11 @@ namespace embroideryReader
             }
             else
             {
-                string message = "An error occured while reading the file:" + Environment.NewLine + design.getLastError();
+                string message = translation.GetTranslatedString(Translation.StringID.ERROR_FILE) + // "An error occured while reading the file:"
+                    Environment.NewLine + design.getLastError();
                 if (design.getStatus() == PesFile.statusEnum.ParseError)
                 {
-                    message += Environment.NewLine + "This file is either corrupt or not a valid PES file.";
+                    message += Environment.NewLine + translation.GetTranslatedString(Translation.StringID.CORRUPT_FILE); // "This file is either corrupt or not a valid PES file."
                 }
                 MessageBox.Show(message);
                 copyToolStripMenuItem.Enabled = false;
@@ -183,7 +187,8 @@ namespace embroideryReader
                 openFileDialog1.InitialDirectory = settings.lastOpenFileFolder;
             }
             openFileDialog1.FileName = "";
-            openFileDialog1.Filter = "Embroidery Files (*.pes)|*.pes|All Files (*.*)|*.*";
+            openFileDialog1.Filter = translation.GetTranslatedString(Translation.StringID.FILE_TYPE_PES) + " (*.pes)|*.pes|" + // "Embroidery Files (*.pes)|*.pes|
+                translation.GetTranslatedString(Translation.StringID.FILE_TYPE_ALL) + " (*.*)|*.*"; // All Files (*.*)|*.*";
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 filename = openFileDialog1.FileName;
@@ -214,7 +219,7 @@ namespace embroideryReader
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("EmbroideryReader version " + currentVersion() + ". This program reads and displays embroidery designs from .PES files.");
+            MessageBox.Show(String.Format(translation.GetTranslatedString(Translation.StringID.ABOUT_MESSAGE), currentVersion())); // "EmbroideryReader version " + currentVersion() + ". This program reads and displays embroidery designs from .PES files."
         }
 
         private void checkForUpdateToolStripMenuItem_Click(object sender, EventArgs e)
@@ -224,11 +229,17 @@ namespace embroideryReader
 
             if (updater.GetLastError() != "")
             {
-                MessageBox.Show("Encountered an error while checking for updates: " + updater.GetLastError());
+                MessageBox.Show(translation.GetTranslatedString(Translation.StringID.ERROR_UPDATE) + // "Encountered an error while checking for updates: "
+                    updater.GetLastError());
             }
             else if (updater.IsUpdateAvailable())
             {
-                if (MessageBox.Show("Version " + updater.VersionAvailable() + " was released on " + updater.getReleaseDate().ToShortDateString() + "." + Environment.NewLine + "You have version " + currentVersion() + ". Would you like to go to the Embroidery Reader website to download or find out more about the new version?", "New version available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (MessageBox.Show(String.Format(translation.GetTranslatedString(Translation.StringID.NEW_VERSION_MESSAGE),
+                    updater.VersionAvailable(), updater.getReleaseDate().ToShortDateString(), currentVersion()) + // "Version " + updater.VersionAvailable() + " was released on " + updater.getReleaseDate().ToShortDateString() + ". You have version " + currentVersion() + "."
+                    Environment.NewLine +
+                    translation.GetTranslatedString(Translation.StringID.NEW_VERSION_QUESTION), // "Would you like to go to the Embroidery Reader website to download or find out more about the new version?",
+                    translation.GetTranslatedString(Translation.StringID.NEW_VERSION_TITLE), // "New version available",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     try
                     {
@@ -236,15 +247,18 @@ namespace embroideryReader
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("An error occured while trying to open the webpage:" + Environment.NewLine + ex.ToString());
+                        MessageBox.Show(translation.GetTranslatedString(Translation.StringID.ERROR_WEBPAGE) + // "An error occured while trying to open the webpage:"
+                             Environment.NewLine + ex.ToString());
                     }
                 }
             }
             else
             {
-                MessageBox.Show("No updates are available right now." + Environment.NewLine + "(Latest version is " + updater.VersionAvailable() + ", you have version " + currentVersion() + ")");
+                MessageBox.Show(translation.GetTranslatedString(Translation.StringID.NO_UPDATE) + // "No updates are available right now."
+                     Environment.NewLine + 
+                     String.Format(translation.GetTranslatedString(Translation.StringID.LATEST_VERSION),
+                     updater.VersionAvailable(), currentVersion())); // "(Latest version is " + updater.VersionAvailable() + ", you have version " + currentVersion() + ")");
             }
-
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -266,16 +280,18 @@ namespace embroideryReader
                 try
                 {
                     string debugFile = design.saveDebugInfo();
-                    MessageBox.Show("Saved debug info to " + debugFile);
+                    MessageBox.Show(String.Format(translation.GetTranslatedString(Translation.StringID.DEBUG_INFO_SAVED), // "Saved debug info to " + debugFile
+                        debugFile));
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("There was an error while saving debug info:" + Environment.NewLine + ex.ToString());
+                    MessageBox.Show(translation.GetTranslatedString(Translation.StringID.ERROR_DEBUG) + // "There was an error while saving debug info:"
+                        Environment.NewLine + ex.ToString());
                 }
             }
             else
             {
-                MessageBox.Show("No design loaded.");
+                MessageBox.Show(translation.GetTranslatedString(Translation.StringID.NO_DESIGN)); // "No design loaded."
             }
         }
 
@@ -283,11 +299,13 @@ namespace embroideryReader
         {
             frmSettingsDialog tempForm = new frmSettingsDialog();
             tempForm.settingsToModify = settings;
+            tempForm.setTranslation = translation;
             if (tempForm.ShowDialog() == DialogResult.OK)
             {
                 settings = tempForm.settingsToModify;
                 checkSettings();
             }
+            loadTranslatedStrings(settings.translation);
         }
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
@@ -339,15 +357,15 @@ namespace embroideryReader
 
                 if (design.getClassWarning())
                 {
-                    toolStripStatusLabel1.Text = "This file contains a class that is not yet supported";
+                    toolStripStatusLabel1.Text = translation.GetTranslatedString(Translation.StringID.UNSUPPORTED_CLASS); // "This file contains a class that is not yet supported"
                 }
                 else if (design.getFormatWarning())
                 {
-                    toolStripStatusLabel1.Text = "The format of this file is not completely supported";
+                    toolStripStatusLabel1.Text = translation.GetTranslatedString(Translation.StringID.UNSUPPORTED_FORMAT); // "The format of this file is not completely supported"
                 }
                 else if (design.getColorWarning())
                 {
-                    toolStripStatusLabel1.Text = "Colors shown for this design may be inaccurate";
+                    toolStripStatusLabel1.Text = translation.GetTranslatedString(Translation.StringID.COLOR_WARNING); // "Colors shown for this design may be inaccurate"
                 }
                 else
                 {
@@ -395,12 +413,13 @@ namespace embroideryReader
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("There was an error while saving debug info:" + Environment.NewLine + ex.ToString());
+                    MessageBox.Show(translation.GetTranslatedString(Translation.StringID.ERROR_DEBUG) + // "There was an error while saving debug info:"
+                        Environment.NewLine + ex.ToString());
                 }
             }
             else
             {
-                MessageBox.Show("No design loaded.");
+                MessageBox.Show(translation.GetTranslatedString(Translation.StringID.NO_DESIGN)); // "No design loaded."
             }
         }
 
@@ -415,7 +434,13 @@ namespace embroideryReader
                 tempGraph.DrawImageUnscaled(DrawArea, 0, 0);
                 tempGraph.Dispose();
                 saveFileDialog1.FileName = "";
-                saveFileDialog1.Filter = "Bitmap (*.bmp)|*.bmp|PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|TIFF (*.tif)|*.tif|All Files (*.*)|*.*";
+                // "Bitmap (*.bmp)|*.bmp|PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|TIFF (*.tif)|*.tif|All Files (*.*)|*.*"
+                saveFileDialog1.Filter = translation.GetTranslatedString(Translation.StringID.FILE_TYPE_BMP) + " (*.bmp)|*.bmp|" + 
+                    translation.GetTranslatedString(Translation.StringID.FILE_TYPE_PNG) + " (*.png)|*.png|" +
+                    translation.GetTranslatedString(Translation.StringID.FILE_TYPE_JPG) + " (*.jpg)|*.jpg|" +
+                    translation.GetTranslatedString(Translation.StringID.FILE_TYPE_GIF) + " (*.gif)|*.gif|" +
+                    translation.GetTranslatedString(Translation.StringID.FILE_TYPE_TIFF) + " (*.tif)|*.tif|" +
+                    translation.GetTranslatedString(Translation.StringID.FILE_TYPE_ALL) + " (*.*)|*.*";
                 if (settings.lastSaveImageLocation != null)
                 {
                     saveFileDialog1.InitialDirectory = settings.lastSaveImageLocation;
@@ -435,7 +460,7 @@ namespace embroideryReader
                         default: format = System.Drawing.Imaging.ImageFormat.Bmp; break;
                     }
                     temp.Save(filename, format);
-                    showStatus("Image saved", 5000);
+                    showStatus(translation.GetTranslatedString(Translation.StringID.IMAGE_SAVED), 5000); // "Image saved"
                     settings.lastSaveImageLocation = System.IO.Path.GetDirectoryName(filename);
                 }
             }
@@ -451,6 +476,37 @@ namespace embroideryReader
         private void timer1_Tick(object sender, EventArgs e)
         {
             toolStripStatusLabel2.Text = "";
+        }
+
+        private void loadTranslatedStrings(String translationName)
+        {
+            translation = new Translation(translationName);
+
+            // File menu
+            fileToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_FILE);
+            openToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_OPEN);
+            saveAsBitmapToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_SAVE_IMAGE);
+            printToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_PRINT);
+            printPreviewToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_PRINT_PREVIEW);
+            exitToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_EXIT);
+
+            // Edit menu
+            editToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_EDIT);
+            copyToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_COPY);
+            preferencesToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_PREFS);
+
+            // View menu
+            viewToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_VIEW);
+            rotateLeftToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.ROTATE_LEFT);
+            rotateRightToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.ROTATE_RIGHT);
+            refreshToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_RESET);
+
+            // Help menu
+            helpToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_HELP);
+            checkForUpdateToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.CHECK_UPDATE);
+            saveDebugInfoToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.SAVE_DEBUG);
+            showDebugInfoToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.SHOW_DEBUG);
+            aboutToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_ABOUT);
         }
     }
 }

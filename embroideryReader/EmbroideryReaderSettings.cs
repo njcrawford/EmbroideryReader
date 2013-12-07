@@ -56,6 +56,8 @@ namespace embroideryReader
 
         private const String SETTING_DRAW_GRID = "draw background grid";
 
+        private const String SETTING_TRANSLATION = "translation";
+
         // YES and NO are deprecated in favor of TRUE and FALSE
         private const String VALUE_YES = "yes";
         private const String VALUE_NO = "no";
@@ -148,6 +150,12 @@ namespace embroideryReader
             else if (settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED) == VALUE_NO)
             {
                 settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, VALUE_FALSE);
+            }
+
+            // Default language to english
+            if (String.IsNullOrWhiteSpace(settings.getValue(SETTING_TRANSLATION)))
+            {
+                settings.setValue(SETTING_TRANSLATION, "English (EN-US)");
             }
         }
 
@@ -352,6 +360,18 @@ namespace embroideryReader
                     output = VALUE_TRUE;
                 }
                 settings.setValue(SETTING_DRAW_GRID, output);
+            }
+        }
+
+        public String translation
+        {
+            get
+            {
+                return settings.getValue(SETTING_TRANSLATION);
+            }
+            set
+            {
+                settings.setValue(SETTING_TRANSLATION, value);
             }
         }
     }

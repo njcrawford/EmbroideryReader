@@ -37,6 +37,8 @@ namespace embroideryReader
     {
         private bool colorChanged = false;
         private EmbroideryReaderSettings settings;
+        private Translation translation;
+
         public EmbroideryReaderSettings settingsToModify
         {
             get
@@ -117,6 +119,46 @@ namespace embroideryReader
             }
 
             settings.drawBackgroundGrid = chkDrawGrid.Checked;
+
+            settings.translation = cmbLanguage.SelectedItem.ToString();
+        }
+
+        public Translation setTranslation
+        {
+            set
+            {
+                translation = value;
+                loadTranslatedStrings();
+                foreach (String s in translation.GetAvailableTranslations())
+                {
+                    cmbLanguage.Items.Add(s);
+                }
+                if (cmbLanguage.Items.Count > 0)
+                {
+                    cmbLanguage.SelectedItem = settings.translation;
+                }
+            }
+        }
+
+        private void loadTranslatedStrings()
+        {
+            grpBackground.Text = translation.GetTranslatedString(Translation.StringID.BACKGROUND);
+            lblColor.Text = translation.GetTranslatedString(Translation.StringID.BACKGROUND_COLOR);
+            btnColor.Text = translation.GetTranslatedString(Translation.StringID.PICK_COLOR);
+            btnResetColor.Text = translation.GetTranslatedString(Translation.StringID.RESET_COLOR);
+            grpStitch.Text = translation.GetTranslatedString(Translation.StringID.STITCH_DRAW);
+            lblThreadThickness.Text = translation.GetTranslatedString(Translation.StringID.THREAD_THICKNESS);
+            lblPixelThick.Text = translation.GetTranslatedString(Translation.StringID.PIXELS);
+            chkUglyStitches.Text = translation.GetTranslatedString(Translation.StringID.REMOVE_UGLY_STITCHES);
+            lblUglyLength.Text = translation.GetTranslatedString(Translation.StringID.UGLY_STITCH_LENGTH);
+            lblPixelLength.Text = translation.GetTranslatedString(Translation.StringID.PIXELS);
+            chkDrawGrid.Text = translation.GetTranslatedString(Translation.StringID.DRAW_BACKGROUND_GRID);
+        }
+
+        private void cmbLanguage_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            translation.Load(cmbLanguage.SelectedItem.ToString());
+            loadTranslatedStrings();
         }
     }
 }

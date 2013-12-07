@@ -34,18 +34,21 @@ namespace embroideryReader
             this.btnResetColor = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblThreadThickness = new System.Windows.Forms.Label();
             this.txtThreadThickness = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.lblPixelThick = new System.Windows.Forms.Label();
+            this.grpBackground = new System.Windows.Forms.GroupBox();
+            this.grpStitch = new System.Windows.Forms.GroupBox();
+            this.chkDrawGrid = new System.Windows.Forms.CheckBox();
+            this.lblUglyLength = new System.Windows.Forms.Label();
+            this.lblPixelLength = new System.Windows.Forms.Label();
             this.txtThreshold = new System.Windows.Forms.TextBox();
             this.chkUglyStitches = new System.Windows.Forms.CheckBox();
-            this.chkDrawGrid = new System.Windows.Forms.CheckBox();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.cmbLanguage = new System.Windows.Forms.ComboBox();
+            this.grpLanguage = new System.Windows.Forms.GroupBox();
+            this.grpBackground.SuspendLayout();
+            this.grpStitch.SuspendLayout();
+            this.grpLanguage.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnColor
@@ -81,7 +84,7 @@ namespace embroideryReader
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(171, 208);
+            this.btnOK.Location = new System.Drawing.Point(128, 284);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 3;
@@ -92,7 +95,7 @@ namespace embroideryReader
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(252, 208);
+            this.btnCancel.Location = new System.Drawing.Point(209, 284);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 4;
@@ -100,14 +103,14 @@ namespace embroideryReader
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
-            // label1
+            // lblThreadThickness
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 16);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(92, 13);
-            this.label1.TabIndex = 5;
-            this.label1.Text = "Thread thickness:";
+            this.lblThreadThickness.AutoSize = true;
+            this.lblThreadThickness.Location = new System.Drawing.Point(6, 16);
+            this.lblThreadThickness.Name = "lblThreadThickness";
+            this.lblThreadThickness.Size = new System.Drawing.Size(92, 13);
+            this.lblThreadThickness.TabIndex = 5;
+            this.lblThreadThickness.Text = "Thread thickness:";
             // 
             // txtThreadThickness
             // 
@@ -116,61 +119,71 @@ namespace embroideryReader
             this.txtThreadThickness.Size = new System.Drawing.Size(32, 20);
             this.txtThreadThickness.TabIndex = 6;
             // 
-            // label2
+            // lblPixelThick
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(142, 16);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(33, 13);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "pixels";
+            this.lblPixelThick.AutoSize = true;
+            this.lblPixelThick.Location = new System.Drawing.Point(142, 16);
+            this.lblPixelThick.Name = "lblPixelThick";
+            this.lblPixelThick.Size = new System.Drawing.Size(33, 13);
+            this.lblPixelThick.TabIndex = 7;
+            this.lblPixelThick.Text = "pixels";
             // 
-            // groupBox1
+            // grpBackground
             // 
-            this.groupBox1.Controls.Add(this.lblColor);
-            this.groupBox1.Controls.Add(this.btnColor);
-            this.groupBox1.Controls.Add(this.btnResetColor);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(315, 79);
-            this.groupBox1.TabIndex = 8;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Background";
+            this.grpBackground.Controls.Add(this.lblColor);
+            this.grpBackground.Controls.Add(this.btnColor);
+            this.grpBackground.Controls.Add(this.btnResetColor);
+            this.grpBackground.Location = new System.Drawing.Point(12, 12);
+            this.grpBackground.Name = "grpBackground";
+            this.grpBackground.Size = new System.Drawing.Size(271, 79);
+            this.grpBackground.TabIndex = 8;
+            this.grpBackground.TabStop = false;
+            this.grpBackground.Text = "Background";
             // 
-            // groupBox2
+            // grpStitch
             // 
-            this.groupBox2.Controls.Add(this.chkDrawGrid);
-            this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Controls.Add(this.txtThreshold);
-            this.groupBox2.Controls.Add(this.chkUglyStitches);
-            this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Controls.Add(this.txtThreadThickness);
-            this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Location = new System.Drawing.Point(12, 97);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(315, 105);
-            this.groupBox2.TabIndex = 3;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Stitch drawing";
+            this.grpStitch.Controls.Add(this.chkDrawGrid);
+            this.grpStitch.Controls.Add(this.lblUglyLength);
+            this.grpStitch.Controls.Add(this.lblPixelLength);
+            this.grpStitch.Controls.Add(this.txtThreshold);
+            this.grpStitch.Controls.Add(this.chkUglyStitches);
+            this.grpStitch.Controls.Add(this.lblThreadThickness);
+            this.grpStitch.Controls.Add(this.txtThreadThickness);
+            this.grpStitch.Controls.Add(this.lblPixelThick);
+            this.grpStitch.Location = new System.Drawing.Point(12, 97);
+            this.grpStitch.Name = "grpStitch";
+            this.grpStitch.Size = new System.Drawing.Size(271, 108);
+            this.grpStitch.TabIndex = 3;
+            this.grpStitch.TabStop = false;
+            this.grpStitch.Text = "Stitch drawing";
             // 
-            // label4
+            // chkDrawGrid
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(57, 58);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(67, 13);
-            this.label4.TabIndex = 11;
-            this.label4.Text = "Ugly Length:";
+            this.chkDrawGrid.AutoSize = true;
+            this.chkDrawGrid.Location = new System.Drawing.Point(9, 81);
+            this.chkDrawGrid.Name = "chkDrawGrid";
+            this.chkDrawGrid.Size = new System.Drawing.Size(131, 17);
+            this.chkDrawGrid.TabIndex = 12;
+            this.chkDrawGrid.Text = "Draw background grid";
+            this.chkDrawGrid.UseVisualStyleBackColor = true;
             // 
-            // label3
+            // lblUglyLength
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(168, 58);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(33, 13);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "pixels";
+            this.lblUglyLength.AutoSize = true;
+            this.lblUglyLength.Location = new System.Drawing.Point(57, 58);
+            this.lblUglyLength.Name = "lblUglyLength";
+            this.lblUglyLength.Size = new System.Drawing.Size(67, 13);
+            this.lblUglyLength.TabIndex = 11;
+            this.lblUglyLength.Text = "Ugly Length:";
+            // 
+            // lblPixelLength
+            // 
+            this.lblPixelLength.AutoSize = true;
+            this.lblPixelLength.Location = new System.Drawing.Point(168, 58);
+            this.lblPixelLength.Name = "lblPixelLength";
+            this.lblPixelLength.Size = new System.Drawing.Size(33, 13);
+            this.lblPixelLength.TabIndex = 10;
+            this.lblPixelLength.Text = "pixels";
             // 
             // txtThreshold
             // 
@@ -189,15 +202,25 @@ namespace embroideryReader
             this.chkUglyStitches.Text = "Remove \'ugly\' stitches";
             this.chkUglyStitches.UseVisualStyleBackColor = true;
             // 
-            // chkDrawGrid
+            // cmbLanguage
             // 
-            this.chkDrawGrid.AutoSize = true;
-            this.chkDrawGrid.Location = new System.Drawing.Point(7, 79);
-            this.chkDrawGrid.Name = "chkDrawGrid";
-            this.chkDrawGrid.Size = new System.Drawing.Size(131, 17);
-            this.chkDrawGrid.TabIndex = 12;
-            this.chkDrawGrid.Text = "Draw background grid";
-            this.chkDrawGrid.UseVisualStyleBackColor = true;
+            this.cmbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbLanguage.FormattingEnabled = true;
+            this.cmbLanguage.Location = new System.Drawing.Point(14, 19);
+            this.cmbLanguage.Name = "cmbLanguage";
+            this.cmbLanguage.Size = new System.Drawing.Size(121, 21);
+            this.cmbLanguage.TabIndex = 10;
+            this.cmbLanguage.SelectedIndexChanged += new System.EventHandler(this.cmbLanguage_SelectedIndexChanged);
+            // 
+            // grpLanguage
+            // 
+            this.grpLanguage.Controls.Add(this.cmbLanguage);
+            this.grpLanguage.Location = new System.Drawing.Point(13, 212);
+            this.grpLanguage.Name = "grpLanguage";
+            this.grpLanguage.Size = new System.Drawing.Size(270, 56);
+            this.grpLanguage.TabIndex = 11;
+            this.grpLanguage.TabStop = false;
+            this.grpLanguage.Text = "Language";
             // 
             // frmSettingsDialog
             // 
@@ -205,9 +228,10 @@ namespace embroideryReader
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(339, 244);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.ClientSize = new System.Drawing.Size(296, 319);
+            this.Controls.Add(this.grpLanguage);
+            this.Controls.Add(this.grpStitch);
+            this.Controls.Add(this.grpBackground);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -216,9 +240,10 @@ namespace embroideryReader
             this.Name = "frmSettingsDialog";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Embroidery Reader Settings";
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.grpBackground.ResumeLayout(false);
+            this.grpStitch.ResumeLayout(false);
+            this.grpStitch.PerformLayout();
+            this.grpLanguage.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -231,15 +256,17 @@ namespace embroideryReader
         private System.Windows.Forms.Button btnResetColor;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblThreadThickness;
         private System.Windows.Forms.TextBox txtThreadThickness;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lblPixelThick;
+        private System.Windows.Forms.GroupBox grpBackground;
+        private System.Windows.Forms.GroupBox grpStitch;
+        private System.Windows.Forms.Label lblPixelLength;
         private System.Windows.Forms.TextBox txtThreshold;
         private System.Windows.Forms.CheckBox chkUglyStitches;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblUglyLength;
         private System.Windows.Forms.CheckBox chkDrawGrid;
+        private System.Windows.Forms.ComboBox cmbLanguage;
+        private System.Windows.Forms.GroupBox grpLanguage;
     }
 }
