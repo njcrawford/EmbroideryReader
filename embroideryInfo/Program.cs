@@ -37,7 +37,6 @@ namespace embroideryInfo
             {
                 try
                 {
-
                     if (args[0] == "--image" && args.Length > 1)
                     {
                         PesFile.PesFile design = new PesFile.PesFile(args[1]);

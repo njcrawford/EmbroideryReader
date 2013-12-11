@@ -1,0 +1,1 @@
+for %%i in (*.pes) do "embroideryInfo.exe" --image "%%~i"
