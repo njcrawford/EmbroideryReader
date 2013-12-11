@@ -355,7 +355,7 @@ namespace embroideryReader
         {
             get
             {
-                return (settings.getValue(SETTING_TRANSPARENCY_GRID_ENABLE) == VALUE_TRUE);
+                return (settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_ENABLE) == VALUE_TRUE);
             }
             set
             {
@@ -364,7 +364,7 @@ namespace embroideryReader
                 {
                     output = VALUE_TRUE;
                 }
-                settings.setValue(SETTING_TRANSPARENCY_GRID_ENABLE, output);
+                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_ENABLE, output);
             }
         }
 
@@ -373,7 +373,7 @@ namespace embroideryReader
             get
             {
                 Int32 retval;
-                string temp = settings.getValue(SETTING_TRANSPARENCY_GRID_SIZE);
+                string temp = settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_SIZE);
                 if (!Int32.TryParse(temp, out retval))
                 {
                     retval = 5;
@@ -382,7 +382,7 @@ namespace embroideryReader
             }
             set
             {
-                settings.setValue(SETTING_TRANSPARENCY_GRID_SIZE, value.ToString());
+                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_SIZE, value.ToString());
             }
         }
 

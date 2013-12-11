@@ -59,6 +59,7 @@ namespace embroideryReader
                 txtThreshold.Text = settings.filterStitchesThreshold.ToString();
 
                 chkDrawGrid.Checked = settings.transparencyGridEnabled;
+                txtGridSize.Text = settings.transparencyGridSize.ToString();
                 updateGridColorControls();
             }
         }
@@ -107,6 +108,11 @@ namespace embroideryReader
             }
 
             settings.transparencyGridEnabled = chkDrawGrid.Checked;
+            int gridSize;
+            if (Int32.TryParse(txtGridSize.Text, out gridSize))
+            {
+                settings.transparencyGridSize = gridSize;
+            }
 
             settings.translation = cmbLanguage.SelectedItem.ToString();
         }
@@ -132,28 +138,35 @@ namespace embroideryReader
         {
             this.Text = translation.GetTranslatedString(Translation.StringID.SETTINGS);
             grpBackground.Text = translation.GetTranslatedString(Translation.StringID.BACKGROUND);
-            pnlBackground.Text = translation.GetTranslatedString(Translation.StringID.BACKGROUND_COLOR);
+            lblBackgroundColor.Text = translation.GetTranslatedString(Translation.StringID.BACKGROUND_COLOR);
             btnColor.Text = translation.GetTranslatedString(Translation.StringID.PICK_COLOR);
             btnResetColor.Text = translation.GetTranslatedString(Translation.StringID.RESET_COLOR);
             grpStitch.Text = translation.GetTranslatedString(Translation.StringID.STITCH_DRAW);
             lblThreadThickness.Text = translation.GetTranslatedString(Translation.StringID.THREAD_THICKNESS);
+            txtThreadThickness.Left = lblThreadThickness.Left + lblThreadThickness.Width + 5;
             lblPixelThick.Text = translation.GetTranslatedString(Translation.StringID.PIXELS);
+            lblPixelThick.Left = txtThreadThickness.Left + lblThreadThickness.Width + 5;
             chkUglyStitches.Text = translation.GetTranslatedString(Translation.StringID.REMOVE_UGLY_STITCHES);
             lblUglyLength.Text = translation.GetTranslatedString(Translation.StringID.UGLY_STITCH_LENGTH);
             txtThreshold.Left = lblUglyLength.Left + lblUglyLength.Width + 5;
             lblPixelLength.Text = translation.GetTranslatedString(Translation.StringID.PIXELS);
             lblPixelLength.Left = txtThreshold.Left + txtThreshold.Width + 5;
-            chkDrawGrid.Text = translation.GetTranslatedString(Translation.StringID.DRAW_BACKGROUND_GRID);
+            chkDrawGrid.Text = translation.GetTranslatedString(Translation.StringID.ENABLE_TRANSPARENCY_GRID);
             grpLanguage.Text = translation.GetTranslatedString(Translation.StringID.LANGUAGE);
             btnCancel.Text = translation.GetTranslatedString(Translation.StringID.CANCEL);
             btnOK.Text = translation.GetTranslatedString(Translation.StringID.OK);
             btnGridColor.Text = translation.GetTranslatedString(Translation.StringID.PICK_COLOR);
             btnResetGridColor.Text = translation.GetTranslatedString(Translation.StringID.RESET_COLOR);
+            lblGridSize.Text = translation.GetTranslatedString(Translation.StringID.GRID_SIZE);
+            txtGridSize.Left = lblGridSize.Left + lblGridSize.Width + 5;
+            lblGridSizePixels.Text = translation.GetTranslatedString(Translation.StringID.PIXELS);
+            lblGridSizePixels.Left = txtGridSize.Left + txtGridSize.Width + 5;
         }
 
         private void cmbLanguage_SelectedIndexChanged(object sender, EventArgs e)
         {
             translation.Load(cmbLanguage.SelectedItem.ToString());
+            lblIncompleteTranslation.Visible = !translation.IsComplete();
             loadTranslatedStrings();
         }
 
@@ -170,6 +183,7 @@ namespace embroideryReader
         {
             btnGridColor.Enabled = chkDrawGrid.Checked;
             btnResetGridColor.Enabled = chkDrawGrid.Checked;
+            txtGridSize.Enabled = chkDrawGrid.Checked;
         }
 
         private void pnlBackground_Paint(object sender, PaintEventArgs e)
@@ -210,6 +224,16 @@ namespace embroideryReader
         {
             settings.transparencyGridColor = Color.LightGray;
             pnlBackground.Invalidate();
+        }
+
+        private void txtGridSize_TextChanged(object sender, EventArgs e)
+        {
+            int gridSize;
+            if (Int32.TryParse(txtGridSize.Text, out gridSize))
+            {
+                settings.transparencyGridSize = gridSize;
+                pnlBackground.Invalidate();
+            }
         }
     }
 }

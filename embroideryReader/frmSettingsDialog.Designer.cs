@@ -38,7 +38,10 @@ namespace embroideryReader
             this.txtThreadThickness = new System.Windows.Forms.TextBox();
             this.lblPixelThick = new System.Windows.Forms.Label();
             this.grpBackground = new System.Windows.Forms.GroupBox();
+            this.btnResetGridColor = new System.Windows.Forms.Button();
+            this.btnGridColor = new System.Windows.Forms.Button();
             this.pnlBackground = new System.Windows.Forms.Panel();
+            this.lblBackgroundColor = new System.Windows.Forms.Label();
             this.chkDrawGrid = new System.Windows.Forms.CheckBox();
             this.grpStitch = new System.Windows.Forms.GroupBox();
             this.lblUglyLength = new System.Windows.Forms.Label();
@@ -47,9 +50,10 @@ namespace embroideryReader
             this.chkUglyStitches = new System.Windows.Forms.CheckBox();
             this.cmbLanguage = new System.Windows.Forms.ComboBox();
             this.grpLanguage = new System.Windows.Forms.GroupBox();
-            this.btnGridColor = new System.Windows.Forms.Button();
-            this.btnResetGridColor = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblIncompleteTranslation = new System.Windows.Forms.Label();
+            this.lblGridSize = new System.Windows.Forms.Label();
+            this.lblGridSizePixels = new System.Windows.Forms.Label();
+            this.txtGridSize = new System.Windows.Forms.TextBox();
             this.grpBackground.SuspendLayout();
             this.pnlBackground.SuspendLayout();
             this.grpStitch.SuspendLayout();
@@ -125,6 +129,9 @@ namespace embroideryReader
             // 
             // grpBackground
             // 
+            this.grpBackground.Controls.Add(this.txtGridSize);
+            this.grpBackground.Controls.Add(this.lblGridSizePixels);
+            this.grpBackground.Controls.Add(this.lblGridSize);
             this.grpBackground.Controls.Add(this.btnResetGridColor);
             this.grpBackground.Controls.Add(this.btnGridColor);
             this.grpBackground.Controls.Add(this.pnlBackground);
@@ -138,14 +145,45 @@ namespace embroideryReader
             this.grpBackground.TabStop = false;
             this.grpBackground.Text = "Background";
             // 
+            // btnResetGridColor
+            // 
+            this.btnResetGridColor.Location = new System.Drawing.Point(171, 100);
+            this.btnResetGridColor.Name = "btnResetGridColor";
+            this.btnResetGridColor.Size = new System.Drawing.Size(75, 23);
+            this.btnResetGridColor.TabIndex = 15;
+            this.btnResetGridColor.Text = "Reset Color";
+            this.btnResetGridColor.UseVisualStyleBackColor = true;
+            this.btnResetGridColor.Click += new System.EventHandler(this.btnResetGridColor_Click);
+            // 
+            // btnGridColor
+            // 
+            this.btnGridColor.Location = new System.Drawing.Point(171, 75);
+            this.btnGridColor.Name = "btnGridColor";
+            this.btnGridColor.Size = new System.Drawing.Size(75, 23);
+            this.btnGridColor.TabIndex = 14;
+            this.btnGridColor.Text = "Pick Color...";
+            this.btnGridColor.UseVisualStyleBackColor = true;
+            this.btnGridColor.Click += new System.EventHandler(this.btnGridColor_Click);
+            // 
             // pnlBackground
             // 
-            this.pnlBackground.Controls.Add(this.label1);
+            this.pnlBackground.Controls.Add(this.lblBackgroundColor);
             this.pnlBackground.Location = new System.Drawing.Point(10, 19);
             this.pnlBackground.Name = "pnlBackground";
             this.pnlBackground.Size = new System.Drawing.Size(130, 50);
             this.pnlBackground.TabIndex = 13;
             this.pnlBackground.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlBackground_Paint);
+            // 
+            // lblBackgroundColor
+            // 
+            this.lblBackgroundColor.BackColor = System.Drawing.Color.Transparent;
+            this.lblBackgroundColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblBackgroundColor.Location = new System.Drawing.Point(0, 0);
+            this.lblBackgroundColor.Name = "lblBackgroundColor";
+            this.lblBackgroundColor.Size = new System.Drawing.Size(130, 50);
+            this.lblBackgroundColor.TabIndex = 16;
+            this.lblBackgroundColor.Text = "Background Color";
+            this.lblBackgroundColor.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // chkDrawGrid
             // 
@@ -221,6 +259,7 @@ namespace embroideryReader
             // 
             // grpLanguage
             // 
+            this.grpLanguage.Controls.Add(this.lblIncompleteTranslation);
             this.grpLanguage.Controls.Add(this.cmbLanguage);
             this.grpLanguage.Location = new System.Drawing.Point(12, 239);
             this.grpLanguage.Name = "grpLanguage";
@@ -229,36 +268,41 @@ namespace embroideryReader
             this.grpLanguage.TabStop = false;
             this.grpLanguage.Text = "Language";
             // 
-            // btnGridColor
+            // lblIncompleteTranslation
             // 
-            this.btnGridColor.Location = new System.Drawing.Point(6, 98);
-            this.btnGridColor.Name = "btnGridColor";
-            this.btnGridColor.Size = new System.Drawing.Size(75, 23);
-            this.btnGridColor.TabIndex = 14;
-            this.btnGridColor.Text = "Pick Color...";
-            this.btnGridColor.UseVisualStyleBackColor = true;
-            this.btnGridColor.Click += new System.EventHandler(this.btnGridColor_Click);
+            this.lblIncompleteTranslation.AutoSize = true;
+            this.lblIncompleteTranslation.Location = new System.Drawing.Point(141, 22);
+            this.lblIncompleteTranslation.Name = "lblIncompleteTranslation";
+            this.lblIncompleteTranslation.Size = new System.Drawing.Size(123, 13);
+            this.lblIncompleteTranslation.TabIndex = 11;
+            this.lblIncompleteTranslation.Text = "Translation is incomplete";
+            this.lblIncompleteTranslation.Visible = false;
             // 
-            // btnResetGridColor
+            // lblGridSize
             // 
-            this.btnResetGridColor.Location = new System.Drawing.Point(87, 98);
-            this.btnResetGridColor.Name = "btnResetGridColor";
-            this.btnResetGridColor.Size = new System.Drawing.Size(75, 23);
-            this.btnResetGridColor.TabIndex = 15;
-            this.btnResetGridColor.Text = "Reset Color";
-            this.btnResetGridColor.UseVisualStyleBackColor = true;
-            this.btnResetGridColor.Click += new System.EventHandler(this.btnResetGridColor_Click);
+            this.lblGridSize.AutoSize = true;
+            this.lblGridSize.Location = new System.Drawing.Point(6, 99);
+            this.lblGridSize.Name = "lblGridSize";
+            this.lblGridSize.Size = new System.Drawing.Size(52, 13);
+            this.lblGridSize.TabIndex = 16;
+            this.lblGridSize.Text = "Grid Size:";
             // 
-            // label1
+            // lblGridSizePixels
             // 
-            this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label1.Location = new System.Drawing.Point(0, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(130, 50);
-            this.label1.TabIndex = 16;
-            this.label1.Text = "Background Color";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblGridSizePixels.AutoSize = true;
+            this.lblGridSizePixels.Location = new System.Drawing.Point(102, 99);
+            this.lblGridSizePixels.Name = "lblGridSizePixels";
+            this.lblGridSizePixels.Size = new System.Drawing.Size(33, 13);
+            this.lblGridSizePixels.TabIndex = 17;
+            this.lblGridSizePixels.Text = "pixels";
+            // 
+            // txtGridSize
+            // 
+            this.txtGridSize.Location = new System.Drawing.Point(64, 96);
+            this.txtGridSize.Name = "txtGridSize";
+            this.txtGridSize.Size = new System.Drawing.Size(32, 20);
+            this.txtGridSize.TabIndex = 18;
+            this.txtGridSize.TextChanged += new System.EventHandler(this.txtGridSize_TextChanged);
             // 
             // frmSettingsDialog
             // 
@@ -285,6 +329,7 @@ namespace embroideryReader
             this.grpStitch.ResumeLayout(false);
             this.grpStitch.PerformLayout();
             this.grpLanguage.ResumeLayout(false);
+            this.grpLanguage.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -311,6 +356,10 @@ namespace embroideryReader
         private System.Windows.Forms.Panel pnlBackground;
         private System.Windows.Forms.Button btnResetGridColor;
         private System.Windows.Forms.Button btnGridColor;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblBackgroundColor;
+        private System.Windows.Forms.Label lblIncompleteTranslation;
+        private System.Windows.Forms.TextBox txtGridSize;
+        private System.Windows.Forms.Label lblGridSizePixels;
+        private System.Windows.Forms.Label lblGridSize;
     }
 }
