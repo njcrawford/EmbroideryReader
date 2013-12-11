@@ -61,6 +61,7 @@ namespace embroideryReader
             BACKGROUND_COLOR,
             RESET_COLOR,
             CANCEL,
+            OK,
             THREAD_THICKNESS,
             PIXELS,
             BACKGROUND,
@@ -74,6 +75,7 @@ namespace embroideryReader
             NEW_VERSION_TITLE,
             DEBUG_INFO_SAVED,
             DRAW_BACKGROUND_GRID,
+            LANGUAGE,
         };
 
         IniFile translationFile;

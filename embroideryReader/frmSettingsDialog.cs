@@ -142,6 +142,7 @@ namespace embroideryReader
 
         private void loadTranslatedStrings()
         {
+            this.Text = translation.GetTranslatedString(Translation.StringID.SETTINGS);
             grpBackground.Text = translation.GetTranslatedString(Translation.StringID.BACKGROUND);
             lblColor.Text = translation.GetTranslatedString(Translation.StringID.BACKGROUND_COLOR);
             btnColor.Text = translation.GetTranslatedString(Translation.StringID.PICK_COLOR);
@@ -151,8 +152,13 @@ namespace embroideryReader
             lblPixelThick.Text = translation.GetTranslatedString(Translation.StringID.PIXELS);
             chkUglyStitches.Text = translation.GetTranslatedString(Translation.StringID.REMOVE_UGLY_STITCHES);
             lblUglyLength.Text = translation.GetTranslatedString(Translation.StringID.UGLY_STITCH_LENGTH);
+            txtThreshold.Left = lblUglyLength.Left + lblUglyLength.Width + 5;
             lblPixelLength.Text = translation.GetTranslatedString(Translation.StringID.PIXELS);
+            lblPixelLength.Left = txtThreshold.Left + txtThreshold.Width + 5;
             chkDrawGrid.Text = translation.GetTranslatedString(Translation.StringID.DRAW_BACKGROUND_GRID);
+            grpLanguage.Text = translation.GetTranslatedString(Translation.StringID.LANGUAGE);
+            btnCancel.Text = translation.GetTranslatedString(Translation.StringID.CANCEL);
+            btnOK.Text = translation.GetTranslatedString(Translation.StringID.OK);
         }
 
         private void cmbLanguage_SelectedIndexChanged(object sender, EventArgs e)
