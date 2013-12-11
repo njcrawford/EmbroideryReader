@@ -74,8 +74,12 @@ namespace embroideryReader
             NEW_VERSION_QUESTION,
             NEW_VERSION_TITLE,
             DEBUG_INFO_SAVED,
-            DRAW_BACKGROUND_GRID,
+            ENABLE_TRANSPARENCY_GRID,
             LANGUAGE,
+            GRID_SIZE,
+
+            // This must be last. Used for checking completeness of translation files.
+            TOTAL_COUNT,
         };
 
         IniFile translationFile;
@@ -117,6 +121,24 @@ namespace embroideryReader
             {
                 retval = "%" + sid.ToString() + "%";
             }
+            return retval;
+        }
+
+        // Returns true if the loaded translation file contains all expected 
+        // string IDs, or false if not.
+        public bool IsComplete()
+        {
+            bool retval = true;
+
+            for (StringID sid = (StringID)0; sid < StringID.TOTAL_COUNT; sid++)
+            {
+                if (translationFile.getValue(sid.ToString()) == null)
+                {
+                    retval = false;
+                    break;
+                }
+            }
+
             return retval;
         }
     }
