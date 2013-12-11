@@ -565,53 +565,43 @@ namespace PesFile
             }
         }
 
-        public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, double filterUglyStitchesThreshold, bool includeGrid)
+        public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, double filterUglyStitchesThreshold)
         {
             Bitmap DrawArea;
             Graphics xGraph;
             int imageWidth = GetWidth() + (int)(threadThickness * 2);
             int imageHeight = GetHeight() + (int)(threadThickness * 2);
-            int gridSize = 10;
 
             DrawArea = new Bitmap(imageWidth, imageHeight);
-            xGraph = Graphics.FromImage(DrawArea);
-            if (includeGrid)
+            using (xGraph = Graphics.FromImage(DrawArea))
             {
-                for (int xStart = 0; (xStart * gridSize) < imageWidth; xStart++)
-                {
-                    for (int yStart = 0; (yStart * gridSize) < imageHeight; yStart++)
-                    {
-                        if ((xStart % 2) == (yStart % 2))
-                        {
-                            xGraph.FillRectangle(Brushes.Gray, (xStart * gridSize), (yStart * gridSize), gridSize, gridSize);
-                        }
-                    }
-                }
-            }
-            xGraph.TranslateTransform(threadThickness+translateStart.X, threadThickness+translateStart.Y);
-            //xGraph.FillRectangle(Brushes.White, 0, 0, DrawArea.Width, DrawArea.Height);
-
-            for (int i = 0; i < blocks.Count; i++)
-            {
-                Pen tempPen = new Pen(blocks[i].color, threadThickness);
-                tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
-                tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
-                tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
+                xGraph.TranslateTransform(threadThickness + translateStart.X, threadThickness + translateStart.Y);
+                
+                // Draw smoother lines
                 xGraph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                foreach (Stitch thisStitch in blocks[i].stitches)
+
+                for (int i = 0; i < blocks.Count; i++)
                 {
-                    if (filterUglyStitches && !formatWarning) // Only filter stitches if we think we understand the format
+                    using (Pen tempPen = new Pen(blocks[i].color, threadThickness))
                     {
-                        if (thisStitch.calcLength() > filterUglyStitchesThreshold)
+                        tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+                        tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+                        tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
+
+                        foreach (Stitch thisStitch in blocks[i].stitches)
                         {
-                            // This stitch is too long, so skip it
-                            continue;
+                            if (filterUglyStitches && // Check for filter ugly stitches option
+                                !formatWarning && // Only filter stitches if we think we understand the format
+                                thisStitch.calcLength() > filterUglyStitchesThreshold) // Check stitch length
+                            {
+                                // This stitch is too long, so skip it
+                                continue;
+                            }
+                            xGraph.DrawLine(tempPen, thisStitch.a, thisStitch.b);
                         }
                     }
-                    xGraph.DrawLine(tempPen, thisStitch.a, thisStitch.b);
                 }
             }
-            xGraph.Dispose();
             return DrawArea;
         }
     }

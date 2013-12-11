@@ -35,7 +35,6 @@ namespace embroideryReader
 {
     public partial class frmSettingsDialog : Form
     {
-        private bool colorChanged = false;
         private EmbroideryReaderSettings settings;
         private Translation translation;
 
@@ -50,7 +49,7 @@ namespace embroideryReader
                 settings = value;
                 if (settings.backgroundColorEnabled)
                 {
-                    lblColor.BackColor = settings.backgroundColor;
+                    pnlBackground.BackColor = settings.backgroundColor;
                 }
 
                 txtThreadThickness.Text = settings.threadThickness.ToString();
@@ -58,6 +57,9 @@ namespace embroideryReader
                 chkUglyStitches.Checked = settings.filterStiches;
 
                 txtThreshold.Text = settings.filterStitchesThreshold.ToString();
+
+                chkDrawGrid.Checked = settings.transparencyGridEnabled;
+                updateGridColorControls();
             }
         }
 
@@ -73,37 +75,23 @@ namespace embroideryReader
 
         private void btnColor_Click(object sender, EventArgs e)
         {
-            colorDialog1.Color = lblColor.BackColor;
-            if (colorDialog1.ShowDialog() == DialogResult.OK && lblColor.BackColor != colorDialog1.Color)
+            colorDialog1.Color = pnlBackground.BackColor;
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
-                lblColor.BackColor = colorDialog1.Color;
-                colorChanged = true;
+                pnlBackground.BackColor = colorDialog1.Color;
+                settings.backgroundColor = colorDialog1.Color;
+                settings.backgroundColorEnabled = true;
             }
         }
 
         private void btnResetColor_Click(object sender, EventArgs e)
         {
-            if (lblColor.BackColor != Color.FromKnownColor(KnownColor.Control))
-            {
-                lblColor.BackColor = Color.FromKnownColor(KnownColor.Control);
-                colorChanged = true;
-            }
+            pnlBackground.BackColor = Color.FromKnownColor(KnownColor.Control);
+            settings.backgroundColorEnabled = false;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            if (colorChanged)
-            {
-                if (lblColor.BackColor != Color.FromKnownColor(KnownColor.Control))
-                {
-                    settings.backgroundColorEnabled = true;
-                    settings.backgroundColor = lblColor.BackColor;
-                }
-                else
-                {
-                    settings.backgroundColorEnabled = false;
-                }
-            }
             double threadThickness;
             if (Double.TryParse(txtThreadThickness.Text, out threadThickness))
             {
@@ -118,7 +106,7 @@ namespace embroideryReader
                 settings.filterStitchesThreshold = threshold;
             }
 
-            settings.drawBackgroundGrid = chkDrawGrid.Checked;
+            settings.transparencyGridEnabled = chkDrawGrid.Checked;
 
             settings.translation = cmbLanguage.SelectedItem.ToString();
         }
@@ -144,7 +132,7 @@ namespace embroideryReader
         {
             this.Text = translation.GetTranslatedString(Translation.StringID.SETTINGS);
             grpBackground.Text = translation.GetTranslatedString(Translation.StringID.BACKGROUND);
-            lblColor.Text = translation.GetTranslatedString(Translation.StringID.BACKGROUND_COLOR);
+            pnlBackground.Text = translation.GetTranslatedString(Translation.StringID.BACKGROUND_COLOR);
             btnColor.Text = translation.GetTranslatedString(Translation.StringID.PICK_COLOR);
             btnResetColor.Text = translation.GetTranslatedString(Translation.StringID.RESET_COLOR);
             grpStitch.Text = translation.GetTranslatedString(Translation.StringID.STITCH_DRAW);
@@ -159,12 +147,69 @@ namespace embroideryReader
             grpLanguage.Text = translation.GetTranslatedString(Translation.StringID.LANGUAGE);
             btnCancel.Text = translation.GetTranslatedString(Translation.StringID.CANCEL);
             btnOK.Text = translation.GetTranslatedString(Translation.StringID.OK);
+            btnGridColor.Text = translation.GetTranslatedString(Translation.StringID.PICK_COLOR);
+            btnResetGridColor.Text = translation.GetTranslatedString(Translation.StringID.RESET_COLOR);
         }
 
         private void cmbLanguage_SelectedIndexChanged(object sender, EventArgs e)
         {
             translation.Load(cmbLanguage.SelectedItem.ToString());
             loadTranslatedStrings();
+        }
+
+        private void chkDrawGrid_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.transparencyGridEnabled = chkDrawGrid.Checked;
+            pnlBackground.Invalidate();
+            pnlBackground.Update();
+
+            updateGridColorControls();
+        }
+
+        private void updateGridColorControls()
+        {
+            btnGridColor.Enabled = chkDrawGrid.Checked;
+            btnResetGridColor.Enabled = chkDrawGrid.Checked;
+        }
+
+        private void pnlBackground_Paint(object sender, PaintEventArgs e)
+        {
+            if (settings.transparencyGridEnabled)
+            {
+                Color gridColor = settings.transparencyGridColor;
+                using (Pen gridPen = new Pen(gridColor))
+                {
+
+                    int gridSize = settings.transparencyGridSize;
+                    for (int xStart = 0; (xStart * gridSize) < pnlBackground.Width; xStart++)
+                    {
+                        for (int yStart = 0; (yStart * gridSize) < pnlBackground.Height; yStart++)
+                        {
+                            // Fill even columns in even rows and odd columns in odd rows
+                            if ((xStart % 2) == (yStart % 2))
+                            {
+                                e.Graphics.FillRectangle(gridPen.Brush, (xStart * gridSize), (yStart * gridSize), gridSize, gridSize);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void btnGridColor_Click(object sender, EventArgs e)
+        {
+            colorDialog1.Color = settings.transparencyGridColor;
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                settings.transparencyGridColor = colorDialog1.Color;
+                pnlBackground.Invalidate();
+            }
+        }
+
+        private void btnResetGridColor_Click(object sender, EventArgs e)
+        {
+            settings.transparencyGridColor = Color.LightGray;
+            pnlBackground.Invalidate();
         }
     }
 }

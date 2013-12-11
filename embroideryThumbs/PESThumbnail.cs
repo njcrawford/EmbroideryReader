@@ -175,7 +175,7 @@ namespace embroideryThumbs
             logfile.WriteLine("Called Extract");
             logfile.Close();
              
-            System.Drawing.Bitmap designBitmap = designFile.designToBitmap(3, false, 0, false);
+            System.Drawing.Bitmap designBitmap = designFile.designToBitmap(3, false, 0);
 
             IntPtr hBmp = designBitmap.GetHbitmap();
 

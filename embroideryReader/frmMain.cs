@@ -55,7 +55,14 @@ namespace embroideryReader
 
         private void checkSettings()
         {
-            this.BackColor = settings.backgroundColor;
+            if (settings.backgroundColorEnabled)
+            {
+                panel2.BackColor = settings.backgroundColor;
+            }
+            else
+            {
+                panel2.BackColor = Color.FromKnownColor(KnownColor.Control);
+            }
             this.Width = settings.windowWidth;
             this.Height = settings.windowHeight;
         }
@@ -116,7 +123,38 @@ namespace embroideryReader
 
         private void updateDesignImage()
         {
-            DrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, settings.drawBackgroundGrid);
+            Bitmap tempImage = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold);
+
+            if (settings.transparencyGridEnabled)
+            {
+                DrawArea = new Bitmap(tempImage.Width, tempImage.Height);
+                using (Graphics g = Graphics.FromImage(DrawArea))
+                {
+                    Color gridColor = settings.transparencyGridColor;
+                    using (Pen gridPen = new Pen(gridColor))
+                    {
+                        int gridSize = settings.transparencyGridSize;
+                        for (int xStart = 0; (xStart * gridSize) < DrawArea.Width; xStart++)
+                        {
+                            for (int yStart = 0; (yStart * gridSize) < DrawArea.Height; yStart++)
+                            {
+                                // Fill even columns in even rows and odd columns in odd rows
+                                if ((xStart % 2) == (yStart % 2))
+                                {
+                                    g.FillRectangle(gridPen.Brush, (xStart * gridSize), (yStart * gridSize), gridSize, gridSize);
+                                }
+                            }
+                        }
+                    }
+
+                    g.DrawImage(tempImage, 0, 0);
+                }
+            }
+            else
+            {
+                DrawArea = tempImage;
+            }
+
             panel1.Width = design.GetWidth() + (int)(settings.threadThickness * 2);
             panel1.Height = design.GetHeight() + (int)(settings.threadThickness * 2);
             panel1.Invalidate();
@@ -214,6 +252,7 @@ namespace embroideryReader
             if (DrawArea != null)
             {
                 e.Graphics.DrawImage(DrawArea, 0, 0);
+                //e.Graphics.DrawImage(DrawArea, e.Graphics.ClipBounds, e.Graphics.ClipBounds, GraphicsUnit.Pixel);
             }
         }
 
@@ -324,7 +363,7 @@ namespace embroideryReader
                 float dpiY = 100;
                 double inchesPerMM = 0.03937007874015748031496062992126;
                 e.Graphics.ScaleTransform((float)(dpiX * inchesPerMM * 0.1), (float)(dpiY * inchesPerMM * 0.1));
-                Bitmap tempDrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, false);
+                Bitmap tempDrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold);
                 e.Graphics.DrawImage(DrawArea, 30, 30);
             }
         }

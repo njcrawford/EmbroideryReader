@@ -54,7 +54,12 @@ namespace embroideryReader
         private const String SETTING_WINDOW_WIDTH = "window width";
         private const String SETTING_WINDOW_HEIGHT = "window height";
 
-        private const String SETTING_DRAW_GRID = "draw background grid";
+        private const String SECTION_TRANSPARENCY_GRID = "transparency grid";
+        private const String SETTING_TRANSPARENCY_GRID_ENABLE = "enabled";
+        private const String SETTING_TRANSPARENCY_GRID_SIZE = "size";
+        private const String SETTING_TRANSPARENCY_GRID_COLOR_RED = "red";
+        private const String SETTING_TRANSPARENCY_GRID_COLOR_GREEN = "green";
+        private const String SETTING_TRANSPARENCY_GRID_COLOR_BLUE = "blue";
 
         private const String SETTING_TRANSLATION = "translation";
 
@@ -136,10 +141,10 @@ namespace embroideryReader
                 }
             }
 
-            // Default to background grid enabled
-            if (settings.getValue(SETTING_DRAW_GRID) == null)
+            // Default to transparency grid enabled
+            if (String.IsNullOrWhiteSpace(settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_ENABLE)))
             {
-                settings.setValue(SETTING_DRAW_GRID, VALUE_TRUE);
+                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_ENABLE, VALUE_TRUE);
             }
 
             // Update deprecated settings
@@ -177,7 +182,7 @@ namespace embroideryReader
             }
             set
             {
-                String output = VALUE_TRUE;
+                String output = VALUE_FALSE;
                 if (value)
                 {
                     output = VALUE_TRUE;
@@ -346,11 +351,11 @@ namespace embroideryReader
             }
         }
 
-        public bool drawBackgroundGrid
+        public bool transparencyGridEnabled
         {
             get
             {
-                return (settings.getValue(SETTING_DRAW_GRID) == VALUE_TRUE);
+                return (settings.getValue(SETTING_TRANSPARENCY_GRID_ENABLE) == VALUE_TRUE);
             }
             set
             {
@@ -359,7 +364,57 @@ namespace embroideryReader
                 {
                     output = VALUE_TRUE;
                 }
-                settings.setValue(SETTING_DRAW_GRID, output);
+                settings.setValue(SETTING_TRANSPARENCY_GRID_ENABLE, output);
+            }
+        }
+
+        public int transparencyGridSize
+        {
+            get
+            {
+                Int32 retval;
+                string temp = settings.getValue(SETTING_TRANSPARENCY_GRID_SIZE);
+                if (!Int32.TryParse(temp, out retval))
+                {
+                    retval = 5;
+                }
+                return retval;
+            }
+            set
+            {
+                settings.setValue(SETTING_TRANSPARENCY_GRID_SIZE, value.ToString());
+            }
+        }
+
+        public System.Drawing.Color transparencyGridColor
+        {
+            get
+            {
+                if (transparencyGridEnabled)
+                {
+                    if (frmMain.checkColorFromStrings(settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_RED),
+                                              settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_GREEN),
+                                              settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_BLUE)))
+                    {
+                        return frmMain.makeColorFromStrings(settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_RED),
+                                                    settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_GREEN),
+                                                    settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_BLUE));
+                    }
+                    else
+                    {
+                        return System.Drawing.Color.LightGray;
+                    }
+                }
+                else
+                {
+                    return System.Drawing.Color.LightGray;
+                }
+            }
+            set
+            {
+                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_RED, value.R.ToString());
+                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_GREEN, value.G.ToString());
+                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_BLUE, value.B.ToString());
             }
         }
 
