@@ -161,6 +161,7 @@ namespace embroideryReader
             txtGridSize.Left = lblGridSize.Left + lblGridSize.Width + 5;
             lblGridSizePixels.Text = translation.GetTranslatedString(Translation.StringID.PIXELS);
             lblGridSizePixels.Left = txtGridSize.Left + txtGridSize.Width + 5;
+            lblIncompleteTranslation.Text = translation.GetTranslatedString(Translation.StringID.TRANSLATION_INCOMPLETE);
         }
 
         private void cmbLanguage_SelectedIndexChanged(object sender, EventArgs e)

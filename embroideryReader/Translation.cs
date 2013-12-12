@@ -10,6 +10,7 @@ namespace embroideryReader
     {
         private const string TRANSLATIONS_FOLDER = "translations";
         private const string TRANSLATION_FILE_EXT = ".ini";
+        private const string DEFAULT_TRANSLATION_NAME = "English (EN-US)";
 
         // String IDs
         public enum StringID {
@@ -77,12 +78,14 @@ namespace embroideryReader
             ENABLE_TRANSPARENCY_GRID,
             LANGUAGE,
             GRID_SIZE,
+            TRANSLATION_INCOMPLETE,
 
             // This must be last. Used for checking completeness of translation files.
             TOTAL_COUNT,
         };
 
         IniFile translationFile;
+        IniFile defaultFile;
 
         public Translation(String name)
         {
@@ -109,6 +112,7 @@ namespace embroideryReader
         public void Load(String translationName)
         {
             translationFile = new IniFile(System.IO.Path.Combine(TRANSLATIONS_FOLDER, translationName + TRANSLATION_FILE_EXT));
+            defaultFile = new IniFile(System.IO.Path.Combine(TRANSLATIONS_FOLDER, DEFAULT_TRANSLATION_NAME + TRANSLATION_FILE_EXT));
         }
 
         // Returns the translated string, or a string representation of the
@@ -117,10 +121,19 @@ namespace embroideryReader
         {
             string retval;
             retval = translationFile.getValue(sid.ToString());
+            
+            // Check the default translation if string is not found in the loaded translation
+            if (retval == null)
+            {
+                retval = defaultFile.getValue(sid.ToString());
+            }
+
+            // If it's not found in the default, return a placeholder string
             if (retval == null)
             {
                 retval = "%" + sid.ToString() + "%";
             }
+
             return retval;
         }
 
