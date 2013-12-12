@@ -21,8 +21,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_9EBE649BA2CF681B845680CA66F0DCA4"
-        "OwnerKey" = "8:_C9EE96902F03442C98B3D1E4D4141407"
+        "MsmKey" = "8:_3A6ABB0733D240CD98ADBAA2EDFD9504"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6D97E1D4F7CF4CAFAA12F2AE7DC1DA8B"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -45,8 +51,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_C5B72082B5ACDE1391111E82C1F315F9"
+        "MsmKey" = "8:_D4B73E74533269A229FF8275ABE6F182"
+        "OwnerKey" = "8:_C9EE96902F03442C98B3D1E4D4141407"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -58,13 +64,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_9EBE649BA2CF681B845680CA66F0DCA4"
+        "OwnerKey" = "8:_D4B73E74533269A229FF8275ABE6F182"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_02FF6E888AB8D1309C32899590FB8D36"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_C5B72082B5ACDE1391111E82C1F315F9"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -85,6 +97,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -101,6 +121,27 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.0,Profile=Client"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4 Client Profile (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.0,Profile=Client"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -134,7 +175,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:UpdateCheck, Version=0.2.0.49, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:UpdateCheck, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_02FF6E888AB8D1309C32899590FB8D36"
@@ -161,20 +202,60 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9EBE649BA2CF681B845680CA66F0DCA4"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3A6ABB0733D240CD98ADBAA2EDFD9504"
+            {
+            "SourcePath" = "8:..\\translations\\English (EN-US).ini"
+            "TargetName" = "8:English (EN-US).ini"
+            "Tag" = "8:"
+            "Folder" = "8:_E894C756BDF7419086B49E199205ACA7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6D97E1D4F7CF4CAFAA12F2AE7DC1DA8B"
+            {
+            "SourcePath" = "8:..\\translations\\Italiano (IT).ini"
+            "TargetName" = "8:Italiano (IT).ini"
+            "Tag" = "8:"
+            "Folder" = "8:_E894C756BDF7419086B49E199205ACA7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C5B72082B5ACDE1391111E82C1F315F9"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PesFile, Version=1.1.0.9, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:IniFile, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_9EBE649BA2CF681B845680CA66F0DCA4"
+                    "_C5B72082B5ACDE1391111E82C1F315F9"
                     {
-                    "Name" = "8:PesFile.dll"
+                    "Name" = "8:IniFile.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:PesFile.dll"
+            "SourcePath" = "8:IniFile.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9F4A293A076D47A8852C5CEE8B08045A"
@@ -192,20 +273,20 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C5B72082B5ACDE1391111E82C1F315F9"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D4B73E74533269A229FF8275ABE6F182"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:IniFile, Version=1.2.2.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PesFile, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_C5B72082B5ACDE1391111E82C1F315F9"
+                    "_D4B73E74533269A229FF8275ABE6F182"
                     {
-                    "Name" = "8:IniFile.dll"
+                    "Name" = "8:PesFile.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:IniFile.dll"
+            "SourcePath" = "8:PesFile.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9F4A293A076D47A8852C5CEE8B08045A"
@@ -273,6 +354,17 @@
             "Property" = "8:TARGETDIR"
                 "Folders"
                 {
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_E894C756BDF7419086B49E199205ACA7"
+                    {
+                    "Name" = "8:translations"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_A6E55FAE6BDA433A9AA014FC66904077"
+                        "Folders"
+                        {
+                        }
+                    }
                 }
             }
             "{1525181F-901A-416C-8A58-119130FE478E}:_A3351D9478504583BBA980BDAE3DF586"
@@ -329,7 +421,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Embroidery Reader"
         "ProductCode" = "8:{52DBACE5-86D0-4B2E-8427-5217463E8836}"
-        "PackageCode" = "8:{CCB6A056-F4B4-4204-9B61-46C93DCA2A0F}"
+        "PackageCode" = "8:{63A28432-DF12-4C31-86EF-2BD1E8930BDA}"
         "UpgradeCode" = "8:{CE1642E2-5EE0-454F-B7DF-5C9C92D6D40D}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -864,7 +956,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_C9EE96902F03442C98B3D1E4D4141407"
             {
-            "SourcePath" = "8:..\\embroideryReader\\obj\\Debug\\embroideryReader.exe"
+            "SourcePath" = "8:..\\embroideryReader\\obj\\Release\\embroideryReader.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9F4A293A076D47A8852C5CEE8B08045A"
