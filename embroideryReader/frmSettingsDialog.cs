@@ -143,14 +143,14 @@ namespace embroideryReader
             btnResetColor.Text = translation.GetTranslatedString(Translation.StringID.RESET_COLOR);
             grpStitch.Text = translation.GetTranslatedString(Translation.StringID.STITCH_DRAW);
             lblThreadThickness.Text = translation.GetTranslatedString(Translation.StringID.THREAD_THICKNESS);
-            txtThreadThickness.Left = lblThreadThickness.Left + lblThreadThickness.Width + 5;
+            txtThreadThickness.Left = lblThreadThickness.Right + 5;
             lblPixelThick.Text = translation.GetTranslatedString(Translation.StringID.PIXELS);
-            lblPixelThick.Left = txtThreadThickness.Left + lblThreadThickness.Width + 5;
+            lblPixelThick.Left = txtThreadThickness.Right + 5;
             chkUglyStitches.Text = translation.GetTranslatedString(Translation.StringID.REMOVE_UGLY_STITCHES);
             lblUglyLength.Text = translation.GetTranslatedString(Translation.StringID.UGLY_STITCH_LENGTH);
-            txtThreshold.Left = lblUglyLength.Left + lblUglyLength.Width + 5;
+            txtThreshold.Left = lblUglyLength.Right + 5;
             lblPixelLength.Text = translation.GetTranslatedString(Translation.StringID.PIXELS);
-            lblPixelLength.Left = txtThreshold.Left + txtThreshold.Width + 5;
+            lblPixelLength.Left = txtThreshold.Right + 5;
             chkDrawGrid.Text = translation.GetTranslatedString(Translation.StringID.ENABLE_TRANSPARENCY_GRID);
             grpLanguage.Text = translation.GetTranslatedString(Translation.StringID.LANGUAGE);
             btnCancel.Text = translation.GetTranslatedString(Translation.StringID.CANCEL);
@@ -158,9 +158,9 @@ namespace embroideryReader
             btnGridColor.Text = translation.GetTranslatedString(Translation.StringID.PICK_COLOR);
             btnResetGridColor.Text = translation.GetTranslatedString(Translation.StringID.RESET_COLOR);
             lblGridSize.Text = translation.GetTranslatedString(Translation.StringID.GRID_SIZE);
-            txtGridSize.Left = lblGridSize.Left + lblGridSize.Width + 5;
+            txtGridSize.Left = lblGridSize.Right + 5;
             lblGridSizePixels.Text = translation.GetTranslatedString(Translation.StringID.PIXELS);
-            lblGridSizePixels.Left = txtGridSize.Left + txtGridSize.Width + 5;
+            lblGridSizePixels.Left = txtGridSize.Right + 5;
             lblIncompleteTranslation.Text = translation.GetTranslatedString(Translation.StringID.TRANSLATION_INCOMPLETE);
         }
 
