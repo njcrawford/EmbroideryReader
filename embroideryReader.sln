@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{1BA749B5-4B20-4C6A-AAE0-57F3A718B6E7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryReader", "embroideryReader\embroideryReader.csproj", "{91B4187B-F1FB-40AD-BFBA-2DF2790965DB}"
@@ -12,8 +14,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PesFile", "PesFile\PesFile.csproj", "{DBF6F9B8-D00A-4BC0-BECF-EE4081F22375}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryThumbs", "embroideryThumbs\embroideryThumbs.csproj", "{C4E7E0E5-EA6E-45DC-809A-1EF1FF8CCFE0}"
-EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "Installer\Installer.vdproj", "{9E2138D0-FCD6-49A8-A6A9-4525E61BD25B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslationBuilder", "TranslationBuilder\TranslationBuilder.csproj", "{470DCEFF-9178-475E-B3A0-A1ABF42AB1ED}"
 EndProject
@@ -77,16 +77,6 @@ Global
 		{C4E7E0E5-EA6E-45DC-809A-1EF1FF8CCFE0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{C4E7E0E5-EA6E-45DC-809A-1EF1FF8CCFE0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C4E7E0E5-EA6E-45DC-809A-1EF1FF8CCFE0}.Release|x86.ActiveCfg = Release|Any CPU
-		{9E2138D0-FCD6-49A8-A6A9-4525E61BD25B}.Debug|Any CPU.ActiveCfg = Debug
-		{9E2138D0-FCD6-49A8-A6A9-4525E61BD25B}.Debug|Mixed Platforms.ActiveCfg = Debug
-		{9E2138D0-FCD6-49A8-A6A9-4525E61BD25B}.Debug|Mixed Platforms.Build.0 = Debug
-		{9E2138D0-FCD6-49A8-A6A9-4525E61BD25B}.Debug|x86.ActiveCfg = Debug
-		{9E2138D0-FCD6-49A8-A6A9-4525E61BD25B}.Debug|x86.Build.0 = Debug
-		{9E2138D0-FCD6-49A8-A6A9-4525E61BD25B}.Release|Any CPU.ActiveCfg = Release
-		{9E2138D0-FCD6-49A8-A6A9-4525E61BD25B}.Release|Mixed Platforms.ActiveCfg = Release
-		{9E2138D0-FCD6-49A8-A6A9-4525E61BD25B}.Release|Mixed Platforms.Build.0 = Release
-		{9E2138D0-FCD6-49A8-A6A9-4525E61BD25B}.Release|x86.ActiveCfg = Release
-		{9E2138D0-FCD6-49A8-A6A9-4525E61BD25B}.Release|x86.Build.0 = Release
 		{470DCEFF-9178-475E-B3A0-A1ABF42AB1ED}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{470DCEFF-9178-475E-B3A0-A1ABF42AB1ED}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{470DCEFF-9178-475E-B3A0-A1ABF42AB1ED}.Debug|Mixed Platforms.Build.0 = Debug|x86
