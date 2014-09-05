@@ -1,7 +1,7 @@
 /*
 Embridery Reader - an application to view .pes embroidery designs
 
-Copyright (C) 2013  Nathan Crawford
+Copyright (C) 2014 Nathan Crawford
  
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -54,5 +54,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.99.0.0")]
-[assembly: AssemblyFileVersion("1.99.0.0")]
+[assembly: AssemblyVersion("1.99.1.0")]
+[assembly: AssemblyFileVersion("1.99.1.0")]
