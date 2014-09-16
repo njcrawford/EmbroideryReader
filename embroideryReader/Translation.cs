@@ -144,12 +144,12 @@ namespace embroideryReader
         public String GetTranslatedString(StringID sid)
         {
             string retval;
-            retval = translationFile.getValue(sid.ToString());
+            retval = translationFile.getValue(sid.ToString(), (String)null);
             
             // Check the default translation if string is not found in the loaded translation
             if (retval == null)
             {
-                retval = defaultFile.getValue(sid.ToString());
+                retval = defaultFile.getValue(sid.ToString(), (String)null);
             }
 
             // If it's not found in the default, return a placeholder string
@@ -169,7 +169,7 @@ namespace embroideryReader
 
             for (StringID sid = (StringID)0; sid < StringID.TOTAL_COUNT; sid++)
             {
-                if (translationFile.getValue(sid.ToString()) == null)
+                if (translationFile.getValue(sid.ToString(), (String)null) == null)
                 {
                     retval = false;
                     break;

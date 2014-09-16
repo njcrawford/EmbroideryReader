@@ -63,13 +63,6 @@ namespace embroideryReader
 
         private const String SETTING_TRANSLATION = "translation";
 
-        // YES and NO are deprecated in favor of TRUE and FALSE
-        private const String VALUE_YES = "yes";
-        private const String VALUE_NO = "no";
-
-        private const String VALUE_TRUE = "true";
-        private const String VALUE_FALSE = "false";
-
         private const String UPDATE_URL = "http://www.njcrawford.com/updates/embroidery-reader.ini";
         private const String SETTINGS_FILENAME = "embroideryreader.ini";
         private const String SETTINGS_PATH_COMPANY = "NJCrawford Software";
@@ -95,70 +88,70 @@ namespace embroideryReader
                 // Windows 7. 
                 NJCrawford.IniFile oldSettings = new NJCrawford.IniFile(SETTINGS_FILENAME);
 
-                if (!String.IsNullOrEmpty(oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED)))
+                if (oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, -1) != -1)
                 {
-                    settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED));
+                    settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, ""));
                 }
 
-                if (!String.IsNullOrEmpty(oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_RED)))
+                if (oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_RED, -1) != -1)
                 {
-                    settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_RED, oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_RED));
+                    settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_RED, oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_RED, ""));
                 }
 
-                if (!String.IsNullOrEmpty(oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN)))
+                if (oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN, -1) != -1)
                 {
-                    settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN, oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN));
+                    settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN, oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN, ""));
                 }
 
-                if (!String.IsNullOrEmpty(oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE)))
+                if (oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE, -1) != -1)
                 {
-                    settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE, oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE));
+                    settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE, oldSettings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE, ""));
                 }
 
-                if (!String.IsNullOrEmpty(oldSettings.getValue(SETTING_FILTER_STITCHES)))
+                if (oldSettings.getValue(SETTING_FILTER_STITCHES, false))
                 {
-                    settings.setValue(SETTING_FILTER_STITCHES, oldSettings.getValue(SETTING_FILTER_STITCHES));
+                    settings.setValue(SETTING_FILTER_STITCHES, oldSettings.getValue(SETTING_FILTER_STITCHES, ""));
                 }
 
-                if (!String.IsNullOrEmpty(oldSettings.getValue(SETTING_FILTER_STITCHES_THRESHOLD)))
+                if (oldSettings.getValue(SETTING_FILTER_STITCHES_THRESHOLD, 0.0) > 0.0)
                 {
-                    settings.setValue(SETTING_FILTER_STITCHES_THRESHOLD, oldSettings.getValue(SETTING_FILTER_STITCHES_THRESHOLD));
+                    settings.setValue(SETTING_FILTER_STITCHES_THRESHOLD, oldSettings.getValue(SETTING_FILTER_STITCHES_THRESHOLD, ""));
                 }
 
-                if (!String.IsNullOrEmpty(oldSettings.getValue(SETTING_THREAD_THICKNESS)))
+                if (oldSettings.getValue(SETTING_THREAD_THICKNESS, 0.0) > 0.0)
                 {
-                    settings.setValue(SETTING_THREAD_THICKNESS, oldSettings.getValue(SETTING_THREAD_THICKNESS));
+                    settings.setValue(SETTING_THREAD_THICKNESS, oldSettings.getValue(SETTING_THREAD_THICKNESS, ""));
                 }
 
-                if (!String.IsNullOrEmpty(oldSettings.getValue(SETTING_LAST_OPEN_FILE_FOLDER)))
+                if (!String.IsNullOrEmpty(oldSettings.getValue(SETTING_LAST_OPEN_FILE_FOLDER, "")))
                 {
-                    settings.setValue(SETTING_LAST_OPEN_FILE_FOLDER, oldSettings.getValue(SETTING_LAST_OPEN_FILE_FOLDER));
+                    settings.setValue(SETTING_LAST_OPEN_FILE_FOLDER, oldSettings.getValue(SETTING_LAST_OPEN_FILE_FOLDER, ""));
                 }
 
-                if (!String.IsNullOrEmpty(oldSettings.getValue(SETTING_LAST_SAVE_IMAGE_LOCATION)))
+                if (!String.IsNullOrEmpty(oldSettings.getValue(SETTING_LAST_SAVE_IMAGE_LOCATION, "")))
                 {
-                    settings.setValue(SETTING_LAST_SAVE_IMAGE_LOCATION, oldSettings.getValue(SETTING_LAST_SAVE_IMAGE_LOCATION));
+                    settings.setValue(SETTING_LAST_SAVE_IMAGE_LOCATION, oldSettings.getValue(SETTING_LAST_SAVE_IMAGE_LOCATION, ""));
                 }
             }
 
             // Default to transparency grid enabled
-            if (String.IsNullOrWhiteSpace(settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_ENABLE)))
+            if (String.IsNullOrWhiteSpace(settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_ENABLE, "")))
             {
-                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_ENABLE, VALUE_TRUE);
+                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_ENABLE, true);
             }
 
             // Update deprecated settings
-            if (settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED) == VALUE_YES)
+            if (settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, "") == "yes")
             {
-                settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, VALUE_TRUE);
+                settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, true);
             }
-            else if (settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED) == VALUE_NO)
+            else
             {
-                settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, VALUE_FALSE);
+                settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, false);
             }
 
             // Default language to english
-            if (String.IsNullOrWhiteSpace(settings.getValue(SETTING_TRANSLATION)))
+            if (String.IsNullOrWhiteSpace(settings.getValue(SETTING_TRANSLATION, "")))
             {
                 settings.setValue(SETTING_TRANSLATION, "English (EN-US)");
             }
@@ -178,16 +171,11 @@ namespace embroideryReader
         {
             get
             {
-                return (settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED) == VALUE_TRUE);
+                return settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, false);
             }
             set
             {
-                String output = VALUE_FALSE;
-                if (value)
-                {
-                    output = VALUE_TRUE;
-                }
-                settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, output);
+                settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_ENABLED, value);
             }
         }
 
@@ -195,31 +183,27 @@ namespace embroideryReader
         {
             get
             {
-                if (backgroundColorEnabled)
+                if (!backgroundColorEnabled)
                 {
-                    if (frmMain.checkColorFromStrings(settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_RED),
-                                              settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN),
-                                              settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE)))
-                    {
-                        return frmMain.makeColorFromStrings(settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_RED),
-                                                    settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN),
-                                                    settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE));
-                    }
-                    else
-                    {
-                        return System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
-                    }
+                    return System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
                 }
-                else
+
+                try
+                {
+                    return System.Drawing.Color.FromArgb(settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_RED, -1),
+                                              settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN, -1),
+                                              settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE, -1));
+                }
+                catch(ArgumentException argEx)
                 {
                     return System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
                 }
             }
             set
             {
-                settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_RED, value.R.ToString());
-                settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN, value.G.ToString());
-                settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE, value.B.ToString());
+                settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_RED, value.R);
+                settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN, value.G);
+                settings.setValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE, value.B);
             }
         }
 
@@ -227,16 +211,11 @@ namespace embroideryReader
         {
             get
             {
-                return (settings.getValue(SETTING_FILTER_STITCHES) == VALUE_TRUE);
+                return (settings.getValue(SETTING_FILTER_STITCHES, false));
             }
             set
             {
-                String output = VALUE_FALSE;
-                if (value)
-                {
-                    output = VALUE_TRUE;
-                }
-                settings.setValue(SETTING_FILTER_STITCHES, output);
+                settings.setValue(SETTING_FILTER_STITCHES, value);
             }
         }
 
@@ -244,22 +223,16 @@ namespace embroideryReader
         {
             get
             {
-                double thickness = 5;
-                if (settings.getValue(SETTING_THREAD_THICKNESS) != null)
+                double thickness = settings.getValue(SETTING_THREAD_THICKNESS, 5.0);
+                if (thickness < 1.0)
                 {
-                    if (Double.TryParse(settings.getValue(SETTING_THREAD_THICKNESS), out thickness))
-                    {
-                        if (thickness < 1)
-                        {
-                            thickness = 1;
-                        }
-                    }
+                    thickness = 1.0;
                 }
                 return thickness;
             }
             set
             {
-                settings.setValue(SETTING_THREAD_THICKNESS, value.ToString());
+                settings.setValue(SETTING_THREAD_THICKNESS, value);
             }
         }
 
@@ -267,22 +240,16 @@ namespace embroideryReader
         {
             get
             {
-                double threshold = 64;
-                if (settings.getValue(SETTING_FILTER_STITCHES_THRESHOLD) != null)
+                double threshold = settings.getValue(SETTING_FILTER_STITCHES_THRESHOLD, 64.0);
+                if (threshold < 10.0)
                 {
-                    if (Double.TryParse(settings.getValue(SETTING_FILTER_STITCHES_THRESHOLD), out threshold))
-                    {
-                        if (threshold < 10)
-                        {
-                            threshold = 10;
-                        }
-                    }
+                    threshold = 10.0;
                 }
                 return threshold;
             }
             set
             {
-                settings.setValue(SETTING_FILTER_STITCHES_THRESHOLD, value.ToString());
+                settings.setValue(SETTING_FILTER_STITCHES_THRESHOLD, value);
             }
         }
 
@@ -290,7 +257,7 @@ namespace embroideryReader
         {
             get
             {
-                return settings.getValue(SETTING_LAST_OPEN_FILE_FOLDER);
+                return settings.getValue(SETTING_LAST_OPEN_FILE_FOLDER, "");
             }
             set
             {
@@ -307,7 +274,7 @@ namespace embroideryReader
         {
             get
             {
-                return settings.getValue(SETTING_LAST_SAVE_IMAGE_LOCATION);
+                return settings.getValue(SETTING_LAST_SAVE_IMAGE_LOCATION, "");
             }
             set
             {
@@ -319,17 +286,11 @@ namespace embroideryReader
         {
             get
 	        {
-                Int32 retval;
-                string temp = settings.getValue(SETTING_WINDOW_WIDTH);
-                if(!Int32.TryParse(temp, out retval))
-                {
-                    retval = 300;
-                }
-		        return retval;
+                return settings.getValue(SETTING_WINDOW_WIDTH, 300);
 	        }
 	        set
 	        {
-	            settings.setValue(SETTING_WINDOW_WIDTH, value.ToString());
+	            settings.setValue(SETTING_WINDOW_WIDTH, value);
 	        }
         }
 
@@ -337,17 +298,11 @@ namespace embroideryReader
         {
             get
             {
-                Int32 retval;
-                string temp = settings.getValue(SETTING_WINDOW_HEIGHT);
-                if (!Int32.TryParse(temp, out retval))
-                {
-                    retval = 300;
-                }
-                return retval;
+                return settings.getValue(SETTING_WINDOW_HEIGHT, 300);
             }
             set
             {
-                settings.setValue(SETTING_WINDOW_HEIGHT, value.ToString());
+                settings.setValue(SETTING_WINDOW_HEIGHT, value);
             }
         }
 
@@ -355,16 +310,11 @@ namespace embroideryReader
         {
             get
             {
-                return (settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_ENABLE) == VALUE_TRUE);
+                return (settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_ENABLE, false));
             }
             set
             {
-                String output = VALUE_FALSE;
-                if (value)
-                {
-                    output = VALUE_TRUE;
-                }
-                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_ENABLE, output);
+                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_ENABLE, value);
             }
         }
 
@@ -372,17 +322,11 @@ namespace embroideryReader
         {
             get
             {
-                Int32 retval;
-                string temp = settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_SIZE);
-                if (!Int32.TryParse(temp, out retval))
-                {
-                    retval = 5;
-                }
-                return retval;
+                return settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_SIZE, 5);
             }
             set
             {
-                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_SIZE, value.ToString());
+                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_SIZE, value);
             }
         }
 
@@ -390,31 +334,27 @@ namespace embroideryReader
         {
             get
             {
-                if (transparencyGridEnabled)
+                if (!transparencyGridEnabled)
                 {
-                    if (frmMain.checkColorFromStrings(settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_RED),
-                                              settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_GREEN),
-                                              settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_BLUE)))
-                    {
-                        return frmMain.makeColorFromStrings(settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_RED),
-                                                    settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_GREEN),
-                                                    settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_BLUE));
-                    }
-                    else
-                    {
-                        return System.Drawing.Color.LightGray;
-                    }
+                    return System.Drawing.Color.LightGray;
                 }
-                else
+
+                try
+                {
+                    return System.Drawing.Color.FromArgb(settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_RED, -1),
+                                            settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_GREEN, -1),
+                                            settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_BLUE, -1));
+                }
+                catch(ArgumentException argEx)
                 {
                     return System.Drawing.Color.LightGray;
                 }
             }
             set
             {
-                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_RED, value.R.ToString());
-                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_GREEN, value.G.ToString());
-                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_BLUE, value.B.ToString());
+                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_RED, value.R);
+                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_GREEN, value.G);
+                settings.setValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_BLUE, value.B);
             }
         }
 
@@ -422,7 +362,7 @@ namespace embroideryReader
         {
             get
             {
-                return settings.getValue(SETTING_TRANSLATION);
+                return settings.getValue(SETTING_TRANSLATION, "");
             }
             set
             {
