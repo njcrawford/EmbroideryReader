@@ -38,6 +38,9 @@ namespace embroideryReader
             this.txtThreadThickness = new System.Windows.Forms.TextBox();
             this.lblPixelThick = new System.Windows.Forms.Label();
             this.grpBackground = new System.Windows.Forms.GroupBox();
+            this.txtGridSize = new System.Windows.Forms.TextBox();
+            this.lblGridSizePixels = new System.Windows.Forms.Label();
+            this.lblGridSize = new System.Windows.Forms.Label();
             this.btnResetGridColor = new System.Windows.Forms.Button();
             this.btnGridColor = new System.Windows.Forms.Button();
             this.pnlBackground = new System.Windows.Forms.Panel();
@@ -51,9 +54,6 @@ namespace embroideryReader
             this.cmbLanguage = new System.Windows.Forms.ComboBox();
             this.grpLanguage = new System.Windows.Forms.GroupBox();
             this.lblIncompleteTranslation = new System.Windows.Forms.Label();
-            this.lblGridSize = new System.Windows.Forms.Label();
-            this.lblGridSizePixels = new System.Windows.Forms.Label();
-            this.txtGridSize = new System.Windows.Forms.TextBox();
             this.grpBackground.SuspendLayout();
             this.pnlBackground.SuspendLayout();
             this.grpStitch.SuspendLayout();
@@ -144,6 +144,32 @@ namespace embroideryReader
             this.grpBackground.TabIndex = 8;
             this.grpBackground.TabStop = false;
             this.grpBackground.Text = "Background";
+            // 
+            // txtGridSize
+            // 
+            this.txtGridSize.Location = new System.Drawing.Point(64, 96);
+            this.txtGridSize.Name = "txtGridSize";
+            this.txtGridSize.Size = new System.Drawing.Size(32, 20);
+            this.txtGridSize.TabIndex = 18;
+            this.txtGridSize.TextChanged += new System.EventHandler(this.txtGridSize_TextChanged);
+            // 
+            // lblGridSizePixels
+            // 
+            this.lblGridSizePixels.AutoSize = true;
+            this.lblGridSizePixels.Location = new System.Drawing.Point(102, 99);
+            this.lblGridSizePixels.Name = "lblGridSizePixels";
+            this.lblGridSizePixels.Size = new System.Drawing.Size(33, 13);
+            this.lblGridSizePixels.TabIndex = 17;
+            this.lblGridSizePixels.Text = "pixels";
+            // 
+            // lblGridSize
+            // 
+            this.lblGridSize.AutoSize = true;
+            this.lblGridSize.Location = new System.Drawing.Point(6, 99);
+            this.lblGridSize.Name = "lblGridSize";
+            this.lblGridSize.Size = new System.Drawing.Size(52, 13);
+            this.lblGridSize.TabIndex = 16;
+            this.lblGridSize.Text = "Grid Size:";
             // 
             // btnResetGridColor
             // 
@@ -278,32 +304,6 @@ namespace embroideryReader
             this.lblIncompleteTranslation.Text = "Translation is incomplete";
             this.lblIncompleteTranslation.Visible = false;
             // 
-            // lblGridSize
-            // 
-            this.lblGridSize.AutoSize = true;
-            this.lblGridSize.Location = new System.Drawing.Point(6, 99);
-            this.lblGridSize.Name = "lblGridSize";
-            this.lblGridSize.Size = new System.Drawing.Size(52, 13);
-            this.lblGridSize.TabIndex = 16;
-            this.lblGridSize.Text = "Grid Size:";
-            // 
-            // lblGridSizePixels
-            // 
-            this.lblGridSizePixels.AutoSize = true;
-            this.lblGridSizePixels.Location = new System.Drawing.Point(102, 99);
-            this.lblGridSizePixels.Name = "lblGridSizePixels";
-            this.lblGridSizePixels.Size = new System.Drawing.Size(33, 13);
-            this.lblGridSizePixels.TabIndex = 17;
-            this.lblGridSizePixels.Text = "pixels";
-            // 
-            // txtGridSize
-            // 
-            this.txtGridSize.Location = new System.Drawing.Point(64, 96);
-            this.txtGridSize.Name = "txtGridSize";
-            this.txtGridSize.Size = new System.Drawing.Size(32, 20);
-            this.txtGridSize.TabIndex = 18;
-            this.txtGridSize.TextChanged += new System.EventHandler(this.txtGridSize_TextChanged);
-            // 
             // frmSettingsDialog
             // 
             this.AcceptButton = this.btnOK;
@@ -323,6 +323,7 @@ namespace embroideryReader
             this.Name = "frmSettingsDialog";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Embroidery Reader Settings";
+            this.Load += new System.EventHandler(this.frmSettingsDialog_Load);
             this.grpBackground.ResumeLayout(false);
             this.grpBackground.PerformLayout();
             this.pnlBackground.ResumeLayout(false);

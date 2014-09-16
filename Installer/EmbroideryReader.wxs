@@ -51,10 +51,10 @@
             </Component>
             <Directory Id="_A6E55FAE6BDA433A9AA014FC66904077" Name="translations">
                 <Component Id="TranslationInis" Guid="29712DD3-062D-4767-AB4F-8F390FF57BED">
-                    <File Id="ENGLISH__EN_US_.INI" Name="English (EN-US).ini" Source="..\translations\English (EN-US).ini" DiskId="1" />
-                    <File Id="ITALIANO__IT_.INI" Name="Italiano (IT).ini" Source="..\translations\Italiano (IT).ini" DiskId="1" />
-                    <File Id="_________ZH_HANS_.INI" Name="中文 (简体) (zh-hans).ini" Source="..\translations\中文 (简体) (zh-hans).ini" DiskId="1" />
-                    <File Id="________ZH_HANT_.INI" Name="中文(繁体) (zh-hant).ini" Source="..\translations\中文(繁体) (zh-hant).ini" DiskId="1" />
+                    <File Id="EN_US.INI" Name="EN-US.ini" Source="..\translations\EN-US.ini" DiskId="1" />
+                    <File Id="IT.INI" Name="IT.ini" Source="..\translations\IT.ini" DiskId="1" />
+                    <File Id="ZH_HANS.INI" Name="zh-hans.ini" Source="..\translations\zh-hans.ini" DiskId="1" />
+                    <File Id="ZH_HANT.INI" Name="zh-hant.ini" Source="..\translations\zh-hant.ini" DiskId="1" />
                 </Component>
             </Directory>
             <Directory Id="DesktopFolder" SourceName="User's Desktop" />

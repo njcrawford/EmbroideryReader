@@ -34,10 +34,12 @@ namespace embroideryReader
     {
         private const string TRANSLATIONS_FOLDER = "translations";
         private const string TRANSLATION_FILE_EXT = ".ini";
-        private const string DEFAULT_TRANSLATION_NAME = "English (EN-US)";
+        private const string DEFAULT_TRANSLATION_NAME = "EN-US";
 
         // String IDs
         public enum StringID {
+            TRANSLATION_DISPLAY_NAME,
+
             UNSUPPORTED_FORMAT,
             COLOR_WARNING,
             ERROR_FILE,
@@ -117,16 +119,19 @@ namespace embroideryReader
         }
 
         // Returns the names of available translations
-        // Names are just the file name without the extension
-        public List<String> GetAvailableTranslations()
+        // The first value of each tubple is the display name, the second value
+        // is the file name that must be passed to the open function.
+        public List<Tuple<String, String>> GetAvailableTranslations()
         {
-            List<String> retval = new List<string>();
+            List<Tuple<String, String>> retval = new List<Tuple<String, String>>();
             foreach (String file in System.IO.Directory.EnumerateFiles(
                 System.IO.Path.Combine(Environment.CurrentDirectory, TRANSLATIONS_FOLDER),
                 "*" + TRANSLATION_FILE_EXT,
                 System.IO.SearchOption.TopDirectoryOnly))
             {
-                retval.Add(System.IO.Path.GetFileNameWithoutExtension(file));
+                IniFile tempFile = new IniFile(file);
+
+                retval.Add(new Tuple<String, String>(tempFile.getValue(StringID.TRANSLATION_DISPLAY_NAME.ToString(), ""), System.IO.Path.GetFileNameWithoutExtension(file)));
             }
             return retval;
         }
@@ -135,8 +140,16 @@ namespace embroideryReader
         // Names are just the file name without the extension
         public void Load(String translationName)
         {
-            translationFile = new IniFile(System.IO.Path.Combine(TRANSLATIONS_FOLDER, translationName + TRANSLATION_FILE_EXT));
             defaultFile = new IniFile(System.IO.Path.Combine(TRANSLATIONS_FOLDER, DEFAULT_TRANSLATION_NAME + TRANSLATION_FILE_EXT));
+            String translationPath = System.IO.Path.Combine(TRANSLATIONS_FOLDER, translationName + TRANSLATION_FILE_EXT);
+            if (System.IO.File.Exists(translationPath))
+            {
+                translationFile = new IniFile(translationPath);
+            }
+            else
+            {
+                translationFile = defaultFile;
+            }
         }
 
         // Returns the translated string, or a string representation of the
@@ -144,16 +157,16 @@ namespace embroideryReader
         public String GetTranslatedString(StringID sid)
         {
             string retval;
-            retval = translationFile.getValue(sid.ToString(), (String)null);
+            retval = translationFile.getValue(sid.ToString(), "");
             
             // Check the default translation if string is not found in the loaded translation
-            if (retval == null)
+            if (String.IsNullOrEmpty(retval))
             {
-                retval = defaultFile.getValue(sid.ToString(), (String)null);
+                retval = defaultFile.getValue(sid.ToString(), "");
             }
 
             // If it's not found in the default, return a placeholder string
-            if (retval == null)
+            if (String.IsNullOrEmpty(retval))
             {
                 retval = "%" + sid.ToString() + "%";
             }

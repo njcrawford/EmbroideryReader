@@ -37,6 +37,7 @@ namespace embroideryReader
     {
         private EmbroideryReaderSettings settings;
         private Translation translation;
+        private List<Tuple<String, String>> availableTranslations = new List<Tuple<string,string>>();
 
         public EmbroideryReaderSettings settingsToModify
         {
@@ -114,7 +115,7 @@ namespace embroideryReader
                 settings.transparencyGridSize = gridSize;
             }
 
-            settings.translation = cmbLanguage.SelectedItem.ToString();
+            settings.translation = availableTranslations[cmbLanguage.SelectedIndex].Item2;
         }
 
         public Translation setTranslation
@@ -123,13 +124,14 @@ namespace embroideryReader
             {
                 translation = value;
                 loadTranslatedStrings();
-                foreach (String s in translation.GetAvailableTranslations())
+                availableTranslations = translation.GetAvailableTranslations();
+                foreach (Tuple<String, String> names in availableTranslations)
                 {
-                    cmbLanguage.Items.Add(s);
-                }
-                if (cmbLanguage.Items.Count > 0)
-                {
-                    cmbLanguage.SelectedItem = settings.translation;
+                    cmbLanguage.Items.Add(names.Item1 + " (" + names.Item2 + ")");
+                    if(names.Item2 == settings.translation)
+                    {
+                        cmbLanguage.SelectedIndex = cmbLanguage.Items.Count - 1;
+                    }
                 }
             }
         }
@@ -166,7 +168,7 @@ namespace embroideryReader
 
         private void cmbLanguage_SelectedIndexChanged(object sender, EventArgs e)
         {
-            translation.Load(cmbLanguage.SelectedItem.ToString());
+            translation.Load(availableTranslations[cmbLanguage.SelectedIndex].Item2);
             lblIncompleteTranslation.Visible = !translation.IsComplete();
             loadTranslatedStrings();
         }
@@ -235,6 +237,11 @@ namespace embroideryReader
                 settings.transparencyGridSize = gridSize;
                 pnlBackground.Invalidate();
             }
+        }
+
+        private void frmSettingsDialog_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
