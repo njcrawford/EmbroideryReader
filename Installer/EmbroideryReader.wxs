@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-    <Product Id="A673ADAF-4BB4-4C19-BED4-696ED8F54C02" Codepage="65001" Language="1033" Manufacturer="NJCrawford Software" Name="Embroidery Reader" UpgradeCode="{CE1642E2-5EE0-454F-B7DF-5C9C92D6D40D}" Version="1.99.1">
+    <?define ProductVersion="1.99.3" ?>
+    <Product Id="FE7B4CB0-2DC0-459E-8B4D-4A1CD22B2F91" Codepage="65001" Language="1033" Manufacturer="NJCrawford Software" Name="Embroidery Reader" UpgradeCode="{CE1642E2-5EE0-454F-B7DF-5C9C92D6D40D}" Version="$(var.ProductVersion)">
         <Package Compressed="yes" InstallerVersion="200" Languages="1033" Manufacturer="Nathan Crawford" Platform="x86" />
         <Binary Id="MSVBDPCADLL" SourceFile="Binary\MSVBDPCADLL" />
         <Binary Id="VSDNETCFG" SourceFile="Binary\VSDNETCFG" />
         <Binary Id="DefBannerBitmap" SourceFile="Binary\DefBannerBitmap" />
         <Binary Id="UpFldrBtn" SourceFile="Binary\UpFldrBtn" />
         <Binary Id="NewFldrBtn" SourceFile="Binary\NewFldrBtn" />
-        <Condition Message="Embroidery Reader 1.5.0 or earlier is installed. Please remove previous versions of Embroidery Reader and run the installer again.">OLD_INSTALL = null</Condition>
+        <Condition Message="Embroidery Reader 1.5 or earlier is installed. Please remove previous versions of Embroidery Reader and run the installer again.">OLD_INSTALL = null</Condition>
         <CustomAction Id="DIRCA_TARGETDIR" Property="TARGETDIR" Value="[ProgramFilesFolder][Manufacturer]\[ProductName]" Execute="firstSequence" />
         <CustomAction Id="DIRCA_CheckFX" BinaryKey="MSVBDPCADLL" DllEntry="CheckFX" />
         <CustomAction Id="VSDCA_VsdLaunchConditions" BinaryKey="MSVBDPCADLL" DllEntry="VsdLaunchConditions" />
         <CustomAction Id="ERRCA_CANCELNEWERVERSION" Error="[VSDVERSIONMSG]" />
         <CustomAction Id="ERRCA_UIANDADVERTISED" Error="[VSDUIANDADVERTISED]" />
         <CustomAction Id="VSDCA_FolderForm_AllUsers" Property="FolderForm_AllUsers" Value="ALL" />
+        <CustomAction Id="PreventDowngrading" Error="Newer version already installed." />
         <CustomTable Id="_VsdLaunchCondition">
             <Column Id="Condition" PrimaryKey="yes" Type="string" Width="255" Category="Condition" Description="Expression which must evaluate to TRUE in order for install to commence." Modularize="Condition" />
             <Column Id="Description" Type="string" Width="255" Localizable="yes" Category="Formatted" Description="Localizable text to display when condition fails and install must abort." Modularize="Property" />
@@ -682,13 +684,15 @@
             </Dialog>
         </UI>
         <Upgrade Id="{CE1642E2-5EE0-454F-B7DF-5C9C92D6D40D}">
-            <UpgradeVersion Minimum="1.99.0" Property="NEWERPRODUCTFOUND" OnlyDetect="yes" IncludeMinimum="yes" />
+            <UpgradeVersion Minimum="$(var.ProductVersion)" Property="NEWERPRODUCTFOUND" OnlyDetect="yes" IncludeMinimum="no" />
+            <UpgradeVersion Property="UPGRADEFOUND" IncludeMinimum="yes" Minimum="1.99.0" Maximum="$(var.ProductVersion)" MigrateFeatures="yes" IncludeMaximum="no" />
         </Upgrade>
         <InstallExecuteSequence>
             <Custom Action="DIRCA_CheckFX" Sequence="1" />
-            <Custom Action="ERRCA_CANCELNEWERVERSION" Sequence="201">NEWERPRODUCTFOUND AND NOT Installed</Custom>
+            <Custom Action="ERRCA_CANCELNEWERVERSION" Sequence="210">NEWERPRODUCTFOUND AND NOT Installed</Custom>
             <Custom Action="VSDCA_VsdLaunchConditions" Sequence="399">NOT Installed</Custom>
             <Custom Action="DIRCA_TARGETDIR" Sequence="750">TARGETDIR=""</Custom>
+            <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWERPRODUCTFOUND</Custom>
             <LaunchConditions Sequence="400">NOT Installed</LaunchConditions>
             <FindRelatedProducts Sequence="200" />
             <AppSearch Sequence="100" />
@@ -762,6 +766,7 @@
             <Custom Action="VSDCA_VsdLaunchConditions" Sequence="399">NOT Installed</Custom>
             <Custom Action="DIRCA_TARGETDIR" Sequence="750">TARGETDIR=""</Custom>
             <Custom Action="VSDCA_FolderForm_AllUsers" Sequence="997">Installed="" AND NOT RESUME AND ALLUSERS=1</Custom>
+            <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWERPRODUCTFOUND</Custom>
             <Show Dialog="FatalErrorForm" OnExit="error">NOT HideFatalErrorForm</Show>
             <Show Dialog="UserExitForm" OnExit="cancel" />
             <Show Dialog="FinishedForm" OnExit="success" />
