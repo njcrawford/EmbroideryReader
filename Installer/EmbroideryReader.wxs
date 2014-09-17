@@ -25,31 +25,21 @@
             </Row>
         </CustomTable>
         <Directory Id="TARGETDIR" Name="SourceDir">
-            <Component Id="UpdateCheckDll" Guid="{9D889989-2240-010E-1839-C746094CCA01}">
-                <File Id="_02FF6E888AB8D1309C32899590FB8D36" Name="UpdateCheck.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_02FF6E888AB8D1309C32899590FB8D36" AssemblyApplication="_02FF6E888AB8D1309C32899590FB8D36" DiskId="1" Source="..\embroideryReader\UpdateCheck.dll" />
-            </Component>
-            <Component Id="IniFileDll" Guid="{78A21EEF-7606-7443-57AC-5B09CFFAB44D}">
-                <File Id="_C5B72082B5ACDE1391111E82C1F315F9" Name="IniFile.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_C5B72082B5ACDE1391111E82C1F315F9" AssemblyApplication="_C5B72082B5ACDE1391111E82C1F315F9" DiskId="1" Source="..\embroideryReader\IniFile.dll" />
-            </Component>
-            <Component Id="PesFileDll" Guid="{78C2D8DB-9192-F971-AECA-0DD38BBB9E96}">
-                <File Id="_D4B73E74533269A229FF8275ABE6F182" Name="PesFile.dll" KeyPath="yes" Assembly=".net" AssemblyManifest="_D4B73E74533269A229FF8275ABE6F182" AssemblyApplication="_D4B73E74533269A229FF8275ABE6F182" DiskId="1" Source="..\PesFile\bin\Release\PesFile.dll" />
-            </Component>
             <Component Id="EmbroideryReader" Guid="{49A5698C-169C-16FA-DEE3-71DED167556C}">
-                <File Id="_B59ED7B688C3AF41B22EA543C8D2F51F" Name="embroideryReader.exe" KeyPath="yes" Assembly=".net" AssemblyManifest="_B59ED7B688C3AF41B22EA543C8D2F51F" AssemblyApplication="_B59ED7B688C3AF41B22EA543C8D2F51F" DiskId="1" Source="..\embroideryReader\bin\Release\embroideryReader.exe" />
-                <ProgId Id="EmbroideryDesign" Description="Embroidery Design File" Icon="EmbroideryReaderIcon.exe" IconIndex="0" Advertise="yes">
+                <File Id="embroideryReader.exe" Name="embroideryReader.exe" DiskId="1" Source="..\embroideryReader\bin\Release\embroideryReader.exe" />
+                <File DiskId="1" Id="embroideryReaderExeConfig" Name="embroideryReader.exe.config" Source="..\embroideryReader\bin\Release\embroideryReader.exe.config" />
+                <ProgId Id="EmbroideryDesign" Description="Embroidery Design File" Icon="embroideryReader.exe" IconIndex="0" Advertise="yes">
                     <Extension Id="pes" Advertise="yes">
                         <Verb Id="open" Command="&amp;Open" Argument="&quot;%1&quot;" Sequence="1" />
                     </Extension>
                 </ProgId>
-                <Shortcut Id="_6B7DE89BB7F9427F8FC790B310F38738" Directory="_90CF7B63C3384CAEBD065FA8FD73766E" Name="Embroidery Reader" Icon="EmbroideryReaderIcon.exe" IconIndex="0" Show="normal" WorkingDirectory="TARGETDIR" Advertise="yes" />
+                <Shortcut Id="EmbroideryReaderShortcut" Directory="ApplicationProgramsFolder" Name="Embroidery Reader" Icon="embroideryReader.exe" IconIndex="0" Show="normal" WorkingDirectory="TARGETDIR" Advertise="yes" />
+                <File Id="PesFile.dll" Name="PesFile.dll" DiskId="1" Source="..\PesFile\bin\Release\PesFile.dll" />
+                <File Id="UpdateCheck.dll" Name="UpdateCheck.dll" DiskId="1" Source="..\embroideryReader\UpdateCheck.dll" />
+                <File Id="IniFile.dll" Name="IniFile.dll" DiskId="1" Source="..\embroideryReader\IniFile.dll" />
+                <RemoveFolder Id="RemoveStartMenuFolder" On="uninstall" Directory="ApplicationProgramsFolder" />
             </Component>
-            <Component Id="C__746C69616E6711D38E0D00C04F6837D0" Guid="{C3329C1B-EC4B-419C-9EFA-1B57D89F4543}" KeyPath="yes">
-                <RemoveFolder Id="_EF56293375A34AE586FD3C3A3A9F1405" Directory="_90CF7B63C3384CAEBD065FA8FD73766E" On="both" />
-            </Component>
-            <Component Id="C__6E3ABFABF4E7BB83843631F01B445CB4" Guid="{3F6C4103-8FFF-2FC8-374D-C5255B10ACD4}">
-                <File Id="_6E3ABFABF4E7BB83843631F01B445CB4" Name="embroideryReader.exe.config" KeyPath="yes" DiskId="1" Source="..\embroideryReader\bin\Release\embroideryReader.exe.config" />
-            </Component>
-            <Directory Id="_A6E55FAE6BDA433A9AA014FC66904077" Name="translations">
+            <Directory Id="translations" Name="translations">
                 <Component Id="TranslationInis" Guid="29712DD3-062D-4767-AB4F-8F390FF57BED">
                     <File Id="EN_US.INI" Name="EN-US.ini" Source="..\translations\EN-US.ini" DiskId="1" />
                     <File Id="IT.INI" Name="IT.ini" Source="..\translations\IT.ini" DiskId="1" />
@@ -59,19 +49,14 @@
             </Directory>
             <Directory Id="DesktopFolder" SourceName="User's Desktop" />
             <Directory Id="ProgramMenuFolder" SourceName="User's Programs Menu">
-                <Directory Id="_90CF7B63C3384CAEBD065FA8FD73766E" Name="Embroidery Reader" />
+                <Directory Id="ApplicationProgramsFolder" Name="Embroidery Reader" />
             </Directory>
         </Directory>
         <Feature Id="DefaultFeature" ConfigurableDirectory="TARGETDIR" Level="1">
-            <ComponentRef Id="UpdateCheckDll" Primary="yes" />
             <ComponentRef Id="TranslationInis" />
-            <ComponentRef Id="IniFileDll" Primary="yes" />
-            <ComponentRef Id="PesFileDll" Primary="yes" />
             <ComponentRef Id="EmbroideryReader" Primary="yes" />
-            <ComponentRef Id="C__746C69616E6711D38E0D00C04F6837D0" />
-            <ComponentRef Id="C__6E3ABFABF4E7BB83843631F01B445CB4" />
         </Feature>
-        <Icon Id="EmbroideryReaderIcon.exe" SourceFile="..\embroideryReader\bin\Release\embroideryReader.exe" />
+        <Icon Id="embroideryReader.exe" SourceFile="..\embroideryReader\bin\Release\embroideryReader.exe" />
         <Media Id="1" Cabinet="_48EE6673B80E6A8A16CFAB058CFEFA12" EmbedCab="yes" />
         <Property Id="VSDFrameworkVersion" Value="v4.0" />
         <Property Id="VSDFrameworkProfile" Value="Client" />
@@ -80,7 +65,7 @@
         <Property Id="ARPCONTACT" Value="Nathan Crawford" />
         <Property Id="ARPURLINFOABOUT" Value="http://www.njcrawford.com/" />
         <Property Id="ALLUSERS" Value="2" />
-        <Property Id="ARPPRODUCTICON" Value="EmbroideryReaderIcon" />
+        <Property Id="ARPPRODUCTICON" Value="embroideryReader.exe" />
         <Property Id="NEWERPRODUCTFOUND" Secure="yes" />
         <Property Id="VSDNETURLMSG" Value="This setup requires the .NET Framework version [1].  Please install the .NET Framework and run this setup again.  The .NET Framework can be obtained from the web.  Would you like to do this now?" />
         <Property Id="VSDIISMSG" Value="This setup requires Internet Information Server 5.1 or higher and Windows XP or higher.  This setup cannot be installed on Windows 2000.  Please install Internet Information Server or a newer operating system and run this setup again." />
@@ -105,7 +90,7 @@
         <Property Id="AdminFolderForm_NextArgs" Value="AdminConfirmInstallForm" />
         <Property Id="AdminConfirmInstallForm_PrevArgs" Value="AdminFolderForm" />
         <Property Id="OLD_INSTALL">
-            <RegistrySearch Id="__C166758ECA2C44ACA6D3EBB5449D1FFD" Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Embroidery Reader" Name="DisplayName" Type="raw" />
+            <RegistrySearch Id="SearchForOldVersions" Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Embroidery Reader" Name="DisplayName" Type="raw" />
         </Property>
         <UI>
             <RadioButtonGroup Property="AdminMaintenanceForm_Action">
