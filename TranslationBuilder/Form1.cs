@@ -20,6 +20,11 @@ namespace TranslationBuilder
 
         private void button1_Click(object sender, EventArgs e)
         {
+            button1.Enabled = false;
+            lblStatus.Text = "Building...";
+            this.Invalidate();
+            Application.DoEvents();
+
             List<string> languageName = new List<string>();
             List<string> outputs = new List<string>();
             DataSet theData = new OdsReaderWriter().ReadOdsFile("..\\..\\..\\translations\\translations.ods");
@@ -71,7 +76,7 @@ namespace TranslationBuilder
                 outfile.Close();
                 //MessageBox.Show(languageName[i] + Environment.NewLine + outputs[i]);
             }
-            MessageBox.Show("Done");
+            lblStatus.Text = "Done";
         }
     }
 }

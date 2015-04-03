@@ -49,6 +49,19 @@ namespace embroideryReader
             this.rotateLeftToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rotateRightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.zoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fitToWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scale100ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scale90ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scale80ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scale70ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scale60ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scale50ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scale40ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scale30ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scale20ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scale10ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scale5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkForUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveDebugInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -191,7 +204,8 @@ namespace embroideryReader
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.rotateLeftToolStripMenuItem,
             this.rotateRightToolStripMenuItem,
-            this.refreshToolStripMenuItem});
+            this.refreshToolStripMenuItem,
+            this.zoomToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
@@ -219,6 +233,112 @@ namespace embroideryReader
             this.refreshToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.refreshToolStripMenuItem.Text = "Reset / Refresh";
             this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
+            // 
+            // zoomToolStripMenuItem
+            // 
+            this.zoomToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fitToWindowToolStripMenuItem,
+            this.scale100ToolStripMenuItem,
+            this.scale90ToolStripMenuItem,
+            this.scale80ToolStripMenuItem,
+            this.scale70ToolStripMenuItem,
+            this.scale60ToolStripMenuItem,
+            this.scale50ToolStripMenuItem,
+            this.scale40ToolStripMenuItem,
+            this.scale30ToolStripMenuItem,
+            this.scale20ToolStripMenuItem,
+            this.scale10ToolStripMenuItem,
+            this.scale5ToolStripMenuItem});
+            this.zoomToolStripMenuItem.Enabled = false;
+            this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
+            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.zoomToolStripMenuItem.Text = "Scale / Zoom";
+            // 
+            // fitToWindowToolStripMenuItem
+            // 
+            this.fitToWindowToolStripMenuItem.Name = "fitToWindowToolStripMenuItem";
+            this.fitToWindowToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.fitToWindowToolStripMenuItem.Text = "Fit to window";
+            this.fitToWindowToolStripMenuItem.Click += new System.EventHandler(this.fitToWindowToolStripMenuItem_Click);
+            // 
+            // scale100ToolStripMenuItem
+            // 
+            this.scale100ToolStripMenuItem.Checked = true;
+            this.scale100ToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.scale100ToolStripMenuItem.Name = "scale100ToolStripMenuItem";
+            this.scale100ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale100ToolStripMenuItem.Text = "100%";
+            this.scale100ToolStripMenuItem.Click += new System.EventHandler(this.scale100ToolStripMenuItem_Click);
+            // 
+            // scale90ToolStripMenuItem
+            // 
+            this.scale90ToolStripMenuItem.Name = "scale90ToolStripMenuItem";
+            this.scale90ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale90ToolStripMenuItem.Text = "90%";
+            this.scale90ToolStripMenuItem.Click += new System.EventHandler(this.scale90ToolStripMenuItem_Click);
+            // 
+            // scale80ToolStripMenuItem
+            // 
+            this.scale80ToolStripMenuItem.Name = "scale80ToolStripMenuItem";
+            this.scale80ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale80ToolStripMenuItem.Text = "80%";
+            this.scale80ToolStripMenuItem.Click += new System.EventHandler(this.scale80ToolStripMenuItem_Click);
+            // 
+            // scale70ToolStripMenuItem
+            // 
+            this.scale70ToolStripMenuItem.Name = "scale70ToolStripMenuItem";
+            this.scale70ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale70ToolStripMenuItem.Text = "70%";
+            this.scale70ToolStripMenuItem.Click += new System.EventHandler(this.scale70ToolStripMenuItem_Click);
+            // 
+            // scale60ToolStripMenuItem
+            // 
+            this.scale60ToolStripMenuItem.Name = "scale60ToolStripMenuItem";
+            this.scale60ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale60ToolStripMenuItem.Text = "60%";
+            this.scale60ToolStripMenuItem.Click += new System.EventHandler(this.scale60ToolStripMenuItem_Click);
+            // 
+            // scale50ToolStripMenuItem
+            // 
+            this.scale50ToolStripMenuItem.Name = "scale50ToolStripMenuItem";
+            this.scale50ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale50ToolStripMenuItem.Text = "50%";
+            this.scale50ToolStripMenuItem.Click += new System.EventHandler(this.scale50ToolStripMenuItem_Click);
+            // 
+            // scale40ToolStripMenuItem
+            // 
+            this.scale40ToolStripMenuItem.Name = "scale40ToolStripMenuItem";
+            this.scale40ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale40ToolStripMenuItem.Text = "40%";
+            this.scale40ToolStripMenuItem.Click += new System.EventHandler(this.scale40ToolStripMenuItem_Click);
+            // 
+            // scale30ToolStripMenuItem
+            // 
+            this.scale30ToolStripMenuItem.Name = "scale30ToolStripMenuItem";
+            this.scale30ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale30ToolStripMenuItem.Text = "30%";
+            this.scale30ToolStripMenuItem.Click += new System.EventHandler(this.scale30ToolStripMenuItem_Click);
+            // 
+            // scale20ToolStripMenuItem
+            // 
+            this.scale20ToolStripMenuItem.Name = "scale20ToolStripMenuItem";
+            this.scale20ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale20ToolStripMenuItem.Text = "20%";
+            this.scale20ToolStripMenuItem.Click += new System.EventHandler(this.scale20ToolStripMenuItem_Click);
+            // 
+            // scale10ToolStripMenuItem
+            // 
+            this.scale10ToolStripMenuItem.Name = "scale10ToolStripMenuItem";
+            this.scale10ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale10ToolStripMenuItem.Text = "10%";
+            this.scale10ToolStripMenuItem.Click += new System.EventHandler(this.scale10ToolStripMenuItem_Click);
+            // 
+            // scale5ToolStripMenuItem
+            // 
+            this.scale5ToolStripMenuItem.Name = "scale5ToolStripMenuItem";
+            this.scale5ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale5ToolStripMenuItem.Text = "5%";
+            this.scale5ToolStripMenuItem.Click += new System.EventHandler(this.scale5ToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -276,6 +396,7 @@ namespace embroideryReader
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(572, 332);
             this.panel2.TabIndex = 10;
+            this.panel2.Resize += new System.EventHandler(this.panel2_Resize);
             // 
             // statusStrip1
             // 
@@ -337,6 +458,7 @@ namespace embroideryReader
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.ResizeEnd += new System.EventHandler(this.frmMain_ResizeEnd);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panel2.ResumeLayout(false);
@@ -383,6 +505,19 @@ namespace embroideryReader
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.ToolStripMenuItem zoomToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fitToWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scale100ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scale90ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scale80ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scale70ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scale60ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scale50ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scale40ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scale30ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scale20ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scale10ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scale5ToolStripMenuItem;
     }
 }
 

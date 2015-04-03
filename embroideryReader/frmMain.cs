@@ -35,6 +35,23 @@ using System.Runtime.InteropServices;
 
 namespace embroideryReader
 {
+    public enum ScaleSetting
+    {
+        Unknown,
+        FitToWindow,
+        Scale100,
+        Scale90,
+        Scale80,
+        Scale70,
+        Scale60,
+        Scale50,
+        Scale40,
+        Scale30,
+        Scale20,
+        Scale10,
+        Scale5,
+    }
+
     public partial class frmMain : Form
     {
         private string[] args;
@@ -46,6 +63,11 @@ namespace embroideryReader
         private const String APP_TITLE = "Embroidery Reader";
 
         private Translation translation;
+
+        private float designScale = 1.0F;
+        private ScaleSetting designScaleSetting = ScaleSetting.Scale100;
+        private Size panel2LastUpdateSize;
+        private bool maximizeChanged = false;
 
         public frmMain()
         {
@@ -65,6 +87,7 @@ namespace embroideryReader
             }
             this.Width = settings.windowWidth;
             this.Height = settings.windowHeight;
+            setDesignScaleSetting(settings.DesignScale, false);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -77,6 +100,22 @@ namespace embroideryReader
             }
 
             loadTranslatedStrings(settings.translation);
+        }
+
+        // Override WndProc to capture maximize and restore events
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == 0x0112) // WM_SYSCOMMAND
+            {
+                // Check your window state here
+                if ((m.WParam.ToInt32() & 0xFFF0) == 0xF030 ||
+                    (m.WParam.ToInt32() & 0xFFF0) == 0xF020 ||
+                    (m.WParam.ToInt32() & 0xFFF0) == 0xF120) // Maximize event - SC_MAXIMIZE from Winuser.h
+                {
+                    maximizeChanged = true;
+                }
+            }
+            base.WndProc(ref m);
         }
 
         public static bool checkColorFromStrings(string red, string green, string blue)
@@ -123,7 +162,7 @@ namespace embroideryReader
 
         private void updateDesignImage()
         {
-            Bitmap tempImage = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold);
+            Bitmap tempImage = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, designScale);
 
             if (settings.transparencyGridEnabled)
             {
@@ -155,9 +194,11 @@ namespace embroideryReader
                 DrawArea = tempImage;
             }
 
-            panel1.Width = design.GetWidth() + (int)(settings.threadThickness * 2);
-            panel1.Height = design.GetHeight() + (int)(settings.threadThickness * 2);
+            panel1.Width = DrawArea.Width;
+            panel1.Height = DrawArea.Height;
             panel1.Invalidate();
+
+            panel2LastUpdateSize = panel2.Size;
         }
 
         private void openFile(string filename)
@@ -171,6 +212,10 @@ namespace embroideryReader
             {
                 this.Text = System.IO.Path.GetFileName(filename) + " - " + APP_TITLE;
 
+                if(designScaleSetting == ScaleSetting.FitToWindow)
+                {
+                    fitDesignToWindow();
+                }
                 updateDesignImage();
 
                 if (design.getFormatWarning())
@@ -192,6 +237,7 @@ namespace embroideryReader
                 rotateLeftToolStripMenuItem.Enabled = true;
                 rotateRightToolStripMenuItem.Enabled = true;
                 refreshToolStripMenuItem.Enabled = true;
+                zoomToolStripMenuItem.Enabled = true;
                 showDebugInfoToolStripMenuItem.Enabled = true;
                 saveAsBitmapToolStripMenuItem.Enabled = true;
                 panel2.Select();
@@ -363,7 +409,7 @@ namespace embroideryReader
                 float dpiY = 100;
                 double inchesPerMM = 0.03937007874015748031496062992126;
                 e.Graphics.ScaleTransform((float)(dpiX * inchesPerMM * 0.1), (float)(dpiY * inchesPerMM * 0.1));
-                Bitmap tempDrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold);
+                Bitmap tempDrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, designScale);
                 e.Graphics.DrawImage(DrawArea, 30, 30);
             }
         }
@@ -535,6 +581,8 @@ namespace embroideryReader
             rotateLeftToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.ROTATE_LEFT);
             rotateRightToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.ROTATE_RIGHT);
             refreshToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_RESET);
+            zoomToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_SCALE_ZOOM);
+            fitToWindowToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_FIT_TO_WINDOW);
 
             // Help menu
             helpToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_HELP);
@@ -542,6 +590,200 @@ namespace embroideryReader
             saveDebugInfoToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.SAVE_DEBUG);
             showDebugInfoToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.SHOW_DEBUG);
             aboutToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_ABOUT);
+        }
+
+        // Calculate designScale so that the image fits on the screen
+        private void fitDesignToWindow()
+        {
+            int designWidth = design.GetWidth();
+            int designHeight = design.GetHeight();
+            float windowWidth = panel2.Width - 10;
+            float windowHeight = panel2.Height - 10;
+
+            // Figure out which dimension is more constrained
+            float widthScale = windowWidth / designWidth;
+            float heightScale = windowHeight / designHeight;
+            if (widthScale < heightScale)
+            {
+                designScale = widthScale;
+            }
+            else
+            {
+                designScale = heightScale;
+            }
+        }
+
+        private void setDesignScaleSetting(ScaleSetting scale, bool updateDesign)
+        {
+            // Clear selected scale menu item
+            fitToWindowToolStripMenuItem.Checked = false;
+            scale100ToolStripMenuItem.Checked = false;
+            scale90ToolStripMenuItem.Checked = false;
+            scale80ToolStripMenuItem.Checked = false;
+            scale70ToolStripMenuItem.Checked = false;
+            scale60ToolStripMenuItem.Checked = false;
+            scale50ToolStripMenuItem.Checked = false;
+            scale40ToolStripMenuItem.Checked = false;
+            scale30ToolStripMenuItem.Checked = false;
+            scale20ToolStripMenuItem.Checked = false;
+            scale10ToolStripMenuItem.Checked = false;
+            scale5ToolStripMenuItem.Checked = false;
+
+            designScaleSetting = scale;
+            if (updateDesign)
+            {
+                settings.DesignScale = scale;
+            }
+
+            switch (scale)
+            {
+                case ScaleSetting.FitToWindow:
+                    fitToWindowToolStripMenuItem.Checked = true;
+                    if (updateDesign)
+                    {
+                        fitDesignToWindow();
+                    }
+                    break;
+                case ScaleSetting.Scale100:
+                    scale100ToolStripMenuItem.Checked = true;
+                    designScale = 1.0f;
+                    break;
+                case ScaleSetting.Scale90:
+                    scale90ToolStripMenuItem.Checked = true;
+                    designScale = 0.9f;
+                    break;
+                case ScaleSetting.Scale80:
+                    scale80ToolStripMenuItem.Checked = true;
+                    designScale = 0.8f;
+                    break;
+                case ScaleSetting.Scale70:
+                    scale70ToolStripMenuItem.Checked = true;
+                    designScale = 0.7f;
+                    break;
+                case ScaleSetting.Scale60:
+                    scale60ToolStripMenuItem.Checked = true;
+                    designScale = 0.6f;
+                    break;
+                case ScaleSetting.Scale50:
+                    scale50ToolStripMenuItem.Checked = true;
+                    designScale = 0.5f;
+                    break;
+                case ScaleSetting.Scale40:
+                    scale40ToolStripMenuItem.Checked = true;
+                    designScale = 0.4f;
+                    break;
+                case ScaleSetting.Scale30:
+                    scale30ToolStripMenuItem.Checked = true;
+                    designScale = 0.3f;
+                    break;
+                case ScaleSetting.Scale20:
+                    scale20ToolStripMenuItem.Checked = true;
+                    designScale = 0.2f;
+                    break;
+                case ScaleSetting.Scale10:
+                    scale10ToolStripMenuItem.Checked = true;
+                    designScale = 0.1f;
+                    break;
+                case ScaleSetting.Scale5:
+                    scale5ToolStripMenuItem.Checked = true;
+                    designScale = 0.05f;
+                    break;
+            }
+
+            if (updateDesign)
+            {
+                updateDesignImage();
+            }
+        }
+
+        private void scale100ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setDesignScaleSetting(ScaleSetting.Scale100, true);
+        }
+
+        private void scale90ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setDesignScaleSetting(ScaleSetting.Scale90, true);
+        }
+
+        private void scale80ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setDesignScaleSetting(ScaleSetting.Scale80, true);
+        }
+
+        private void scale70ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setDesignScaleSetting(ScaleSetting.Scale70, true);
+        }
+
+        private void scale60ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setDesignScaleSetting(ScaleSetting.Scale60, true);
+        }
+
+        private void scale50ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setDesignScaleSetting(ScaleSetting.Scale50, true);
+        }
+
+        private void scale40ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setDesignScaleSetting(ScaleSetting.Scale40, true);
+        }
+
+        private void scale30ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setDesignScaleSetting(ScaleSetting.Scale30, true);
+        }
+
+        private void scale20ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setDesignScaleSetting(ScaleSetting.Scale20, true);
+        }
+
+        private void scale10ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setDesignScaleSetting(ScaleSetting.Scale10, true);
+        }
+
+        private void scale5ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setDesignScaleSetting(ScaleSetting.Scale5, true);
+        }
+
+        private void fitToWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setDesignScaleSetting(ScaleSetting.FitToWindow, true);
+        }
+
+        private void frmMain_ResizeEnd(object sender, EventArgs e)
+        {
+            // Finished resize, update design scale if set to fit-to-window.
+            // This event also captures window move events, so check if the size
+            // of panel2 has changed to see if it's really a resize event.
+            if (designScaleSetting == ScaleSetting.FitToWindow && panel2LastUpdateSize != panel2.Size)
+            {
+                fitDesignToWindow();
+                updateDesignImage();
+            }
+        }
+
+        private void panel2_Resize(object sender, EventArgs e)
+        {
+            // This event is the one we really want, but it fires much too 
+            // frequently during a resize event. So, let ReziseEnd handle most
+            // of the cases and only process this after a window maximize or
+            // restore.
+            if(maximizeChanged)
+            {
+                maximizeChanged = false;
+                
+                if (designScaleSetting == ScaleSetting.FitToWindow)
+                {
+                    fitDesignToWindow();
+                    updateDesignImage();
+                }
+            }
         }
     }
 }

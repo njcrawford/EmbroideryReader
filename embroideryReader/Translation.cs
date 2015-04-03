@@ -78,6 +78,8 @@ namespace embroideryReader
             ROTATE_LEFT,
             ROTATE_RIGHT,
             MENU_RESET,
+            MENU_SCALE_ZOOM,
+            MENU_FIT_TO_WINDOW,
             MENU_HELP,
             CHECK_UPDATE,
             SAVE_DEBUG,

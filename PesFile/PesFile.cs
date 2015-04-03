@@ -414,24 +414,27 @@ namespace PesFile
             }
         }
 
-        public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, double filterUglyStitchesThreshold)
+        public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, double filterUglyStitchesThreshold, float scale)
         {
             Bitmap DrawArea;
             Graphics xGraph;
-            int imageWidth = GetWidth() + (int)(threadThickness * 2);
-            int imageHeight = GetHeight() + (int)(threadThickness * 2);
+            int imageWidth = (int)((GetWidth() + (threadThickness * 2)) * scale);
+            int imageHeight = (int)((GetHeight() + (threadThickness * 2)) * scale);
+            float tempThreadThickness = threadThickness * scale;
 
             DrawArea = new Bitmap(imageWidth, imageHeight);
             using (xGraph = Graphics.FromImage(DrawArea))
             {
-                xGraph.TranslateTransform(threadThickness + translateStart.X, threadThickness + translateStart.Y);
+                int translateX = (int)(translateStart.X * scale);
+                int translateY = (int)(translateStart.Y * scale);
+                xGraph.TranslateTransform(tempThreadThickness + translateX, tempThreadThickness + translateY);
                 
                 // Draw smoother lines
                 xGraph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
                 for (int i = 0; i < blocks.Count; i++)
                 {
-                    using (Pen tempPen = new Pen(blocks[i].color, threadThickness))
+                    using (Pen tempPen = new Pen(blocks[i].color, tempThreadThickness))
                     {
                         tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
                         tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
@@ -446,7 +449,9 @@ namespace PesFile
                                 // This stitch is too long, so skip it
                                 continue;
                             }
-                            xGraph.DrawLine(tempPen, thisStitch.a, thisStitch.b);
+                            Point tempA = new Point((int)(thisStitch.a.X * scale), (int)(thisStitch.a.Y * scale));
+                            Point tempB = new Point((int)(thisStitch.b.X * scale), (int)(thisStitch.b.Y * scale));
+                            xGraph.DrawLine(tempPen, tempA, tempB);
                         }
                     }
                 }
