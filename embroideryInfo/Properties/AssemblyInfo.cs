@@ -34,7 +34,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("embroideryInfo")]
-[assembly: AssemblyCopyright("Copyright © Nathan Crawford 2011")]
+[assembly: AssemblyCopyright("Copyright © Nathan Crawford 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
