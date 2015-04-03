@@ -31,12 +31,6 @@ namespace PesFile
 {
     public enum statusEnum { NotOpen, IOError, ParseError, Ready };
 
-    public struct intPair
-    {
-        public int a;
-        public int b;
-    }
-
     public class PesFile
     {
         System.IO.BinaryReader fileIn;
@@ -49,7 +43,7 @@ namespace PesFile
         public List<Int16> embPunchHeader = new List<short>();
         public List<Int16> sewFigSegHeader = new List<short>();
         public List<StitchBlock> blocks = new List<StitchBlock>();
-        public List<intPair> colorTable = new List<intPair>();
+        public List<Tuple<int, int>> colorTable = new List<Tuple<int, int>>();
         private statusEnum readyStatus = statusEnum.NotOpen;
         Int64 startStitches = 0;
         string lastError = "";
@@ -504,7 +498,7 @@ namespace PesFile
             outfile.WriteLine("number\ta\tb");
             for (int i = 0; i < colorTable.Count; i++)
             {
-                outfile.WriteLine((i + 1).ToString() + "\t" + colorTable[i].a.ToString() + ", " + colorTable[i].b.ToString());
+                outfile.WriteLine((i + 1).ToString() + "\t" + colorTable[i].Item1.ToString() + ", " + colorTable[i].Item2.ToString());
             }
             if (blocks.Count > 0)
             {
