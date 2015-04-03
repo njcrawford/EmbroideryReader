@@ -37,11 +37,6 @@ namespace PesFile
         int imageWidth;
         int imageHeight;
         string _filename;
-        public List<Int64> pesHeader = new List<Int64>();
-        public List<Int16> embOneHeader = new List<short>();
-        public List<Int16> sewSegHeader = new List<short>();
-        public List<Int16> embPunchHeader = new List<short>();
-        public List<Int16> sewFigSegHeader = new List<short>();
         public List<StitchBlock> blocks = new List<StitchBlock>();
         public List<Tuple<int, int>> colorTable = new List<Tuple<int, int>>();
         private statusEnum readyStatus = statusEnum.NotOpen;
@@ -56,8 +51,6 @@ namespace PesFile
         private bool colorWarning = false;
 
         private bool formatWarning = false;
-
-        private bool classWarning = false;
 
         public PesFile(string filename)
         {
@@ -316,91 +309,6 @@ namespace PesFile
 #endif
         }
 
-        /*void readCSewFigSeg(System.IO.BinaryReader file)
-        {
-            startStitches = fileIn.BaseStream.Position;
-
-            bool doneWithStitches = false;
-            int xValue = -100;
-            int yValue = -100;
-            stitchBlock currentBlock;
-            int blockType; //if this is equal to newColorMarker, it's time to change color
-            int colorIndex = 0;
-            int remainingStitches;
-            List<Point> stitchData;
-            stitchData = new List<Point>();
-            currentBlock = new stitchBlock();
-
-            while (!doneWithStitches)
-            {
-                //reset variables
-                xValue = 0;
-                yValue = 0;
-
-                blockType = file.ReadInt16();
-                if (blockType == 16716)
-                    break;
-                colorIndex = file.ReadInt16();
-                if (colorIndex == 16716)
-                    break;
-                remainingStitches = file.ReadInt16();
-                if (remainingStitches == 16716)
-                    break;
-                while (remainingStitches >= 0)
-                {
-                    xValue = file.ReadInt16();
-                    if (xValue == -32765)
-                    {
-                        break;//drop out before we start eating into the next section 
-                    }
-                    if (remainingStitches == 0)
-                    {
-                        int junk2 = 0;
-                        junk2 = blocks.Count;
-
-                        file.ReadBytes(24);
-                        if (file.ReadInt16() == -1)
-                            doneWithStitches = true;
-
-                        currentBlock.stitches = new Point[stitchData.Count];
-                        stitchData.CopyTo(currentBlock.stitches);
-                        currentBlock.colorIndex = colorIndex;
-                        currentBlock.color = getColorFromIndex(colorIndex);
-                        currentBlock.stitchesTotal = stitchData.Count;
-                        blocks.Add(currentBlock);
-                        stitchData = new List<Point>();
-                        currentBlock = new stitchBlock();
-
-                        file.ReadBytes(48);
-
-                        break;
-                    }
-                    else if (xValue == 16716 || xValue == 8224)
-                    {
-                        doneWithStitches = true;
-                        break;
-                    }
-                    yValue = fileIn.ReadInt16();
-                    if (yValue == 16716 || yValue == 8224)
-                    {
-                        doneWithStitches = true;
-                        break;
-                    }
-                    stitchData.Add(new Point(xValue - translateStart.X, yValue + imageHeight - translateStart.Y));
-                    remainingStitches--;
-                }
-            }
-            if (stitchData.Count > 1)
-            {
-                currentBlock.stitches = new Point[stitchData.Count];
-                stitchData.CopyTo(currentBlock.stitches);
-                currentBlock.colorIndex = colorIndex;
-                currentBlock.color = getColorFromIndex(colorIndex);
-                currentBlock.stitchesTotal = stitchData.Count;
-                blocks.Add(currentBlock);
-            }
-        }*/
-
         public int GetWidth()
         {
             return imageWidth;
@@ -436,56 +344,8 @@ namespace PesFile
         public string getDebugInfo()
         {
             System.IO.StringWriter outfile = new System.IO.StringWriter();
-            string name = "";
             outfile.WriteLine("PES header");
             outfile.WriteLine("PES version:\t" + pesVersion);
-            for (int i = 0; i < pesHeader.Count; i++)
-            {
-                name = (i + 1).ToString();
-                outfile.WriteLine(name + "\t" + pesHeader[i].ToString());
-            }
-            if (embOneHeader.Count > 0)
-            {
-                outfile.WriteLine("CEmbOne header");
-                for (int i = 0; i < embOneHeader.Count; i++)
-                {
-                    switch (i + 1)
-                    {
-                        case 22:
-                            name = "translate x";
-                            break;
-                        case 23:
-                            name = "translate y";
-                            break;
-                        case 24:
-                            name = "width";
-                            break;
-                        case 25:
-                            name = "height";
-                            break;
-                        default:
-                            name = (i + 1).ToString();
-                            break;
-                    }
-
-                    outfile.WriteLine(name + "\t" + embOneHeader[i].ToString());
-                }
-            }
-            if (embPunchHeader.Count > 0)
-            {
-                outfile.WriteLine("CEmbPunch header");
-                for (int i = 0; i < embPunchHeader.Count; i++)
-                {
-                    switch (i + 1)
-                    {
-                        default:
-                            name = (i + 1).ToString();
-                            break;
-                    }
-
-                    outfile.WriteLine(name + "\t" + embPunchHeader[i].ToString());
-                }
-            }
 
             outfile.WriteLine("stitches start: " + startStitches.ToString());
             outfile.WriteLine("block info");
@@ -535,11 +395,6 @@ namespace PesFile
         public bool getFormatWarning()
         {
             return formatWarning;
-        }
-
-        public bool getClassWarning()
-        {
-            return classWarning;
         }
 
         private Color getColorFromIndex(int index)

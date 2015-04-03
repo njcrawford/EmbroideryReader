@@ -394,11 +394,7 @@ namespace embroideryReader
             {
                 updateDesignImage();
 
-                if (design.getClassWarning())
-                {
-                    toolStripStatusLabel1.Text = translation.GetTranslatedString(Translation.StringID.UNSUPPORTED_CLASS); // "This file contains a class that is not yet supported"
-                }
-                else if (design.getFormatWarning())
+                if (design.getFormatWarning())
                 {
                     toolStripStatusLabel1.Text = translation.GetTranslatedString(Translation.StringID.UNSUPPORTED_FORMAT); // "The format of this file is not completely supported"
                 }
