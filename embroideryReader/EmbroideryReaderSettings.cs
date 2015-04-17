@@ -311,7 +311,7 @@ namespace embroideryReader
         {
             get
             {
-                return settings.getValue(SETTING_AUTOSCALE_DESIGN, false);
+                return settings.getValue(SETTING_AUTOSCALE_DESIGN, true);
             }
             set
             {
