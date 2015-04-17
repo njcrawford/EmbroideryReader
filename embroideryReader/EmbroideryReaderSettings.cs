@@ -220,14 +220,14 @@ namespace embroideryReader
             }
         }
 
-        public double threadThickness
+        public float threadThickness
         {
             get
             {
-                double thickness = settings.getValue(SETTING_THREAD_THICKNESS, 5.0);
-                if (thickness < 1.0)
+                float thickness = settings.getValue(SETTING_THREAD_THICKNESS, 5.0f);
+                if (thickness < 1.0f)
                 {
-                    thickness = 1.0;
+                    thickness = 1.0f;
                 }
                 return thickness;
             }
@@ -237,14 +237,14 @@ namespace embroideryReader
             }
         }
 
-        public double filterStitchesThreshold
+        public float filterStitchesThreshold
         {
             get
             {
-                double threshold = settings.getValue(SETTING_FILTER_STITCHES_THRESHOLD, 64.0);
-                if (threshold < 10.0)
+                float threshold = settings.getValue(SETTING_FILTER_STITCHES_THRESHOLD, 64.0f);
+                if (threshold < 10.0f)
                 {
-                    threshold = 10.0;
+                    threshold = 10.0f;
                 }
                 return threshold;
             }

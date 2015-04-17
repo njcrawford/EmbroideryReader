@@ -94,16 +94,16 @@ namespace embroideryReader
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            double threadThickness;
-            if (Double.TryParse(txtThreadThickness.Text, out threadThickness))
+            float threadThickness;
+            if (Single.TryParse(txtThreadThickness.Text, out threadThickness))
             {
                 settings.threadThickness = threadThickness;
             }
 
             settings.filterStiches = chkUglyStitches.Checked;
 
-            double threshold;
-            if (Double.TryParse(txtThreshold.Text, out threshold))
+            float threshold;
+            if (Single.TryParse(txtThreshold.Text, out threshold))
             {
                 settings.filterStitchesThreshold = threshold;
             }
