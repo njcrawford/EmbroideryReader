@@ -450,13 +450,11 @@ namespace embroideryReader
 
         private void printDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
         {
-            if (DrawArea != null)
+            if (design != null)
             {
-                float dpiX = 100;
-                float dpiY = 100;
-                double inchesPerMM = 0.03937007874015748031496062992126;
-                e.Graphics.ScaleTransform((float)(dpiX * inchesPerMM * 0.1), (float)(dpiY * inchesPerMM * 0.1));
-                Bitmap tempDrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, 1.0f);
+                float inchesPerMM = 0.03937007874015748031496062992126f;
+                e.Graphics.ScaleTransform((float)(e.PageSettings.PrinterResolution.X * inchesPerMM * 0.01f), (float)(e.PageSettings.PrinterResolution.Y * inchesPerMM * 0.01f));
+                Bitmap tempDrawArea = design.designToBitmap((float)settings.threadThickness, settings.filterStiches, settings.filterStitchesThreshold, e.PageSettings.PrinterResolution.X * inchesPerMM * 0.2f);
                 e.Graphics.DrawImage(tempDrawArea, 30, 30);
             }
         }
