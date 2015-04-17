@@ -53,6 +53,7 @@ namespace embroideryReader
         private Size panel2LastUpdateSize;
         private bool maximizeChanged = false;
         private int designRotation = 0;
+        private string loadedFileName = "";
 
         public frmMain()
         {
@@ -250,7 +251,7 @@ namespace embroideryReader
             panel2LastUpdateSize = panel2.Size;
 
             // Update window title
-            this.Text = "File (" + (designScale * 100).ToString("0") + "%) " + APP_TITLE;
+            this.Text = System.IO.Path.GetFileName(loadedFileName) + " (" + (designScale * 100).ToString("0") + "%) - " + APP_TITLE;
         }
 
         private void openFile(string filename)
@@ -260,10 +261,9 @@ namespace embroideryReader
                 return;
             }
             design = new PesFile.PesFile(filename);
+            loadedFileName = filename;
             if (design.getStatus() == PesFile.statusEnum.Ready)
             {
-                this.Text = System.IO.Path.GetFileName(filename) + " - " + APP_TITLE;
-
                 updateDesignImage();
 
                 if (design.getFormatWarning())
