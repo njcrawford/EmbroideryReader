@@ -456,6 +456,7 @@ namespace PesFile
                     }
                 }
             }
+
             return DrawArea;
         }
     }

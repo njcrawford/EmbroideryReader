@@ -77,6 +77,7 @@ namespace embroideryReader
             this.printPreviewDialog1 = new System.Windows.Forms.PrintPreviewDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -238,6 +239,7 @@ namespace embroideryReader
             // 
             this.zoomToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fitToWindowToolStripMenuItem,
+            this.toolStripSeparator5,
             this.scale100ToolStripMenuItem,
             this.scale90ToolStripMenuItem,
             this.scale80ToolStripMenuItem,
@@ -257,86 +259,84 @@ namespace embroideryReader
             // fitToWindowToolStripMenuItem
             // 
             this.fitToWindowToolStripMenuItem.Name = "fitToWindowToolStripMenuItem";
-            this.fitToWindowToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.fitToWindowToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.fitToWindowToolStripMenuItem.Text = "Fit to window";
             this.fitToWindowToolStripMenuItem.Click += new System.EventHandler(this.fitToWindowToolStripMenuItem_Click);
             // 
             // scale100ToolStripMenuItem
             // 
-            this.scale100ToolStripMenuItem.Checked = true;
-            this.scale100ToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.scale100ToolStripMenuItem.Name = "scale100ToolStripMenuItem";
-            this.scale100ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale100ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scale100ToolStripMenuItem.Text = "100%";
             this.scale100ToolStripMenuItem.Click += new System.EventHandler(this.scale100ToolStripMenuItem_Click);
             // 
             // scale90ToolStripMenuItem
             // 
             this.scale90ToolStripMenuItem.Name = "scale90ToolStripMenuItem";
-            this.scale90ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale90ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scale90ToolStripMenuItem.Text = "90%";
             this.scale90ToolStripMenuItem.Click += new System.EventHandler(this.scale90ToolStripMenuItem_Click);
             // 
             // scale80ToolStripMenuItem
             // 
             this.scale80ToolStripMenuItem.Name = "scale80ToolStripMenuItem";
-            this.scale80ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale80ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scale80ToolStripMenuItem.Text = "80%";
             this.scale80ToolStripMenuItem.Click += new System.EventHandler(this.scale80ToolStripMenuItem_Click);
             // 
             // scale70ToolStripMenuItem
             // 
             this.scale70ToolStripMenuItem.Name = "scale70ToolStripMenuItem";
-            this.scale70ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale70ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scale70ToolStripMenuItem.Text = "70%";
             this.scale70ToolStripMenuItem.Click += new System.EventHandler(this.scale70ToolStripMenuItem_Click);
             // 
             // scale60ToolStripMenuItem
             // 
             this.scale60ToolStripMenuItem.Name = "scale60ToolStripMenuItem";
-            this.scale60ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale60ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scale60ToolStripMenuItem.Text = "60%";
             this.scale60ToolStripMenuItem.Click += new System.EventHandler(this.scale60ToolStripMenuItem_Click);
             // 
             // scale50ToolStripMenuItem
             // 
             this.scale50ToolStripMenuItem.Name = "scale50ToolStripMenuItem";
-            this.scale50ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale50ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scale50ToolStripMenuItem.Text = "50%";
             this.scale50ToolStripMenuItem.Click += new System.EventHandler(this.scale50ToolStripMenuItem_Click);
             // 
             // scale40ToolStripMenuItem
             // 
             this.scale40ToolStripMenuItem.Name = "scale40ToolStripMenuItem";
-            this.scale40ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale40ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scale40ToolStripMenuItem.Text = "40%";
             this.scale40ToolStripMenuItem.Click += new System.EventHandler(this.scale40ToolStripMenuItem_Click);
             // 
             // scale30ToolStripMenuItem
             // 
             this.scale30ToolStripMenuItem.Name = "scale30ToolStripMenuItem";
-            this.scale30ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale30ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scale30ToolStripMenuItem.Text = "30%";
             this.scale30ToolStripMenuItem.Click += new System.EventHandler(this.scale30ToolStripMenuItem_Click);
             // 
             // scale20ToolStripMenuItem
             // 
             this.scale20ToolStripMenuItem.Name = "scale20ToolStripMenuItem";
-            this.scale20ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale20ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scale20ToolStripMenuItem.Text = "20%";
             this.scale20ToolStripMenuItem.Click += new System.EventHandler(this.scale20ToolStripMenuItem_Click);
             // 
             // scale10ToolStripMenuItem
             // 
             this.scale10ToolStripMenuItem.Name = "scale10ToolStripMenuItem";
-            this.scale10ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale10ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scale10ToolStripMenuItem.Text = "10%";
             this.scale10ToolStripMenuItem.Click += new System.EventHandler(this.scale10ToolStripMenuItem_Click);
             // 
             // scale5ToolStripMenuItem
             // 
             this.scale5ToolStripMenuItem.Name = "scale5ToolStripMenuItem";
-            this.scale5ToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.scale5ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scale5ToolStripMenuItem.Text = "5%";
             this.scale5ToolStripMenuItem.Click += new System.EventHandler(this.scale5ToolStripMenuItem_Click);
             // 
@@ -444,6 +444,11 @@ namespace embroideryReader
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(149, 6);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -518,6 +523,7 @@ namespace embroideryReader
         private System.Windows.Forms.ToolStripMenuItem scale20ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scale10ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scale5ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
     }
 }
 

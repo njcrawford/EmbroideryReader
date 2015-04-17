@@ -53,7 +53,7 @@ namespace embroideryReader
 	
         private const String SETTING_WINDOW_WIDTH = "window width";
         private const String SETTING_WINDOW_HEIGHT = "window height";
-        private const String SETTING_DESIGN_SCALE = "design scale";
+        private const String SETTING_AUTOSCALE_DESIGN = "auto scale design";
 
         private const String SECTION_TRANSPARENCY_GRID = "transparency grid";
         private const String SETTING_TRANSPARENCY_GRID_ENABLE = "enabled";
@@ -307,45 +307,15 @@ namespace embroideryReader
             }
         }
 
-        public ScaleSetting DesignScale
+        public bool AutoScaleDesign
         {
             get
             {
-                string temp = settings.getValue(SETTING_DESIGN_SCALE, "");
-
-                switch(temp)
-                {
-                    case "Scale90":
-                        return ScaleSetting.Scale90;
-                    case "Scale80":
-                        return ScaleSetting.Scale80;
-                    case "Scale70":
-                        return ScaleSetting.Scale70;
-                    case "Scale60":
-                        return ScaleSetting.Scale60;
-                    case "Scale50":
-                        return ScaleSetting.Scale50;
-                    case "Scale40":
-                        return ScaleSetting.Scale40;
-                    case "Scale30":
-                        return ScaleSetting.Scale30;
-                    case "Scale20":
-                        return ScaleSetting.Scale20;
-                    case "Scale10":
-                        return ScaleSetting.Scale10;
-                    case "Scale5":
-                        return ScaleSetting.Scale5;
-
-                    case "FitToWindow":
-                        return ScaleSetting.FitToWindow;
-
-                    default:
-                        return ScaleSetting.Scale100;
-                }
+                return settings.getValue(SETTING_AUTOSCALE_DESIGN, false);
             }
             set
             {
-                settings.setValue(SETTING_DESIGN_SCALE, value);
+                settings.setValue(SETTING_AUTOSCALE_DESIGN, value);
             }
         }
 

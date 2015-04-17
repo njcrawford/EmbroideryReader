@@ -32,26 +32,11 @@ using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
 
 namespace embroideryReader
 {
-    public enum ScaleSetting
-    {
-        Unknown,
-        FitToWindow,
-        Scale100,
-        Scale90,
-        Scale80,
-        Scale70,
-        Scale60,
-        Scale50,
-        Scale40,
-        Scale30,
-        Scale20,
-        Scale10,
-        Scale5,
-    }
-
     public partial class frmMain : Form
     {
         private string[] args;
@@ -64,10 +49,10 @@ namespace embroideryReader
 
         private Translation translation;
 
-        private float designScale = 1.0F;
-        private ScaleSetting designScaleSetting = ScaleSetting.Scale100;
+        private float designScale = 1.0f;
         private Size panel2LastUpdateSize;
         private bool maximizeChanged = false;
+        private int designRotation = 0;
 
         public frmMain()
         {
@@ -87,7 +72,7 @@ namespace embroideryReader
             }
             this.Width = settings.windowWidth;
             this.Height = settings.windowHeight;
-            setDesignScaleSetting(settings.DesignScale, false);
+            setDesignScaleSetting(1.0f, settings.AutoScaleDesign, false);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -162,8 +147,72 @@ namespace embroideryReader
 
         private void updateDesignImage()
         {
-            Bitmap tempImage = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, designScale);
+            Bitmap tempImage = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, 1.0f);
 
+            // Rotate image
+            switch (designRotation)
+            {
+                case 90:
+                    tempImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                    break;
+                case 180:
+                    tempImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    break;
+                case 270:
+                    tempImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                    break;
+            }
+
+            // Scale image
+            if (fitToWindowToolStripMenuItem.Checked)
+            {
+                // Calculate size of image based on available drawing area
+                float windowWidth = panel2.Width - 3;
+                float windowHeight = panel2.Height - 3;
+                
+                // Figure out which dimension is more constrained
+                float widthScale = windowWidth / tempImage.Width;
+                float heightScale = windowHeight / tempImage.Height;
+                if (widthScale < heightScale)
+                {
+                    designScale = widthScale;
+                }
+                else
+                {
+                    designScale = heightScale;
+                }
+            }
+
+            int width = (int)(tempImage.Width * designScale);
+            int height = (int)(tempImage.Height * designScale);
+
+            if (width != tempImage.Width || height != tempImage.Height)
+            {
+                // Scale image code from http://stackoverflow.com/questions/1922040/resize-an-image-c-sharp
+                Rectangle destRect = new Rectangle(0, 0, width, height);
+                Bitmap destImage = new Bitmap(width, height);
+
+                destImage.SetResolution(tempImage.HorizontalResolution, tempImage.VerticalResolution);
+
+                using (var graphics = Graphics.FromImage(destImage))
+                {
+                    graphics.CompositingMode = CompositingMode.SourceCopy;
+                    graphics.CompositingQuality = CompositingQuality.HighQuality;
+                    graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    graphics.SmoothingMode = SmoothingMode.HighQuality;
+                    graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                    using (var wrapMode = new ImageAttributes())
+                    {
+                        wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                        graphics.DrawImage(tempImage, destRect, 0, 0, tempImage.Width, tempImage.Height, GraphicsUnit.Pixel, wrapMode);
+                    }
+                }
+                // Keep the scaled image and toss the intermediate image
+                tempImage = destImage;
+            }
+
+            // Add transparency grid
             if (settings.transparencyGridEnabled)
             {
                 DrawArea = new Bitmap(tempImage.Width, tempImage.Height);
@@ -199,6 +248,9 @@ namespace embroideryReader
             panel1.Invalidate();
 
             panel2LastUpdateSize = panel2.Size;
+
+            // Update window title
+            this.Text = "File (" + (designScale * 100).ToString("0") + "%) " + APP_TITLE;
         }
 
         private void openFile(string filename)
@@ -212,10 +264,6 @@ namespace embroideryReader
             {
                 this.Text = System.IO.Path.GetFileName(filename) + " - " + APP_TITLE;
 
-                if(designScaleSetting == ScaleSetting.FitToWindow)
-                {
-                    fitDesignToWindow();
-                }
                 updateDesignImage();
 
                 if (design.getFormatWarning())
@@ -298,7 +346,6 @@ namespace embroideryReader
             if (DrawArea != null)
             {
                 e.Graphics.DrawImage(DrawArea, 0, 0);
-                //e.Graphics.DrawImage(DrawArea, e.Graphics.ClipBounds, e.Graphics.ClipBounds, GraphicsUnit.Pixel);
             }
         }
 
@@ -409,8 +456,8 @@ namespace embroideryReader
                 float dpiY = 100;
                 double inchesPerMM = 0.03937007874015748031496062992126;
                 e.Graphics.ScaleTransform((float)(dpiX * inchesPerMM * 0.1), (float)(dpiY * inchesPerMM * 0.1));
-                Bitmap tempDrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, designScale);
-                e.Graphics.DrawImage(DrawArea, 30, 30);
+                Bitmap tempDrawArea = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, 1.0f);
+                e.Graphics.DrawImage(tempDrawArea, 30, 30);
             }
         }
 
@@ -436,51 +483,28 @@ namespace embroideryReader
 
         private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (design != null && design.getStatus() == PesFile.statusEnum.Ready)
-            {
-                updateDesignImage();
-
-                if (design.getFormatWarning())
-                {
-                    toolStripStatusLabel1.Text = translation.GetTranslatedString(Translation.StringID.UNSUPPORTED_FORMAT); // "The format of this file is not completely supported"
-                }
-                else if (design.getColorWarning())
-                {
-                    toolStripStatusLabel1.Text = translation.GetTranslatedString(Translation.StringID.COLOR_WARNING); // "Colors shown for this design may be inaccurate"
-                }
-                else
-                {
-                    toolStripStatusLabel1.Text = "";
-                }
-            }
+            designRotation = 0;
+            updateDesignImage();
         }
 
         private void rotateLeftToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Bitmap temp = new Bitmap(DrawArea.Height, DrawArea.Width);
-            Graphics g = Graphics.FromImage(temp);
-            g.RotateTransform(270.0f);
-            g.DrawImage(DrawArea, -DrawArea.Width, 0);
-            g.Dispose();
-            DrawArea = temp;
-            int temp2 = panel1.Width;
-            panel1.Width = panel1.Height;
-            panel1.Height = temp2;
-            panel1.Invalidate();
+            designRotation -= 90;
+            if(designRotation < 0)
+            {
+                designRotation += 360;
+            }
+            updateDesignImage();
         }
 
         private void rotateRightToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Bitmap temp = new Bitmap(DrawArea.Height, DrawArea.Width);
-            Graphics g = Graphics.FromImage(temp);
-            g.RotateTransform(90.0f);
-            g.DrawImage(DrawArea, 0, -DrawArea.Height);
-            g.Dispose();
-            DrawArea = temp;
-            int temp2 = panel1.Width;
-            panel1.Width = panel1.Height;
-            panel1.Height = temp2;
-            panel1.Invalidate();
+            designRotation += 90;
+            if (designRotation >= 360)
+            {
+                designRotation -= 360;
+            }
+            updateDesignImage();
         }
 
         private void showDebugInfoToolStripMenuItem_Click(object sender, EventArgs e)
@@ -592,104 +616,20 @@ namespace embroideryReader
             aboutToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_ABOUT);
         }
 
-        // Calculate designScale so that the image fits on the screen
-        private void fitDesignToWindow()
+        private void setDesignScaleSetting(float scale, bool autoSize, bool updateDesign)
         {
-            int designWidth = design.GetWidth();
-            int designHeight = design.GetHeight();
-            float windowWidth = panel2.Width - 10;
-            float windowHeight = panel2.Height - 10;
-
-            // Figure out which dimension is more constrained
-            float widthScale = windowWidth / designWidth;
-            float heightScale = windowHeight / designHeight;
-            if (widthScale < heightScale)
+            if(autoSize)
             {
-                designScale = widthScale;
+                fitToWindowToolStripMenuItem.Checked = true;
+                settings.AutoScaleDesign = true;
             }
             else
             {
-                designScale = heightScale;
+                fitToWindowToolStripMenuItem.Checked = false;
+                settings.AutoScaleDesign = false;
+                designScale = scale;
             }
-        }
-
-        private void setDesignScaleSetting(ScaleSetting scale, bool updateDesign)
-        {
-            // Clear selected scale menu item
-            fitToWindowToolStripMenuItem.Checked = false;
-            scale100ToolStripMenuItem.Checked = false;
-            scale90ToolStripMenuItem.Checked = false;
-            scale80ToolStripMenuItem.Checked = false;
-            scale70ToolStripMenuItem.Checked = false;
-            scale60ToolStripMenuItem.Checked = false;
-            scale50ToolStripMenuItem.Checked = false;
-            scale40ToolStripMenuItem.Checked = false;
-            scale30ToolStripMenuItem.Checked = false;
-            scale20ToolStripMenuItem.Checked = false;
-            scale10ToolStripMenuItem.Checked = false;
-            scale5ToolStripMenuItem.Checked = false;
-
-            designScaleSetting = scale;
-            if (updateDesign)
-            {
-                settings.DesignScale = scale;
-            }
-
-            switch (scale)
-            {
-                case ScaleSetting.FitToWindow:
-                    fitToWindowToolStripMenuItem.Checked = true;
-                    if (updateDesign)
-                    {
-                        fitDesignToWindow();
-                    }
-                    break;
-                case ScaleSetting.Scale100:
-                    scale100ToolStripMenuItem.Checked = true;
-                    designScale = 1.0f;
-                    break;
-                case ScaleSetting.Scale90:
-                    scale90ToolStripMenuItem.Checked = true;
-                    designScale = 0.9f;
-                    break;
-                case ScaleSetting.Scale80:
-                    scale80ToolStripMenuItem.Checked = true;
-                    designScale = 0.8f;
-                    break;
-                case ScaleSetting.Scale70:
-                    scale70ToolStripMenuItem.Checked = true;
-                    designScale = 0.7f;
-                    break;
-                case ScaleSetting.Scale60:
-                    scale60ToolStripMenuItem.Checked = true;
-                    designScale = 0.6f;
-                    break;
-                case ScaleSetting.Scale50:
-                    scale50ToolStripMenuItem.Checked = true;
-                    designScale = 0.5f;
-                    break;
-                case ScaleSetting.Scale40:
-                    scale40ToolStripMenuItem.Checked = true;
-                    designScale = 0.4f;
-                    break;
-                case ScaleSetting.Scale30:
-                    scale30ToolStripMenuItem.Checked = true;
-                    designScale = 0.3f;
-                    break;
-                case ScaleSetting.Scale20:
-                    scale20ToolStripMenuItem.Checked = true;
-                    designScale = 0.2f;
-                    break;
-                case ScaleSetting.Scale10:
-                    scale10ToolStripMenuItem.Checked = true;
-                    designScale = 0.1f;
-                    break;
-                case ScaleSetting.Scale5:
-                    scale5ToolStripMenuItem.Checked = true;
-                    designScale = 0.05f;
-                    break;
-            }
-
+            
             if (updateDesign)
             {
                 updateDesignImage();
@@ -698,62 +638,65 @@ namespace embroideryReader
 
         private void scale100ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(ScaleSetting.Scale100, true);
+            setDesignScaleSetting(1.0f, false, true);
         }
 
         private void scale90ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(ScaleSetting.Scale90, true);
+            setDesignScaleSetting(0.9f, false, true);
         }
 
         private void scale80ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(ScaleSetting.Scale80, true);
+            setDesignScaleSetting(0.8f, false, true);
         }
 
         private void scale70ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(ScaleSetting.Scale70, true);
+            setDesignScaleSetting(0.7f, false, true);
         }
 
         private void scale60ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(ScaleSetting.Scale60, true);
+            setDesignScaleSetting(0.6f, false, true);
         }
 
         private void scale50ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(ScaleSetting.Scale50, true);
+            setDesignScaleSetting(0.5f, false, true);
         }
 
         private void scale40ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(ScaleSetting.Scale40, true);
+            setDesignScaleSetting(0.4f, false, true);
         }
 
         private void scale30ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(ScaleSetting.Scale30, true);
+            setDesignScaleSetting(0.3f, false, true);
         }
 
         private void scale20ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(ScaleSetting.Scale20, true);
+            setDesignScaleSetting(0.2f, false, true);
         }
 
         private void scale10ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(ScaleSetting.Scale10, true);
+            setDesignScaleSetting(0.1f, false, true);
         }
 
         private void scale5ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(ScaleSetting.Scale5, true);
+            setDesignScaleSetting(0.05f, false, true);
         }
 
         private void fitToWindowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(ScaleSetting.FitToWindow, true);
+            // Toggle checked state
+            fitToWindowToolStripMenuItem.Checked = !fitToWindowToolStripMenuItem.Checked;
+            // Update design
+            setDesignScaleSetting(1.0f, fitToWindowToolStripMenuItem.Checked, true);
         }
 
         private void frmMain_ResizeEnd(object sender, EventArgs e)
@@ -761,9 +704,8 @@ namespace embroideryReader
             // Finished resize, update design scale if set to fit-to-window.
             // This event also captures window move events, so check if the size
             // of panel2 has changed to see if it's really a resize event.
-            if (designScaleSetting == ScaleSetting.FitToWindow && panel2LastUpdateSize != panel2.Size)
+            if (fitToWindowToolStripMenuItem.Checked && panel2LastUpdateSize != panel2.Size)
             {
-                fitDesignToWindow();
                 updateDesignImage();
             }
         }
@@ -778,9 +720,8 @@ namespace embroideryReader
             {
                 maximizeChanged = false;
                 
-                if (designScaleSetting == ScaleSetting.FitToWindow)
+                if (fitToWindowToolStripMenuItem.Checked)
                 {
-                    fitDesignToWindow();
                     updateDesignImage();
                 }
             }
