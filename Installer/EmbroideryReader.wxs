@@ -37,16 +37,15 @@
                 </ProgId>
                 <Shortcut Id="EmbroideryReaderShortcut" Directory="ApplicationProgramsFolder" Name="Embroidery Reader" Icon="embroideryReader.exe" IconIndex="0" Show="normal" WorkingDirectory="TARGETDIR" Advertise="yes" />
                 <File Id="PesFile.dll" Name="PesFile.dll" DiskId="1" Source="..\PesFile\bin\Release\PesFile.dll" />
-                <File Id="UpdateCheck.dll" Name="UpdateCheck.dll" DiskId="1" Source="..\embroideryReader\UpdateCheck.dll" />
                 <File Id="IniFile.dll" Name="IniFile.dll" DiskId="1" Source="..\embroideryReader\IniFile.dll" />
                 <RemoveFolder Id="RemoveStartMenuFolder" On="uninstall" Directory="ApplicationProgramsFolder" />
             </Component>
             <Directory Id="translations" Name="translations">
                 <Component Id="TranslationInis" Guid="29712DD3-062D-4767-AB4F-8F390FF57BED">
-                    <File Id="EN_US.INI" Name="EN-US.ini" Source="..\translations\EN-US.ini" DiskId="1" />
-                    <File Id="IT.INI" Name="IT.ini" Source="..\translations\IT.ini" DiskId="1" />
-                    <File Id="ZH_HANS.INI" Name="zh-hans.ini" Source="..\translations\zh-hans.ini" DiskId="1" />
-                    <File Id="ZH_HANT.INI" Name="zh-hant.ini" Source="..\translations\zh-hant.ini" DiskId="1" />
+                    <File Id="EN_US.INI" Name="en-US.ini" Source="..\translations\en-US.ini" DiskId="1" />
+                    <File Id="IT_IT.INI" Name="it-IT.ini" Source="..\translations\it-IT.ini" DiskId="1" />
+                    <File Id="ZH_HANS.INI" Name="zh-Hans.ini" Source="..\translations\zh-Hans.ini" DiskId="1" />
+                    <File Id="ZH_HANT.INI" Name="zh-Hant.ini" Source="..\translations\zh-Hant.ini" DiskId="1" />
                 </Component>
             </Directory>
             <Directory Id="DesktopFolder" SourceName="User's Desktop" />
@@ -65,7 +64,7 @@
         <Property Id="VSDAllowLaterFrameworkVersions" Value="False" />
         <Property Id="ARPHELPLINK" Value="http://www.njcrawford.com/contact/" />
         <Property Id="ARPCONTACT" Value="Nathan Crawford" />
-        <Property Id="ARPURLINFOABOUT" Value="http://www.njcrawford.com/" />
+        <Property Id="ARPURLINFOABOUT" Value="http://www.njcrawford.com/programs/embroidery-reader/" />
         <Property Id="ALLUSERS" Value="2" />
         <Property Id="ARPPRODUCTICON" Value="embroideryReader.exe" />
         <Property Id="NEWERPRODUCTFOUND" Secure="yes" />
