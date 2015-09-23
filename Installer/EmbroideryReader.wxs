@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-    <?define ProductVersion="1.99.3" ?>
-    <Product Id="FE7B4CB0-2DC0-459E-8B4D-4A1CD22B2F91" Codepage="65001" Language="1033" Manufacturer="NJCrawford Software" Name="Embroidery Reader" UpgradeCode="{CE1642E2-5EE0-454F-B7DF-5C9C92D6D40D}" Version="$(var.ProductVersion)">
+
+    <!-- ProductGuid should change whenever ProductVersion changes -->
+    <?define ProductVersion="2.0.0" ?>
+    <?define ProductGuid="EBDB3DFC-098D-42DE-917B-91E25ECFD95B" ?>
+
+    <Product Id="$(var.ProductGuid)" Codepage="65001" Language="1033" Manufacturer="NJCrawford Software" Name="Embroidery Reader" UpgradeCode="{CE1642E2-5EE0-454F-B7DF-5C9C92D6D40D}" Version="$(var.ProductVersion)">
         <Package Compressed="yes" InstallerVersion="200" Languages="1033" Manufacturer="Nathan Crawford" Platform="x86" />
         <Binary Id="MSVBDPCADLL" SourceFile="Binary\MSVBDPCADLL" />
         <Binary Id="VSDNETCFG" SourceFile="Binary\VSDNETCFG" />
