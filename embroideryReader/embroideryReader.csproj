@@ -63,13 +63,10 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="UpdateCheck, Version=0.2.0.35, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\UpdateCheck.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmbroideryReaderSettings.cs" />
+    <Compile Include="EmbroideryReaderUpdates.cs" />
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>

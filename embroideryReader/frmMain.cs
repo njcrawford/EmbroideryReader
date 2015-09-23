@@ -356,7 +356,7 @@ namespace embroideryReader
 
         private void checkForUpdateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NJCrawford.UpdateCheck updater = new NJCrawford.UpdateCheck(settings.updateLocation, null, null);
+            EmbroideryReaderUpdates updater = new EmbroideryReaderUpdates(settings.updateLocation, null, null);
             updater.waitForInfo();
 
             if (updater.GetLastError() != "")
