@@ -148,6 +148,12 @@ namespace embroideryReader
 
         private void updateDesignImage()
         {
+            if(design == null)
+            {
+                // No design loaded - nothing to update
+                return;
+            }
+
             Bitmap tempImage = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, 1.0f);
 
             // Rotate image
@@ -186,6 +192,12 @@ namespace embroideryReader
 
             int width = (int)(tempImage.Width * designScale);
             int height = (int)(tempImage.Height * designScale);
+
+            if (width < 1 || height < 1)
+            {
+                // Image area is too small to update
+                return;
+            }
 
             if (width != tempImage.Width || height != tempImage.Height)
             {
