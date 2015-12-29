@@ -1,7 +1,7 @@
 /*
 Embroidery Reader - an application to view .pes embroidery designs
 
-Copyright (C) 2014 Nathan Crawford
+Copyright (C) 2015 Nathan Crawford
  
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -40,7 +40,7 @@ namespace embroideryInfo
                     if (args[0] == "--image" && args.Length > 1)
                     {
                         PesFile.PesFile design = new PesFile.PesFile(args[1]);
-                        Bitmap DrawArea = design.designToBitmap(5, false, 0, 100);
+                        Bitmap DrawArea = design.designToBitmap(5.0f, false, 0.0f, 1.0f);
                         Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
                         Graphics tempGraph = Graphics.FromImage(temp);
                         tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
@@ -61,11 +61,11 @@ namespace embroideryInfo
             }
             else
             {
-                Console.WriteLine("Specify input file");
-                for (int x = 0; x < args.Length; x++)
-                {
-                    Console.WriteLine(args[x]);
-                }
+                Console.WriteLine("No input file specified.");
+                Console.WriteLine("To generate design debug text file:");
+                Console.WriteLine("embroideryInfo.exe input.pes");
+                Console.WriteLine("To generate PNG file:");
+                Console.WriteLine("embroideryInfo.exe --image input.pes");
             }
         }
     }
