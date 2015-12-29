@@ -120,6 +120,12 @@ namespace embroideryReader
             Load(name);
         }
 
+        private string GetBasePath()
+        {
+            string exePath = System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath);
+            return System.IO.Path.Combine(exePath, TRANSLATIONS_FOLDER);
+        }
+
         // Returns the names of available translations
         // The first value of each tubple is the display name, the second value
         // is the file name that must be passed to the open function.
@@ -127,7 +133,7 @@ namespace embroideryReader
         {
             List<Tuple<String, String>> retval = new List<Tuple<String, String>>();
             foreach (String file in System.IO.Directory.EnumerateFiles(
-                System.IO.Path.Combine(Environment.CurrentDirectory, TRANSLATIONS_FOLDER),
+                GetBasePath(),
                 "*" + TRANSLATION_FILE_EXT,
                 System.IO.SearchOption.TopDirectoryOnly))
             {
@@ -142,15 +148,19 @@ namespace embroideryReader
         // Names are just the file name without the extension
         public void Load(String translationName)
         {
-            string exePath = System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath);
-            String translationPath = System.IO.Path.Combine(exePath, System.IO.Path.Combine(TRANSLATIONS_FOLDER, translationName + TRANSLATION_FILE_EXT));
+            // Init default translation, in case loaded translation is missing any strings
+            defaultFile = new IniFile(System.IO.Path.Combine(GetBasePath(), DEFAULT_TRANSLATION_NAME + TRANSLATION_FILE_EXT));
+
+            String translationPath = System.IO.Path.Combine(GetBasePath(), translationName + TRANSLATION_FILE_EXT);
             if (System.IO.File.Exists(translationPath))
             {
+                // Tranlation exists, load it
                 translationFile = new IniFile(translationPath);
             }
             else
             {
-                translationFile = new IniFile(System.IO.Path.Combine(exePath, System.IO.Path.Combine(TRANSLATIONS_FOLDER, DEFAULT_TRANSLATION_NAME + TRANSLATION_FILE_EXT)));
+                // Requested translation doesn't exist, so use the default
+                translationFile = defaultFile;
             }
         }
 
