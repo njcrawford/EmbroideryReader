@@ -142,15 +142,15 @@ namespace embroideryReader
         // Names are just the file name without the extension
         public void Load(String translationName)
         {
-            defaultFile = new IniFile(System.IO.Path.Combine(TRANSLATIONS_FOLDER, DEFAULT_TRANSLATION_NAME + TRANSLATION_FILE_EXT));
-            String translationPath = System.IO.Path.Combine(TRANSLATIONS_FOLDER, translationName + TRANSLATION_FILE_EXT);
+            string exePath = System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath);
+            String translationPath = System.IO.Path.Combine(exePath, System.IO.Path.Combine(TRANSLATIONS_FOLDER, translationName + TRANSLATION_FILE_EXT));
             if (System.IO.File.Exists(translationPath))
             {
                 translationFile = new IniFile(translationPath);
             }
             else
             {
-                translationFile = defaultFile;
+                translationFile = new IniFile(System.IO.Path.Combine(exePath, System.IO.Path.Combine(TRANSLATIONS_FOLDER, DEFAULT_TRANSLATION_NAME + TRANSLATION_FILE_EXT)));
             }
         }
 
