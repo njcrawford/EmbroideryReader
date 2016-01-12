@@ -71,8 +71,17 @@ namespace embroideryReader
             {
                 panel2.BackColor = Color.FromKnownColor(KnownColor.Control);
             }
-            this.Width = settings.windowWidth;
-            this.Height = settings.windowHeight;
+            if (settings.windowMaximized)
+            {
+                // Check maximized first
+                this.WindowState = FormWindowState.Maximized;
+            }
+            else
+            {
+                // Not maximized, restore last saved window size
+                this.Width = settings.windowWidth;
+                this.Height = settings.windowHeight;
+            }
             setDesignScaleSetting(1.0f, settings.AutoScaleDesign, false);
         }
 
@@ -407,8 +416,21 @@ namespace embroideryReader
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            settings.windowWidth = this.Width;
-            settings.windowHeight = this.Height;
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                settings.windowMaximized = true;
+            }
+            else
+            {
+                settings.windowMaximized = false;
+
+                if (this.WindowState == FormWindowState.Normal)
+                {
+                    // If window is not minimized or maximized, save current size
+                    settings.windowWidth = this.Width;
+                    settings.windowHeight = this.Height;
+                }
+            }
             settings.save();
         }
 
