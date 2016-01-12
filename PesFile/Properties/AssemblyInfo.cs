@@ -34,7 +34,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("PesFile")]
-[assembly: AssemblyCopyright("Copyright © Nathan Crawford 2015")]
+[assembly: AssemblyCopyright("Copyright © Nathan Crawford 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
