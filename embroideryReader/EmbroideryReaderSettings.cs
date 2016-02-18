@@ -70,6 +70,9 @@ namespace embroideryReader
         private const String SETTINGS_PATH_COMPANY = "NJCrawford Software";
         private const String SETTINGS_PATH_APP_NAME = "Embroidery Reader";
 
+        private const int DEFAULT_WINDOW_SIZE = 300;
+        private const int MINIMUM_WINDOW_SIZE = 150;
+
         public EmbroideryReaderSettings()
         {
             string settingsPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -300,7 +303,8 @@ namespace embroideryReader
         {
             get
 	        {
-                return settings.getValue(SETTING_WINDOW_WIDTH, 300);
+                // Return the stored window size, but no smaller than MINUMUM_WINDOW_SIZE
+                return Math.Max(settings.getValue(SETTING_WINDOW_WIDTH, DEFAULT_WINDOW_SIZE), MINIMUM_WINDOW_SIZE);
 	        }
 	        set
 	        {
@@ -312,7 +316,8 @@ namespace embroideryReader
         {
             get
             {
-                return settings.getValue(SETTING_WINDOW_HEIGHT, 300);
+                // Return the stored window size, but no smaller than MINUMUM_WINDOW_SIZE
+                return Math.Max(settings.getValue(SETTING_WINDOW_HEIGHT, DEFAULT_WINDOW_SIZE), MINIMUM_WINDOW_SIZE);
             }
             set
             {
