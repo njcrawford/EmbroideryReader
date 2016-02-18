@@ -122,8 +122,22 @@ namespace embroideryReader
 
         private string GetBasePath()
         {
+            // Build the path that should be used by default
             string exePath = System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath);
-            return System.IO.Path.Combine(exePath, TRANSLATIONS_FOLDER);
+            exePath = System.IO.Path.Combine(exePath, TRANSLATIONS_FOLDER);
+
+            // If the default path exists, use it
+            if (System.IO.Directory.Exists(exePath))
+            {
+                return exePath;
+            }
+            // If the translations folder exists in the current working directory, use it
+            else if(System.IO.Directory.Exists(TRANSLATIONS_FOLDER))
+            {
+                return TRANSLATIONS_FOLDER;
+            }
+            // No usable translations folder found
+            throw new Exception("Unable to locate a suitable translations directory");
         }
 
         // Returns the names of available translations
