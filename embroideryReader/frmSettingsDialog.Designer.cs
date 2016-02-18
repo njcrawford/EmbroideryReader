@@ -54,15 +54,17 @@ namespace embroideryReader
             this.cmbLanguage = new System.Windows.Forms.ComboBox();
             this.grpLanguage = new System.Windows.Forms.GroupBox();
             this.lblIncompleteTranslation = new System.Windows.Forms.Label();
+            this.grpTranparencyGrid = new System.Windows.Forms.GroupBox();
             this.grpBackground.SuspendLayout();
             this.pnlBackground.SuspendLayout();
             this.grpStitch.SuspendLayout();
             this.grpLanguage.SuspendLayout();
+            this.grpTranparencyGrid.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnColor
             // 
-            this.btnColor.Location = new System.Drawing.Point(171, 16);
+            this.btnColor.Location = new System.Drawing.Point(200, 19);
             this.btnColor.Name = "btnColor";
             this.btnColor.Size = new System.Drawing.Size(75, 23);
             this.btnColor.TabIndex = 0;
@@ -72,7 +74,7 @@ namespace embroideryReader
             // 
             // btnResetColor
             // 
-            this.btnResetColor.Location = new System.Drawing.Point(171, 45);
+            this.btnResetColor.Location = new System.Drawing.Point(200, 48);
             this.btnResetColor.Name = "btnResetColor";
             this.btnResetColor.Size = new System.Drawing.Size(75, 23);
             this.btnResetColor.TabIndex = 2;
@@ -83,7 +85,7 @@ namespace embroideryReader
             // btnOK
             // 
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(117, 301);
+            this.btnOK.Location = new System.Drawing.Point(137, 327);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 3;
@@ -94,7 +96,7 @@ namespace embroideryReader
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(207, 301);
+            this.btnCancel.Location = new System.Drawing.Point(218, 327);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 4;
@@ -129,25 +131,20 @@ namespace embroideryReader
             // 
             // grpBackground
             // 
-            this.grpBackground.Controls.Add(this.txtGridSize);
-            this.grpBackground.Controls.Add(this.lblGridSizePixels);
-            this.grpBackground.Controls.Add(this.lblGridSize);
-            this.grpBackground.Controls.Add(this.btnResetGridColor);
-            this.grpBackground.Controls.Add(this.btnGridColor);
+            this.grpBackground.Controls.Add(this.grpTranparencyGrid);
             this.grpBackground.Controls.Add(this.pnlBackground);
-            this.grpBackground.Controls.Add(this.chkDrawGrid);
             this.grpBackground.Controls.Add(this.btnColor);
             this.grpBackground.Controls.Add(this.btnResetColor);
             this.grpBackground.Location = new System.Drawing.Point(12, 12);
             this.grpBackground.Name = "grpBackground";
-            this.grpBackground.Size = new System.Drawing.Size(271, 129);
+            this.grpBackground.Size = new System.Drawing.Size(281, 155);
             this.grpBackground.TabIndex = 8;
             this.grpBackground.TabStop = false;
             this.grpBackground.Text = "Background";
             // 
             // txtGridSize
             // 
-            this.txtGridSize.Location = new System.Drawing.Point(64, 96);
+            this.txtGridSize.Location = new System.Drawing.Point(64, 42);
             this.txtGridSize.Name = "txtGridSize";
             this.txtGridSize.Size = new System.Drawing.Size(32, 20);
             this.txtGridSize.TabIndex = 18;
@@ -156,7 +153,7 @@ namespace embroideryReader
             // lblGridSizePixels
             // 
             this.lblGridSizePixels.AutoSize = true;
-            this.lblGridSizePixels.Location = new System.Drawing.Point(102, 99);
+            this.lblGridSizePixels.Location = new System.Drawing.Point(102, 45);
             this.lblGridSizePixels.Name = "lblGridSizePixels";
             this.lblGridSizePixels.Size = new System.Drawing.Size(33, 13);
             this.lblGridSizePixels.TabIndex = 17;
@@ -165,7 +162,7 @@ namespace embroideryReader
             // lblGridSize
             // 
             this.lblGridSize.AutoSize = true;
-            this.lblGridSize.Location = new System.Drawing.Point(6, 99);
+            this.lblGridSize.Location = new System.Drawing.Point(6, 45);
             this.lblGridSize.Name = "lblGridSize";
             this.lblGridSize.Size = new System.Drawing.Size(52, 13);
             this.lblGridSize.TabIndex = 16;
@@ -173,7 +170,7 @@ namespace embroideryReader
             // 
             // btnResetGridColor
             // 
-            this.btnResetGridColor.Location = new System.Drawing.Point(171, 100);
+            this.btnResetGridColor.Location = new System.Drawing.Point(188, 44);
             this.btnResetGridColor.Name = "btnResetGridColor";
             this.btnResetGridColor.Size = new System.Drawing.Size(75, 23);
             this.btnResetGridColor.TabIndex = 15;
@@ -183,7 +180,7 @@ namespace embroideryReader
             // 
             // btnGridColor
             // 
-            this.btnGridColor.Location = new System.Drawing.Point(171, 75);
+            this.btnGridColor.Location = new System.Drawing.Point(188, 15);
             this.btnGridColor.Name = "btnGridColor";
             this.btnGridColor.Size = new System.Drawing.Size(75, 23);
             this.btnGridColor.TabIndex = 14;
@@ -204,6 +201,7 @@ namespace embroideryReader
             // 
             this.lblBackgroundColor.BackColor = System.Drawing.Color.Transparent;
             this.lblBackgroundColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblBackgroundColor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblBackgroundColor.Location = new System.Drawing.Point(0, 0);
             this.lblBackgroundColor.Name = "lblBackgroundColor";
             this.lblBackgroundColor.Size = new System.Drawing.Size(130, 50);
@@ -214,7 +212,7 @@ namespace embroideryReader
             // chkDrawGrid
             // 
             this.chkDrawGrid.AutoSize = true;
-            this.chkDrawGrid.Location = new System.Drawing.Point(6, 75);
+            this.chkDrawGrid.Location = new System.Drawing.Point(6, 19);
             this.chkDrawGrid.Name = "chkDrawGrid";
             this.chkDrawGrid.Size = new System.Drawing.Size(143, 17);
             this.chkDrawGrid.TabIndex = 12;
@@ -231,9 +229,9 @@ namespace embroideryReader
             this.grpStitch.Controls.Add(this.lblThreadThickness);
             this.grpStitch.Controls.Add(this.txtThreadThickness);
             this.grpStitch.Controls.Add(this.lblPixelThick);
-            this.grpStitch.Location = new System.Drawing.Point(13, 147);
+            this.grpStitch.Location = new System.Drawing.Point(12, 173);
             this.grpStitch.Name = "grpStitch";
-            this.grpStitch.Size = new System.Drawing.Size(271, 86);
+            this.grpStitch.Size = new System.Drawing.Size(281, 86);
             this.grpStitch.TabIndex = 3;
             this.grpStitch.TabStop = false;
             this.grpStitch.Text = "Stitch drawing";
@@ -279,7 +277,7 @@ namespace embroideryReader
             this.cmbLanguage.FormattingEnabled = true;
             this.cmbLanguage.Location = new System.Drawing.Point(14, 19);
             this.cmbLanguage.Name = "cmbLanguage";
-            this.cmbLanguage.Size = new System.Drawing.Size(121, 21);
+            this.cmbLanguage.Size = new System.Drawing.Size(132, 21);
             this.cmbLanguage.TabIndex = 10;
             this.cmbLanguage.SelectedIndexChanged += new System.EventHandler(this.cmbLanguage_SelectedIndexChanged);
             // 
@@ -287,9 +285,9 @@ namespace embroideryReader
             // 
             this.grpLanguage.Controls.Add(this.lblIncompleteTranslation);
             this.grpLanguage.Controls.Add(this.cmbLanguage);
-            this.grpLanguage.Location = new System.Drawing.Point(12, 239);
+            this.grpLanguage.Location = new System.Drawing.Point(12, 265);
             this.grpLanguage.Name = "grpLanguage";
-            this.grpLanguage.Size = new System.Drawing.Size(270, 56);
+            this.grpLanguage.Size = new System.Drawing.Size(281, 56);
             this.grpLanguage.TabIndex = 11;
             this.grpLanguage.TabStop = false;
             this.grpLanguage.Text = "Language";
@@ -297,12 +295,27 @@ namespace embroideryReader
             // lblIncompleteTranslation
             // 
             this.lblIncompleteTranslation.AutoSize = true;
-            this.lblIncompleteTranslation.Location = new System.Drawing.Point(141, 22);
+            this.lblIncompleteTranslation.Location = new System.Drawing.Point(152, 22);
             this.lblIncompleteTranslation.Name = "lblIncompleteTranslation";
             this.lblIncompleteTranslation.Size = new System.Drawing.Size(123, 13);
             this.lblIncompleteTranslation.TabIndex = 11;
             this.lblIncompleteTranslation.Text = "Translation is incomplete";
             this.lblIncompleteTranslation.Visible = false;
+            // 
+            // grpTranparencyGrid
+            // 
+            this.grpTranparencyGrid.Controls.Add(this.chkDrawGrid);
+            this.grpTranparencyGrid.Controls.Add(this.btnResetGridColor);
+            this.grpTranparencyGrid.Controls.Add(this.txtGridSize);
+            this.grpTranparencyGrid.Controls.Add(this.btnGridColor);
+            this.grpTranparencyGrid.Controls.Add(this.lblGridSize);
+            this.grpTranparencyGrid.Controls.Add(this.lblGridSizePixels);
+            this.grpTranparencyGrid.Location = new System.Drawing.Point(6, 75);
+            this.grpTranparencyGrid.Name = "grpTranparencyGrid";
+            this.grpTranparencyGrid.Size = new System.Drawing.Size(269, 74);
+            this.grpTranparencyGrid.TabIndex = 12;
+            this.grpTranparencyGrid.TabStop = false;
+            this.grpTranparencyGrid.Text = "Transparency Grid";
             // 
             // frmSettingsDialog
             // 
@@ -310,7 +323,7 @@ namespace embroideryReader
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(296, 338);
+            this.ClientSize = new System.Drawing.Size(305, 359);
             this.Controls.Add(this.grpLanguage);
             this.Controls.Add(this.grpStitch);
             this.Controls.Add(this.grpBackground);
@@ -323,14 +336,14 @@ namespace embroideryReader
             this.Name = "frmSettingsDialog";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Embroidery Reader Settings";
-            this.Load += new System.EventHandler(this.frmSettingsDialog_Load);
             this.grpBackground.ResumeLayout(false);
-            this.grpBackground.PerformLayout();
             this.pnlBackground.ResumeLayout(false);
             this.grpStitch.ResumeLayout(false);
             this.grpStitch.PerformLayout();
             this.grpLanguage.ResumeLayout(false);
             this.grpLanguage.PerformLayout();
+            this.grpTranparencyGrid.ResumeLayout(false);
+            this.grpTranparencyGrid.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -362,5 +375,6 @@ namespace embroideryReader
         private System.Windows.Forms.TextBox txtGridSize;
         private System.Windows.Forms.Label lblGridSizePixels;
         private System.Windows.Forms.Label lblGridSize;
+        private System.Windows.Forms.GroupBox grpTranparencyGrid;
     }
 }

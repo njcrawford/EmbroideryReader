@@ -1,7 +1,7 @@
 /*
 Embroidery Reader - an application to view .pes embroidery designs
 
-Copyright (C) 2014 Nathan Crawford
+Copyright (C) 2016 Nathan Crawford
  
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -39,6 +39,11 @@ namespace embroideryReader
         private Translation translation;
         private List<Tuple<String, String>> availableTranslations = new List<Tuple<string,string>>();
 
+        // Local copies of settings to update
+        private bool backgroundColorEnabled;
+        private Color transparencyGridColor;
+        private int gridSize;
+
         public EmbroideryReaderSettings settingsToModify
         {
             get
@@ -47,20 +52,31 @@ namespace embroideryReader
             }
             set
             {
+                // Save a local reference to update later if/when the user clicks the OK button
                 settings = value;
-                if (settings.backgroundColorEnabled)
+
+                // Load background color settings
+                backgroundColorEnabled = settings.backgroundColorEnabled;
+                if (backgroundColorEnabled)
                 {
                     pnlBackground.BackColor = settings.backgroundColor;
                 }
 
+                // Load thread thickness setting
                 txtThreadThickness.Text = settings.threadThickness.ToString();
 
+                // Load filter stitches settings
                 chkUglyStitches.Checked = settings.filterStiches;
-
                 txtThreshold.Text = settings.filterStitchesThreshold.ToString();
 
+                // Load transparency grid settings
                 chkDrawGrid.Checked = settings.transparencyGridEnabled;
-                txtGridSize.Text = settings.transparencyGridSize.ToString();
+                gridSize = settings.transparencyGridSize;
+                txtGridSize.Text = gridSize.ToString();
+                if(chkDrawGrid.Checked)
+                {
+                    transparencyGridColor = settings.transparencyGridColor;
+                }
                 updateGridColorControls();
             }
         }
@@ -81,40 +97,49 @@ namespace embroideryReader
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
                 pnlBackground.BackColor = colorDialog1.Color;
-                settings.backgroundColor = colorDialog1.Color;
-                settings.backgroundColorEnabled = true;
+                backgroundColorEnabled = true;
             }
         }
 
         private void btnResetColor_Click(object sender, EventArgs e)
         {
             pnlBackground.BackColor = Color.FromKnownColor(KnownColor.Control);
-            settings.backgroundColorEnabled = false;
+            backgroundColorEnabled = false;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
+            // Save thread thickness setting
             float threadThickness;
             if (Single.TryParse(txtThreadThickness.Text, out threadThickness))
             {
                 settings.threadThickness = threadThickness;
             }
 
+            // Save filter stitches settings
             settings.filterStiches = chkUglyStitches.Checked;
-
             float threshold;
             if (Single.TryParse(txtThreshold.Text, out threshold))
             {
                 settings.filterStitchesThreshold = threshold;
             }
 
+            // Save Transparency grid settings
             settings.transparencyGridEnabled = chkDrawGrid.Checked;
-            int gridSize;
-            if (Int32.TryParse(txtGridSize.Text, out gridSize))
+            settings.transparencyGridSize = gridSize;
+            if(chkDrawGrid.Checked)
             {
-                settings.transparencyGridSize = gridSize;
+                settings.transparencyGridColor = transparencyGridColor;
             }
 
+            // Save background color settings
+            settings.backgroundColorEnabled = backgroundColorEnabled;
+            if(backgroundColorEnabled)
+            {
+                settings.backgroundColor = pnlBackground.BackColor;
+            }
+
+            // Save translation setting
             settings.translation = availableTranslations[cmbLanguage.SelectedIndex].Item2;
         }
 
@@ -132,6 +157,11 @@ namespace embroideryReader
                     {
                         cmbLanguage.SelectedIndex = cmbLanguage.Items.Count - 1;
                     }
+                }
+                // Make sure a valid language is selected if no match was found
+                if(cmbLanguage.Items.Count != 0 && cmbLanguage.SelectedIndex == -1)
+                {
+                    cmbLanguage.SelectedIndex = 0;
                 }
             }
         }
@@ -175,7 +205,6 @@ namespace embroideryReader
 
         private void chkDrawGrid_CheckedChanged(object sender, EventArgs e)
         {
-            settings.transparencyGridEnabled = chkDrawGrid.Checked;
             pnlBackground.Invalidate();
             pnlBackground.Update();
 
@@ -191,13 +220,10 @@ namespace embroideryReader
 
         private void pnlBackground_Paint(object sender, PaintEventArgs e)
         {
-            if (settings.transparencyGridEnabled)
+            if (chkDrawGrid.Checked)
             {
-                Color gridColor = settings.transparencyGridColor;
-                using (Pen gridPen = new Pen(gridColor))
+                using (Pen gridPen = new Pen(transparencyGridColor))
                 {
-
-                    int gridSize = settings.transparencyGridSize;
                     for (int xStart = 0; (xStart * gridSize) < pnlBackground.Width; xStart++)
                     {
                         for (int yStart = 0; (yStart * gridSize) < pnlBackground.Height; yStart++)
@@ -215,33 +241,31 @@ namespace embroideryReader
 
         private void btnGridColor_Click(object sender, EventArgs e)
         {
-            colorDialog1.Color = settings.transparencyGridColor;
+            colorDialog1.Color = transparencyGridColor;
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
-                settings.transparencyGridColor = colorDialog1.Color;
+                transparencyGridColor = colorDialog1.Color;
                 pnlBackground.Invalidate();
             }
         }
 
         private void btnResetGridColor_Click(object sender, EventArgs e)
         {
-            settings.transparencyGridColor = Color.LightGray;
+            transparencyGridColor = Color.LightGray;
             pnlBackground.Invalidate();
         }
 
         private void txtGridSize_TextChanged(object sender, EventArgs e)
         {
-            int gridSize;
             if (Int32.TryParse(txtGridSize.Text, out gridSize))
             {
-                settings.transparencyGridSize = gridSize;
+                // Try to keep grid size in a reasonable range
+                if (gridSize < 1 || gridSize > 1000)
+                {
+                    gridSize = 5;
+                }
                 pnlBackground.Invalidate();
             }
-        }
-
-        private void frmSettingsDialog_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }
