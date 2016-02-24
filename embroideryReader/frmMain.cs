@@ -82,14 +82,20 @@ namespace embroideryReader
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            checkSettings();
+            // Set app window title
             this.Text = APP_TITLE;
+
+            // Load and check settings
+            checkSettings();
+            
+            // Load translation
+            loadTranslatedStrings(settings.translation);
+
+            // Load design, if specified
             if (args.Length > 1)
             {
                 openFile(args[1]);
             }
-
-            loadTranslatedStrings(settings.translation);
         }
 
         // Override WndProc to capture maximize and restore events
@@ -274,6 +280,7 @@ namespace embroideryReader
         {
             if (!System.IO.File.Exists(filename))
             {
+                MessageBox.Show("File \"" + filename + "\" does not exist", "File not found", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
             design = new PesFile.PesFile(filename);
@@ -309,6 +316,7 @@ namespace embroideryReader
             else
             {
                 string message = translation.GetTranslatedString(Translation.StringID.ERROR_FILE) + // "An error occured while reading the file:"
+                    Environment.NewLine + design.GetFileName() +
                     Environment.NewLine + design.getLastError();
                 if (design.getStatus() == PesFile.statusEnum.ParseError)
                 {
