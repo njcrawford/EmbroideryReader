@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="EmbroideryReaderSettings.cs" />
     <Compile Include="EmbroideryReaderUpdates.cs" />
+    <Compile Include="ErrorReporter.cs" />
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
