@@ -22,11 +22,6 @@ A copy of the full GPL 2 license can be found in the docs directory.
 You can contact me at http://www.njcrawford.com/contact/.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace PesFile
 {
     public class PesColors

@@ -23,8 +23,6 @@ You can contact me at http://www.njcrawford.com/contact/.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 
 namespace embroideryInfo
