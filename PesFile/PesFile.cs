@@ -222,6 +222,16 @@ namespace PesFile
                 }
                 else
                 {
+                    int extraBits1 = 0x00;
+                    if ((val1 & 0x80) == 0x80)
+                    {
+                        // Save the top 4 bits to output with debug info
+                        // The top bit means this is a 12 bit value, but I don't know what the next 3 bits mean.
+                        // The only combinations I've observed in real files are 0x80, 0x90 and 0xa0. 0x80 is
+                        // used for the bulk of stitches, with a few 0x80 and/or 0x90 in most files.
+                        extraBits1 = val1 & 0xf0;
+                    }
+
                     int deltaX = 0;
                     int deltaY = 0;
                     if ((val1 & 0x80) == 0x80)
@@ -245,6 +255,15 @@ namespace PesFile
                         val1 = val2;
                     }
 
+                    int extraBits2 = 0x00;
+                    if ((val1 & 0x80) == 0x80)
+                    {
+                        // Save the top 4 bits to output with debug info
+                        // The top bit means this is a 12 bit value, but I don't know what the next 3 bits mean.
+                        // In all the files I've checked, extraBits2 is the same as extraBits1.
+                        extraBits2 = val1 & 0xf0;
+                    }
+
                     if ((val1 & 0x80) == 0x80)
                     {
                         // This is a 12-bit int. Allows for needle movement
@@ -261,14 +280,21 @@ namespace PesFile
                         // Finished reading data for this stitch, no more
                         // bytes needed.
                     }
+                    // Add stitch to list
                     tempStitches.Add(
                         new Stitch(
                             new Point(prevX, prevY),
-                            new Point(prevX + deltaX, prevY + deltaY)
+                            new Point(prevX + deltaX, prevY + deltaY),
+                            extraBits1,
+                            extraBits2
                         )
                     );
+
+                    // Calculate new "previous" position
                     prevX = prevX + deltaX;
                     prevY = prevY + deltaY;
+
+                    // Update maximum distances
                     if (prevX > maxX)
                     {
                         maxX = prevX;
@@ -354,11 +380,20 @@ namespace PesFile
                 outfile.WriteLine("Extended stitch debug info");
                 for (int blocky = 0; blocky < blocks.Count; blocky++)
                 {
-                    outfile.WriteLine("block " + (blocky + 1).ToString() + " start");
+                    outfile.WriteLine("block " + (blocky + 1).ToString() + " start (color index " + blocks[blocky].colorIndex + ")");
                     outfile.WriteLine("unknown start byte: " + blocks[blocky].unknownStartByte.ToString("X2"));
                     for (int stitchy = 0; stitchy < blocks[blocky].stitches.Length; stitchy++)
                     {
-                        outfile.WriteLine(blocks[blocky].stitches[stitchy].a.ToString() + " - " + blocks[blocky].stitches[stitchy].b.ToString());
+                        string tempLine = blocks[blocky].stitches[stitchy].a.ToString() + " - " + blocks[blocky].stitches[stitchy].b.ToString();
+                        if(blocks[blocky].stitches[stitchy].extraBits1 != 0x00)
+                        {
+                            tempLine += " (extra bits 1: " + blocks[blocky].stitches[stitchy].extraBits1.ToString("X2") + ")";
+                        }
+                        if (blocks[blocky].stitches[stitchy].extraBits2 != 0x00)
+                        {
+                            tempLine += " (extra bits 2: " + blocks[blocky].stitches[stitchy].extraBits2.ToString("X2") + ")";
+                        }
+                        outfile.WriteLine(tempLine);
                     }
                 }
             }

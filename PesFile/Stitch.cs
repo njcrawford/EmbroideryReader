@@ -31,11 +31,22 @@ namespace PesFile
     {
         public Point a;
         public Point b;
+        // Extra bits to output with debug info
+        public int extraBits1;
+        public int extraBits2;
 
         public Stitch(Point pointA, Point pointB)
         {
             this.a = pointA;
             this.b = pointB;
+        }
+
+        public Stitch(Point pointA, Point pointB, int extraBits1, int extraBits2)
+        {
+            this.a = pointA;
+            this.b = pointB;
+            this.extraBits1 = extraBits1;
+            this.extraBits2 = extraBits2;
         }
 
         public double calcLength()
