@@ -32,7 +32,6 @@ namespace PesFile
 
     public class PesFile
     {
-        System.IO.BinaryReader fileIn;
         int imageWidth;
         int imageHeight;
         string _filename;
@@ -112,216 +111,216 @@ namespace PesFile
         private void OpenFile(string filename)
         {
             _filename = filename;
-            fileIn = new System.IO.BinaryReader(System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read));
 
-            string startFileSig = "";
-            for (int i = 0; i < 4; i++) // 4 bytes
+            // The using statements ensure fileIn is closed, no matter how the statement is exited.
+            using (System.IO.FileStream fileStreamIn = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
             {
-                startFileSig += fileIn.ReadChar();
-            }
-            if (startFileSig != "#PES")
-            {
-                // This is not a file that we can read
-                readyStatus = statusEnum.ParseError;
-                lastError = "Missing #PES at beginning of file";
-                fileIn.Close();
-                return;
-            }
-                
-            // PES version
-            string versionString = "";
-            for (int i = 0; i < 4; i++) // 4 bytes
-            {
-                versionString += fileIn.ReadChar();
-            }
-            if(!UInt16.TryParse(versionString, out pesVersion))
-            {
-                // This is not a file that we can read
-                readyStatus = statusEnum.ParseError;
-                lastError = "PES version is not the correct format";
-                fileIn.Close();
-                return;
-            }
-                
-            int pecstart = fileIn.ReadInt32();
-            // Sanity check on PEC start position
-            if(fileIn.BaseStream.Length < (pecstart + 532))
-            {
-                // This file is probably truncated
-                readyStatus = statusEnum.ParseError;
-                lastError = "File appears to be truncated (PEC section is beyond end of file)";
-                fileIn.Close();
-                return;
-            }
-
-            // Read number of colors in this design
-            fileIn.BaseStream.Position = pecstart + 48;
-            int numColors = fileIn.ReadByte() +1;
-            List<byte> colorList = new List<byte>();
-            for (int x = 0; x < numColors; x++)
-            {
-                colorList.Add(fileIn.ReadByte());
-            }
-
-            // Read stitch data
-            fileIn.BaseStream.Position = pecstart + 532;
-            bool thisPartIsDone = false;
-            StitchBlock curBlock;
-            int prevX = 0;
-            int prevY = 0;
-            int maxX = 0;
-            int minX = 0;
-            int maxY = 0;
-            int minY = 0;
-            int colorNum = -1;
-            int colorIndex = 0;
-            List<Stitch> tempStitches = new List<Stitch>();
-            while (!thisPartIsDone)
-            {
-                byte val1;
-                byte val2;
-                val1 = fileIn.ReadByte();
-                val2 = fileIn.ReadByte();
-                if (val1 == 0xff && val2 == 0x00)
+                using (System.IO.BinaryReader fileIn = new System.IO.BinaryReader(fileStreamIn))
                 {
-                    //end of stitches
-                    thisPartIsDone = true;
-
-                    //add the last block
-                    curBlock = new StitchBlock();
-                    curBlock.stitches = new Stitch[tempStitches.Count];
-                    tempStitches.CopyTo(curBlock.stitches);
-                    curBlock.stitchesTotal = tempStitches.Count;
-                    colorNum++;
-                    colorIndex = colorList[colorNum];
-                    curBlock.colorIndex = colorIndex;
-                    curBlock.color = getColorFromIndex(colorIndex);
-                    blocks.Add(curBlock);
-                }
-                else if (val1 == 0xfe && val2 == 0xb0)
-                {
-                    //color switch, start a new block
-
-                    curBlock = new StitchBlock();
-                    curBlock.stitches = new Stitch[tempStitches.Count];
-                    tempStitches.CopyTo(curBlock.stitches);
-                    curBlock.stitchesTotal = tempStitches.Count;
-                    colorNum++;
-                    colorIndex = colorList[colorNum];
-                    curBlock.colorIndex = colorIndex;
-                    curBlock.color = getColorFromIndex(colorIndex);
-                    //read useless(?) byte
-                    // The value of this 'useless' byte seems to alternate
-                    // between 2 and 1 for every other block. The only
-                    // exception I've noted is the last block which appears
-                    // to always be 0.
-                    curBlock.unknownStartByte = fileIn.ReadByte();
-                    blocks.Add(curBlock);
-
-                    tempStitches = new List<Stitch>();
-                }
-                else
-                {
-                    int extraBits1 = 0x00;
-                    if ((val1 & 0x80) == 0x80)
+                    string startFileSig = "";
+                    for (int i = 0; i < 4; i++) // 4 bytes
                     {
-                        // Save the top 4 bits to output with debug info
-                        // The top bit means this is a 12 bit value, but I don't know what the next 3 bits mean.
-                        // The only combinations I've observed in real files are 0x80, 0x90 and 0xa0. 0x80 is
-                        // used for the bulk of stitches, with a few 0x80 and/or 0x90 in most files.
-                        extraBits1 = val1 & 0xf0;
+                        startFileSig += fileIn.ReadChar();
+                    }
+                    if (startFileSig != "#PES")
+                    {
+                        // This is not a file that we can read
+                        readyStatus = statusEnum.ParseError;
+                        lastError = "Missing #PES at beginning of file";
+                        return;
                     }
 
-                    int deltaX = 0;
-                    int deltaY = 0;
-                    if ((val1 & 0x80) == 0x80)
+                    // PES version
+                    string versionString = "";
+                    for (int i = 0; i < 4; i++) // 4 bytes
                     {
-                        // This is a 12-bit int. Allows for needle movement
-                        // of up to +2047 or -2048.
-                        deltaX = get12Bit2sComplement(val1, val2);
+                        versionString += fileIn.ReadChar();
+                    }
+                    if (!UInt16.TryParse(versionString, out pesVersion))
+                    {
+                        // This is not a file that we can read
+                        readyStatus = statusEnum.ParseError;
+                        lastError = "PES version is not the correct format";
+                        return;
+                    }
 
-                        // The X value used both bytes, so read next byte
-                        // for Y value.
+                    int pecstart = fileIn.ReadInt32();
+                    // Sanity check on PEC start position
+                    if (fileIn.BaseStream.Length < (pecstart + 532))
+                    {
+                        // This file is probably truncated
+                        readyStatus = statusEnum.ParseError;
+                        lastError = "File appears to be truncated (PEC section is beyond end of file)";
+                        return;
+                    }
+
+                    // Read number of colors in this design
+                    fileIn.BaseStream.Position = pecstart + 48;
+                    int numColors = fileIn.ReadByte() + 1;
+                    List<byte> colorList = new List<byte>();
+                    for (int x = 0; x < numColors; x++)
+                    {
+                        colorList.Add(fileIn.ReadByte());
+                    }
+
+                    // Read stitch data
+                    fileIn.BaseStream.Position = pecstart + 532;
+                    bool thisPartIsDone = false;
+                    StitchBlock curBlock;
+                    int prevX = 0;
+                    int prevY = 0;
+                    int maxX = 0;
+                    int minX = 0;
+                    int maxY = 0;
+                    int minY = 0;
+                    int colorNum = -1;
+                    int colorIndex = 0;
+                    List<Stitch> tempStitches = new List<Stitch>();
+                    while (!thisPartIsDone)
+                    {
+                        byte val1;
+                        byte val2;
                         val1 = fileIn.ReadByte();
-                    }
-                    else
-                    {
-                        // This is a 7-bit int. Allows for needle movement
-                        // of up to +63 or -64.
-                        deltaX = get7Bit2sComplement(val1);
-
-                        // The X value only used 1 byte, so copy the second
-                        // to to the first for Y value.
-                        val1 = val2;
-                    }
-
-                    int extraBits2 = 0x00;
-                    if ((val1 & 0x80) == 0x80)
-                    {
-                        // Save the top 4 bits to output with debug info
-                        // The top bit means this is a 12 bit value, but I don't know what the next 3 bits mean.
-                        // In all the files I've checked, extraBits2 is the same as extraBits1.
-                        extraBits2 = val1 & 0xf0;
-                    }
-
-                    if ((val1 & 0x80) == 0x80)
-                    {
-                        // This is a 12-bit int. Allows for needle movement
-                        // of up to +2047 or -2048.
-                        // Read in the next byte to get the full value
                         val2 = fileIn.ReadByte();
-                        deltaY = get12Bit2sComplement(val1, val2);
-                    }
-                    else
-                    {
-                        // This is a 7-bit int. Allows for needle movement
-                        // of up to +63 or -64.
-                        deltaY = get7Bit2sComplement(val1);
-                        // Finished reading data for this stitch, no more
-                        // bytes needed.
-                    }
-                    // Add stitch to list
-                    tempStitches.Add(
-                        new Stitch(
-                            new Point(prevX, prevY),
-                            new Point(prevX + deltaX, prevY + deltaY),
-                            extraBits1,
-                            extraBits2
-                        )
-                    );
+                        if (val1 == 0xff && val2 == 0x00)
+                        {
+                            //end of stitches
+                            thisPartIsDone = true;
 
-                    // Calculate new "previous" position
-                    prevX = prevX + deltaX;
-                    prevY = prevY + deltaY;
+                            //add the last block
+                            curBlock = new StitchBlock();
+                            curBlock.stitches = new Stitch[tempStitches.Count];
+                            tempStitches.CopyTo(curBlock.stitches);
+                            curBlock.stitchesTotal = tempStitches.Count;
+                            colorNum++;
+                            colorIndex = colorList[colorNum];
+                            curBlock.colorIndex = colorIndex;
+                            curBlock.color = getColorFromIndex(colorIndex);
+                            blocks.Add(curBlock);
+                        }
+                        else if (val1 == 0xfe && val2 == 0xb0)
+                        {
+                            //color switch, start a new block
 
-                    // Update maximum distances
-                    if (prevX > maxX)
-                    {
-                        maxX = prevX;
-                    }
-                    else if (prevX < minX)
-                    {
-                        minX = prevX;
-                    }
+                            curBlock = new StitchBlock();
+                            curBlock.stitches = new Stitch[tempStitches.Count];
+                            tempStitches.CopyTo(curBlock.stitches);
+                            curBlock.stitchesTotal = tempStitches.Count;
+                            colorNum++;
+                            colorIndex = colorList[colorNum];
+                            curBlock.colorIndex = colorIndex;
+                            curBlock.color = getColorFromIndex(colorIndex);
+                            //read useless(?) byte
+                            // The value of this 'useless' byte seems to alternate
+                            // between 2 and 1 for every other block. The only
+                            // exception I've noted is the last block which appears
+                            // to always be 0.
+                            curBlock.unknownStartByte = fileIn.ReadByte();
+                            blocks.Add(curBlock);
 
-                    if (prevY > maxY)
-                    {
-                        maxY = prevY;
+                            tempStitches = new List<Stitch>();
+                        }
+                        else
+                        {
+                            int extraBits1 = 0x00;
+                            if ((val1 & 0x80) == 0x80)
+                            {
+                                // Save the top 4 bits to output with debug info
+                                // The top bit means this is a 12 bit value, but I don't know what the next 3 bits mean.
+                                // The only combinations I've observed in real files are 0x80, 0x90 and 0xa0. 0x80 is
+                                // used for the bulk of stitches, with a few 0x80 and/or 0x90 in most files.
+                                extraBits1 = val1 & 0xf0;
+                            }
+
+                            int deltaX = 0;
+                            int deltaY = 0;
+                            if ((val1 & 0x80) == 0x80)
+                            {
+                                // This is a 12-bit int. Allows for needle movement
+                                // of up to +2047 or -2048.
+                                deltaX = get12Bit2sComplement(val1, val2);
+
+                                // The X value used both bytes, so read next byte
+                                // for Y value.
+                                val1 = fileIn.ReadByte();
+                            }
+                            else
+                            {
+                                // This is a 7-bit int. Allows for needle movement
+                                // of up to +63 or -64.
+                                deltaX = get7Bit2sComplement(val1);
+
+                                // The X value only used 1 byte, so copy the second
+                                // to to the first for Y value.
+                                val1 = val2;
+                            }
+
+                            int extraBits2 = 0x00;
+                            if ((val1 & 0x80) == 0x80)
+                            {
+                                // Save the top 4 bits to output with debug info
+                                // The top bit means this is a 12 bit value, but I don't know what the next 3 bits mean.
+                                // In all the files I've checked, extraBits2 is the same as extraBits1.
+                                extraBits2 = val1 & 0xf0;
+                            }
+
+                            if ((val1 & 0x80) == 0x80)
+                            {
+                                // This is a 12-bit int. Allows for needle movement
+                                // of up to +2047 or -2048.
+                                // Read in the next byte to get the full value
+                                val2 = fileIn.ReadByte();
+                                deltaY = get12Bit2sComplement(val1, val2);
+                            }
+                            else
+                            {
+                                // This is a 7-bit int. Allows for needle movement
+                                // of up to +63 or -64.
+                                deltaY = get7Bit2sComplement(val1);
+                                // Finished reading data for this stitch, no more
+                                // bytes needed.
+                            }
+                            // Add stitch to list
+                            tempStitches.Add(
+                                new Stitch(
+                                    new Point(prevX, prevY),
+                                    new Point(prevX + deltaX, prevY + deltaY),
+                                    extraBits1,
+                                    extraBits2
+                                )
+                            );
+
+                            // Calculate new "previous" position
+                            prevX = prevX + deltaX;
+                            prevY = prevY + deltaY;
+
+                            // Update maximum distances
+                            if (prevX > maxX)
+                            {
+                                maxX = prevX;
+                            }
+                            else if (prevX < minX)
+                            {
+                                minX = prevX;
+                            }
+
+                            if (prevY > maxY)
+                            {
+                                maxY = prevY;
+                            }
+                            else if (prevY < minY)
+                            {
+                                minY = prevY;
+                            }
+                        }
                     }
-                    else if (prevY < minY)
-                    {
-                        minY = prevY;
-                    }
+                    imageWidth = maxX - minX;
+                    imageHeight = maxY - minY;
+                    translateStart.X = -minX;
+                    translateStart.Y = -minY;
+                    readyStatus = statusEnum.Ready;
                 }
             }
-            imageWidth = maxX - minX;
-            imageHeight = maxY - minY;
-            translateStart.X = -minX;
-            translateStart.Y = -minY;
-            readyStatus = statusEnum.Ready;
-
-            // Close the file
-            fileIn.Close();
         }
 
         public int GetWidth()
