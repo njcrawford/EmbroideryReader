@@ -292,7 +292,14 @@ namespace embroideryReader
                 MessageBox.Show("File \"" + filename + "\" does not exist", "File not found", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
-            design = new PesFile.PesFile(filename);
+            try
+            {
+                design = new PesFile.PesFile(filename);
+            }
+            catch(System.IO.IOException ioex)
+            {
+                MessageBox.Show("IOException while reading file \"" + filename + "\":" + Environment.NewLine + ioex.Message);
+            }
             loadedFileName = filename;
             if (design.getStatus() == PesFile.statusEnum.Ready)
             {
