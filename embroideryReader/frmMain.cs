@@ -98,15 +98,24 @@ namespace embroideryReader
             }
         }
 
+        // WndProc values
+        // See https://msdn.microsoft.com/en-us/library/windows/desktop/ms646360(v=vs.85).aspx for more info
+        const int WM_SYSCOMMAND = 0x0112;
+        const int SC_MAXIMIZE = 0xF030;
+        const int SC_MINIMIZE = 0xF020;
+        const int SC_RESTORE = 0xF120;
+        const int SC_WPARAM_MASK = 0xFFF0;
+
         // Override WndProc to capture maximize and restore events
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == 0x0112) // WM_SYSCOMMAND
+            if (m.Msg == WM_SYSCOMMAND)
             {
                 // Check your window state here
-                if ((m.WParam.ToInt32() & 0xFFF0) == 0xF030 ||
-                    (m.WParam.ToInt32() & 0xFFF0) == 0xF020 ||
-                    (m.WParam.ToInt32() & 0xFFF0) == 0xF120) // Maximize event - SC_MAXIMIZE from Winuser.h
+                int maskedWParam = m.WParam.ToInt32() & SC_WPARAM_MASK;
+                if (maskedWParam == SC_MAXIMIZE ||
+                    maskedWParam == SC_MINIMIZE ||
+                    maskedWParam == SC_RESTORE)
                 {
                     maximizeChanged = true;
                 }
