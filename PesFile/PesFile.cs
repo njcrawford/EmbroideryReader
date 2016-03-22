@@ -25,6 +25,7 @@ You can contact me at http://www.njcrawford.com/contact/.
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 
 namespace PesFile
 {
@@ -113,9 +114,15 @@ namespace PesFile
             _filename = filename;
 
             // The using statements ensure fileIn is closed, no matter how the statement is exited.
-            using (System.IO.FileStream fileStreamIn = System.IO.File.Open(filename, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            // Open the file in read-only mode, but allow read-write sharing. This prevents a case where opening
+            // the file read-only with read sharing could fail because some other application already has it
+            // open with read-write access even though it's not writing to the file. (I suspect some antivirus
+            // programs may be doing this) Using this mode may allow reading half-written files, but I don't expect
+            // that will be an issue with PES designs, since they're generally written once when downloaded and left
+            // alone after that.
+            using (FileStream fileStreamIn = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                using (System.IO.BinaryReader fileIn = new System.IO.BinaryReader(fileStreamIn))
+                using (BinaryReader fileIn = new BinaryReader(fileStreamIn))
                 {
                     string startFileSig = "";
                     for (int i = 0; i < 4; i++) // 4 bytes
