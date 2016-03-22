@@ -29,20 +29,21 @@ using System.IO;
 
 namespace PesFile
 {
-    public enum statusEnum { NotOpen, IOError, ParseError, Ready };
+    public class PECFormatException : System.Exception
+    {
+        public PECFormatException(string message) : base(message) { }
+    }
 
     public class PesFile
     {
-        int imageWidth;
-        int imageHeight;
-        string _filename;
+        private int imageWidth;
+        private int imageHeight;
+        private string _filename;
         public List<StitchBlock> blocks = new List<StitchBlock>();
         public List<Tuple<int, int>> colorTable = new List<Tuple<int, int>>();
-        private statusEnum readyStatus = statusEnum.NotOpen;
-        Int64 startStitches = 0;
-        string lastError = "";
-        Point translateStart;
-        UInt16 pesVersion;
+        private Int64 startStitches = 0;
+        private Point translateStart;
+        private UInt16 pesVersion;
 
 
         // If set to true, this variable means we couldn't figure out some or
@@ -132,9 +133,7 @@ namespace PesFile
                     if (startFileSig != "#PES")
                     {
                         // This is not a file that we can read
-                        readyStatus = statusEnum.ParseError;
-                        lastError = "Missing #PES at beginning of file";
-                        return;
+                        throw new PECFormatException("Missing #PES at beginning of file");
                     }
 
                     // PES version
@@ -146,8 +145,7 @@ namespace PesFile
                     if (!UInt16.TryParse(versionString, out pesVersion))
                     {
                         // This is not a file that we can read
-                        readyStatus = statusEnum.ParseError;
-                        lastError = "PES version is not the correct format";
+                        throw new PECFormatException("PES version is not the correct format");
                         return;
                     }
 
@@ -156,8 +154,7 @@ namespace PesFile
                     if (fileIn.BaseStream.Length < (pecstart + 532))
                     {
                         // This file is probably truncated
-                        readyStatus = statusEnum.ParseError;
-                        lastError = "File appears to be truncated (PEC section is beyond end of file)";
+                        throw new PECFormatException("File appears to be truncated (PEC section is beyond end of file)");
                         return;
                     }
 
@@ -325,7 +322,6 @@ namespace PesFile
                     imageHeight = maxY - minY;
                     translateStart.X = -minX;
                     translateStart.Y = -minY;
-                    readyStatus = statusEnum.Ready;
                 }
             }
         }
@@ -405,16 +401,6 @@ namespace PesFile
             }
             outfile.Close();
             return outfile.ToString();
-        }
-
-        public statusEnum getStatus()
-        {
-            return readyStatus;
-        }
-
-        public string getLastError()
-        {
-            return lastError;
         }
 
         public bool getColorWarning()

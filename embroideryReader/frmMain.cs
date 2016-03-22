@@ -289,19 +289,30 @@ namespace embroideryReader
         {
             if (!System.IO.File.Exists(filename))
             {
-                MessageBox.Show("File \"" + filename + "\" does not exist", "File not found", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                // "An error occured while reading the file:"
+                MessageBox.Show(Translation.StringID.ERROR_FILE + Environment.NewLine + "File \"" + filename + "\" does not exist", "File not found", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
+
             try
             {
                 design = new PesFile.PesFile(filename);
             }
             catch(System.IO.IOException ioex)
             {
-                MessageBox.Show("IOException while reading file \"" + filename + "\":" + Environment.NewLine + ioex.Message);
+                // "An error occured while reading the file:"
+                MessageBox.Show(Translation.StringID.ERROR_FILE + Environment.NewLine + filename + ":" + Environment.NewLine + ioex.Message, "IOException", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                design = null;
             }
+            catch(PesFile.PECFormatException pecex)
+            {
+                // "This file is either corrupt or not a valid PES file."
+                MessageBox.Show(Translation.StringID.ERROR_FILE + Environment.NewLine + filename + ":" + Environment.NewLine + pecex.Message, "PECFormatException", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                design = null;
+            }
+
             loadedFileName = filename;
-            if (design.getStatus() == PesFile.statusEnum.Ready)
+            if (design != null)
             {
                 updateDesignImage();
 
@@ -317,6 +328,7 @@ namespace embroideryReader
                 {
                     toolStripStatusLabel1.Text = "";
                 }
+
                 copyToolStripMenuItem.Enabled = true;
                 saveDebugInfoToolStripMenuItem.Enabled = true;
                 printPreviewToolStripMenuItem.Enabled = true;
@@ -331,14 +343,6 @@ namespace embroideryReader
             }
             else
             {
-                string message = translation.GetTranslatedString(Translation.StringID.ERROR_FILE) + // "An error occured while reading the file:"
-                    Environment.NewLine + design.GetFileName() +
-                    Environment.NewLine + design.getLastError();
-                if (design.getStatus() == PesFile.statusEnum.ParseError)
-                {
-                    message += Environment.NewLine + translation.GetTranslatedString(Translation.StringID.CORRUPT_FILE); // "This file is either corrupt or not a valid PES file."
-                }
-                MessageBox.Show(message);
                 copyToolStripMenuItem.Enabled = false;
                 saveDebugInfoToolStripMenuItem.Enabled = false;
                 printPreviewToolStripMenuItem.Enabled = false;
