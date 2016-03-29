@@ -148,7 +148,6 @@ namespace PesFile
                     {
                         // This is not a file that we can read
                         throw new PECFormatException("PES version is not the correct format");
-                        return;
                     }
 
                     int pecstart = fileIn.ReadInt32();
@@ -157,7 +156,6 @@ namespace PesFile
                     {
                         // This file is probably truncated
                         throw new PECFormatException("File appears to be truncated (PEC section is beyond end of file)");
-                        return;
                     }
 
                     // Read number of colors in this design
