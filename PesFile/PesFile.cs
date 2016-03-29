@@ -128,7 +128,8 @@ namespace PesFile
                     string startFileSig = "";
                     for (int i = 0; i < 4; i++) // 4 bytes
                     {
-                        startFileSig += fileIn.ReadChar();
+                        // This needs to be read as a byte, since characters can be multiple bytes depending on encoding
+                        startFileSig += (char)fileIn.ReadByte();
                     }
                     if (startFileSig != "#PES")
                     {
@@ -140,7 +141,8 @@ namespace PesFile
                     string versionString = "";
                     for (int i = 0; i < 4; i++) // 4 bytes
                     {
-                        versionString += fileIn.ReadChar();
+                        // This needs to be read as a byte, since characters can be multiple bytes depending on encoding
+                        versionString += (char)fileIn.ReadByte();
                     }
                     if (!UInt16.TryParse(versionString, out pesVersion))
                     {
