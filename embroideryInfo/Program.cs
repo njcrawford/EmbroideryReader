@@ -33,9 +33,47 @@ namespace embroideryInfo
         {
             Console.WriteLine("No input file specified.");
             Console.WriteLine("To generate design debug text file:");
-            Console.WriteLine("embroideryInfo.exe input.pes");
+            Console.WriteLine("embroideryInfo.exe --debug input.pes");
+            Console.WriteLine("To generate design debug text file for all files in current folder:");
+            Console.WriteLine("embroideryInfo.exe --debug --all");
             Console.WriteLine("To generate PNG file:");
             Console.WriteLine("embroideryInfo.exe --image input.pes");
+            Console.WriteLine("To generate PNG file for all files in the current folder:");
+            Console.WriteLine("embroideryInfo.exe --image --all");
+        }
+
+        static void generateDebug(string filename)
+        {
+            try
+            {
+                PesFile.PesFile design = new PesFile.PesFile(filename);
+                design.saveDebugInfo();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        static void generateImage(string filename)
+        {
+            try
+            {
+                PesFile.PesFile design = new PesFile.PesFile(filename);
+                Bitmap DrawArea = design.designToBitmap(5.0f, false, 0.0f, 1.0f);
+                Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                using (Graphics tempGraph = Graphics.FromImage(temp))
+                {
+                    tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
+                    tempGraph.DrawImageUnscaled(DrawArea, 0, 0);
+                    tempGraph.Dispose();
+                    temp.Save(System.IO.Path.ChangeExtension(filename, ".png"));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         static void Main(string[] args)
@@ -48,32 +86,30 @@ namespace embroideryInfo
                 }
                 else if (args[0] == "--image" && args.Length > 1)
                 {
-                    try
+                    if (args[1] == "--all")
                     {
-                        PesFile.PesFile design = new PesFile.PesFile(args[1]);
-                        Bitmap DrawArea = design.designToBitmap(5.0f, false, 0.0f, 1.0f);
-                        Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-                        Graphics tempGraph = Graphics.FromImage(temp);
-                        tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
-                        tempGraph.DrawImageUnscaled(DrawArea, 0, 0);
-                        tempGraph.Dispose();
-                        temp.Save(System.IO.Path.ChangeExtension(args[1], ".png"));
+                        foreach(string file in System.IO.Directory.EnumerateFiles(Environment.CurrentDirectory, "*.pes"))
+                        {
+                            generateImage(file);
+                        }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        Console.WriteLine(ex.ToString());
+                        generateImage(args[1]);
                     }
                 }
-                else
+                else if (args[0] == "--debug" && args.Length > 1)
                 {
-                    try
-                    { 
-                        PesFile.PesFile design = new PesFile.PesFile(args[0]);
-                        design.saveDebugInfo();
-                    }
-                    catch (Exception ex)
+                    if (args[1] == "--all")
                     {
-                        Console.WriteLine(ex.ToString());
+                        foreach (string file in System.IO.Directory.EnumerateFiles(Environment.CurrentDirectory, "*.pes"))
+                        {
+                            generateDebug(file);
+                        }
+                    }
+                    else
+                    {
+                        generateDebug(args[1]);
                     }
                 }
             }
