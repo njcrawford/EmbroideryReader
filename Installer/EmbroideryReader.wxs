@@ -42,6 +42,7 @@
                 <Shortcut Id="EmbroideryReaderShortcut" Directory="ApplicationProgramsFolder" Name="Embroidery Reader" Icon="embroideryReader.exe" IconIndex="0" Show="normal" WorkingDirectory="TARGETDIR" Advertise="yes" />
                 <File Id="PesFile.dll" Name="PesFile.dll" DiskId="1" Source="..\PesFile\bin\Release\PesFile.dll" />
                 <File Id="IniFile.dll" Name="IniFile.dll" DiskId="1" Source="..\embroideryReader\IniFile.dll" />
+                <File Id="ErrorReporter.dll" Name="ErrorReporter.dll" DiskId="1" Source="..\embroideryReader\ErrorReporter.dll" />
                 <RemoveFolder Id="RemoveStartMenuFolder" On="uninstall" Directory="ApplicationProgramsFolder" />
             </Component>
             <Directory Id="translations" Name="translations">

@@ -53,6 +53,9 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ErrorReporter">
+      <HintPath>.\ErrorReporter.dll</HintPath>
+    </Reference>
     <Reference Include="IniFile, Version=1.2.1.11, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\IniFile.dll</HintPath>
@@ -67,7 +70,6 @@
   <ItemGroup>
     <Compile Include="EmbroideryReaderSettings.cs" />
     <Compile Include="EmbroideryReaderUpdates.cs" />
-    <Compile Include="ErrorReporter.cs" />
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>

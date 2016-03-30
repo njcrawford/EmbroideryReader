@@ -38,7 +38,7 @@ namespace embroideryReader
         static void Main()
         {
             // Register ErrorReporter to report unhandled exceptions
-            NJCrawford.ErrorReporter.Register("Embroidery Reader");
+            NJCrawford.ErrorReporter.RegisterWebReport("Embroidery Reader", "http://www.njcrawford.com/contact/error-reports/?2subject=Embroidery%20Reader%20Automated%20Error%20Report&2message=");
 
             // Normal program.cs stuff
             Application.EnableVisualStyles();
