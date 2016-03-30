@@ -29,13 +29,26 @@ namespace embroideryInfo
 {
     class Program
     {
+        static void printHelp()
+        {
+            Console.WriteLine("No input file specified.");
+            Console.WriteLine("To generate design debug text file:");
+            Console.WriteLine("embroideryInfo.exe input.pes");
+            Console.WriteLine("To generate PNG file:");
+            Console.WriteLine("embroideryInfo.exe --image input.pes");
+        }
+
         static void Main(string[] args)
         {
             if (args.Length > 0)
             {
-                try
+                if(args[0] == "--help" || args[0] == "-h" || args[0] == "/?")
                 {
-                    if (args[0] == "--image" && args.Length > 1)
+                    printHelp();
+                }
+                else if (args[0] == "--image" && args.Length > 1)
+                {
+                    try
                     {
                         PesFile.PesFile design = new PesFile.PesFile(args[1]);
                         Bitmap DrawArea = design.designToBitmap(5.0f, false, 0.0f, 1.0f);
@@ -46,24 +59,27 @@ namespace embroideryInfo
                         tempGraph.Dispose();
                         temp.Save(System.IO.Path.ChangeExtension(args[1], ".png"));
                     }
-                    else
+                    catch (Exception ex)
                     {
+                        Console.WriteLine(ex.ToString());
+                    }
+                }
+                else
+                {
+                    try
+                    { 
                         PesFile.PesFile design = new PesFile.PesFile(args[0]);
                         design.saveDebugInfo();
                     }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                    }
                 }
             }
             else
             {
-                Console.WriteLine("No input file specified.");
-                Console.WriteLine("To generate design debug text file:");
-                Console.WriteLine("embroideryInfo.exe input.pes");
-                Console.WriteLine("To generate PNG file:");
-                Console.WriteLine("embroideryInfo.exe --image input.pes");
+                printHelp();
             }
         }
     }
