@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-
     <!-- ProductGuid should change whenever ProductVersion changes -->
     <?define ProductVersion="1.6.0" ?>
     <?define ProductGuid="CF135B2A-9F4D-40C4-B08B-1A7FE711922D" ?>
-
     <Product Id="$(var.ProductGuid)" Codepage="65001" Language="1033" Manufacturer="NJCrawford Software" Name="Embroidery Reader" UpgradeCode="{CE1642E2-5EE0-454F-B7DF-5C9C92D6D40D}" Version="$(var.ProductVersion)">
         <Package Compressed="yes" InstallerVersion="200" Languages="1033" Manufacturer="Nathan Crawford" Platform="x86" />
         <Binary Id="MSVBDPCADLL" SourceFile="Binary\MSVBDPCADLL" />
@@ -42,23 +40,15 @@
                 <Shortcut Id="EmbroideryReaderShortcut" Directory="ApplicationProgramsFolder" Name="Embroidery Reader" Icon="embroideryReader.exe" IconIndex="0" Show="normal" WorkingDirectory="TARGETDIR" Advertise="yes" />
                 <File Id="PesFile.dll" Name="PesFile.dll" DiskId="1" Source="..\PesFile\bin\Release\PesFile.dll" />
                 <File Id="IniFile.dll" Name="IniFile.dll" DiskId="1" Source="..\embroideryReader\IniFile.dll" />
+                <File Id="UpdateCheck.dll" Name="UpdateCheck.dll" DiskId="1" Source="..\embroideryReader\UpdateCheck.dll" />
                 <RemoveFolder Id="RemoveStartMenuFolder" On="uninstall" Directory="ApplicationProgramsFolder" />
             </Component>
-            <Directory Id="translations" Name="translations">
-                <Component Id="TranslationInis" Guid="29712DD3-062D-4767-AB4F-8F390FF57BED">
-                    <File Id="EN_US.INI" Name="en-US.ini" Source="..\translations\en-US.ini" DiskId="1" />
-                    <File Id="IT_IT.INI" Name="it-IT.ini" Source="..\translations\it-IT.ini" DiskId="1" />
-                    <File Id="ZH_HANS.INI" Name="zh-Hans.ini" Source="..\translations\zh-Hans.ini" DiskId="1" />
-                    <File Id="ZH_HANT.INI" Name="zh-Hant.ini" Source="..\translations\zh-Hant.ini" DiskId="1" />
-                </Component>
-            </Directory>
             <Directory Id="DesktopFolder" SourceName="User's Desktop" />
             <Directory Id="ProgramMenuFolder" SourceName="User's Programs Menu">
                 <Directory Id="ApplicationProgramsFolder" Name="Embroidery Reader" />
             </Directory>
         </Directory>
         <Feature Id="DefaultFeature" ConfigurableDirectory="TARGETDIR" Level="1">
-            <ComponentRef Id="TranslationInis" />
             <ComponentRef Id="EmbroideryReader" Primary="yes" />
         </Feature>
         <Icon Id="embroideryReader.exe" SourceFile="..\embroideryReader\bin\Release\embroideryReader.exe" />
@@ -688,7 +678,7 @@
         </UI>
         <Upgrade Id="{CE1642E2-5EE0-454F-B7DF-5C9C92D6D40D}">
             <UpgradeVersion Minimum="$(var.ProductVersion)" Property="NEWERPRODUCTFOUND" OnlyDetect="yes" IncludeMinimum="no" />
-            <UpgradeVersion Property="UPGRADEFOUND" IncludeMinimum="yes" Minimum="1.6.0" Maximum="$(var.ProductVersion)" MigrateFeatures="yes" IncludeMaximum="no" />
+            <UpgradeVersion Property="UPGRADEFOUND" IncludeMinimum="yes" Minimum="1.5.99" Maximum="$(var.ProductVersion)" MigrateFeatures="yes" IncludeMaximum="no" />
         </Upgrade>
         <InstallExecuteSequence>
             <Custom Action="DIRCA_CheckFX" Sequence="1" />
