@@ -381,9 +381,7 @@ namespace PesFile
                     outfile.WriteLine("unknown start byte: " + thisBlock.unknownStartByte.ToString("X2"));
                     foreach (Stitch thisStitch in thisBlock.stitches)
                     {
-                        double stitchLength;
-                        stitchLength = Math.Sqrt(Math.Pow(thisStitch.a.X - thisStitch.b.X, 2) + Math.Pow(thisStitch.a.Y - thisStitch.b.Y, 2));
-                        string tempLine = thisStitch.a.ToString() + " - " + thisStitch.b.ToString() + ", length " + stitchLength;
+                        string tempLine = thisStitch.a.ToString() + " - " + thisStitch.b.ToString() + ", length " + thisStitch.calcLength();
                         if (thisStitch.extraBits1 != 0x00)
                         {
                             tempLine += " (extra bits 1: " + thisStitch.extraBits1.ToString("X2") + ")";
@@ -430,14 +428,18 @@ namespace PesFile
 
         public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, double filterUglyStitchesThreshold, float scale)
         {
-            Bitmap DrawArea;
-            Graphics xGraph;
             int imageWidth = (int)((GetWidth() + (threadThickness * 2)) * scale);
             int imageHeight = (int)((GetHeight() + (threadThickness * 2)) * scale);
             float tempThreadThickness = threadThickness * scale;
 
-            DrawArea = new Bitmap(imageWidth, imageHeight);
-            using (xGraph = Graphics.FromImage(DrawArea))
+            Bitmap DrawArea = new Bitmap(imageWidth, imageHeight);
+            // Return now if for any reason there aren't any blocks
+            if(blocks.Count == 0)
+            {
+                return DrawArea;
+            }
+
+            using (Graphics xGraph = Graphics.FromImage(DrawArea))
             {
                 int translateX = (int)(translateStart.X * scale);
                 int translateY = (int)(translateStart.Y * scale);
@@ -446,15 +448,20 @@ namespace PesFile
                 // Draw smoother lines
                 xGraph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
-                for (int i = 0; i < blocks.Count; i++)
+                // Only use one pen - I think this will be more resource friendly than creating a new pen for each block
+                using (Pen tempPen = new Pen(blocks[0].color, tempThreadThickness))
                 {
-                    using (Pen tempPen = new Pen(blocks[i].color, tempThreadThickness))
-                    {
-                        tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
-                        tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
-                        tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
+                    // Set rounded ends and joints
+                    tempPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+                    tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+                    tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
 
-                        foreach (Stitch thisStitch in blocks[i].stitches)
+                    foreach(StitchBlock thisBlock in blocks)
+                    {
+                        // Set new color for this block
+                        tempPen.Color = thisBlock.color;
+                        
+                        foreach (Stitch thisStitch in thisBlock.stitches)
                         {
                             if (filterUglyStitches && // Check for filter ugly stitches option
                                 !formatWarning && // Only filter stitches if we think we understand the format
