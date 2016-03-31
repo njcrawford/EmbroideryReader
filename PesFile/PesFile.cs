@@ -226,20 +226,17 @@ namespace PesFile
                         }
                         else
                         {
+                            int deltaX = 0;
+                            int deltaY = 0;
                             int extraBits1 = 0x00;
                             if ((val1 & 0x80) == 0x80)
                             {
                                 // Save the top 4 bits to output with debug info
                                 // The top bit means this is a 12 bit value, but I don't know what the next 3 bits mean.
-                                // The only combinations I've observed in real files are 0x80, 0x90 and 0xa0. 0x80 is
-                                // used for the bulk of stitches, with a few 0x80 and/or 0x90 in most files.
-                                extraBits1 = val1 & 0xf0;
-                            }
+                                // The only combinations I've observed in real files are 0x10 and 0x20. 0x20 occurs
+                                // about 4 times as much as 0x10 in the samples I have available.
+                                extraBits1 = val1 & 0x70;
 
-                            int deltaX = 0;
-                            int deltaY = 0;
-                            if ((val1 & 0x80) == 0x80)
-                            {
                                 // This is a 12-bit int. Allows for needle movement
                                 // of up to +2047 or -2048.
                                 deltaX = get12Bit2sComplement(val1, val2);
@@ -265,11 +262,8 @@ namespace PesFile
                                 // Save the top 4 bits to output with debug info
                                 // The top bit means this is a 12 bit value, but I don't know what the next 3 bits mean.
                                 // In all the files I've checked, extraBits2 is the same as extraBits1.
-                                extraBits2 = val1 & 0xf0;
-                            }
+                                extraBits2 = val1 & 0x70;
 
-                            if ((val1 & 0x80) == 0x80)
-                            {
                                 // This is a 12-bit int. Allows for needle movement
                                 // of up to +2047 or -2048.
                                 // Read in the next byte to get the full value
@@ -380,23 +374,27 @@ namespace PesFile
             if (blocks.Count > 0)
             {
                 outfile.WriteLine("Extended stitch debug info");
-                for (int blocky = 0; blocky < blocks.Count; blocky++)
+                int blockCount = 1;
+                foreach(StitchBlock thisBlock in blocks)
                 {
-                    outfile.WriteLine("block " + (blocky + 1).ToString() + " start (color index " + blocks[blocky].colorIndex + ")");
-                    outfile.WriteLine("unknown start byte: " + blocks[blocky].unknownStartByte.ToString("X2"));
-                    for (int stitchy = 0; stitchy < blocks[blocky].stitches.Length; stitchy++)
+                    outfile.WriteLine("block " + blockCount.ToString() + " start (color index " + thisBlock.colorIndex + ")");
+                    outfile.WriteLine("unknown start byte: " + thisBlock.unknownStartByte.ToString("X2"));
+                    foreach (Stitch thisStitch in thisBlock.stitches)
                     {
-                        string tempLine = blocks[blocky].stitches[stitchy].a.ToString() + " - " + blocks[blocky].stitches[stitchy].b.ToString();
-                        if(blocks[blocky].stitches[stitchy].extraBits1 != 0x00)
+                        double stitchLength;
+                        stitchLength = Math.Sqrt(Math.Pow(thisStitch.a.X - thisStitch.b.X, 2) + Math.Pow(thisStitch.a.Y - thisStitch.b.Y, 2));
+                        string tempLine = thisStitch.a.ToString() + " - " + thisStitch.b.ToString() + ", length " + stitchLength;
+                        if (thisStitch.extraBits1 != 0x00)
                         {
-                            tempLine += " (extra bits 1: " + blocks[blocky].stitches[stitchy].extraBits1.ToString("X2") + ")";
+                            tempLine += " (extra bits 1: " + thisStitch.extraBits1.ToString("X2") + ")";
                         }
-                        if (blocks[blocky].stitches[stitchy].extraBits2 != 0x00)
+                        if (thisStitch.extraBits2 != 0x00)
                         {
-                            tempLine += " (extra bits 2: " + blocks[blocky].stitches[stitchy].extraBits2.ToString("X2") + ")";
+                            tempLine += " (extra bits 2: " + thisStitch.extraBits2.ToString("X2") + ")";
                         }
                         outfile.WriteLine(tempLine);
                     }
+                    blockCount++;
                 }
             }
             outfile.Close();
