@@ -197,7 +197,7 @@ namespace embroideryReader
                                               settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_GREEN, -1),
                                               settings.getValue(SECTION_BACKGROUND_COLOR, SETTING_BACKGROUND_COLOR_BLUE, -1));
                 }
-                catch(ArgumentException argEx)
+                catch(ArgumentException /*argEx*/)
                 {
                     return System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
                 }
@@ -374,7 +374,7 @@ namespace embroideryReader
                                             settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_GREEN, -1),
                                             settings.getValue(SECTION_TRANSPARENCY_GRID, SETTING_TRANSPARENCY_GRID_COLOR_BLUE, -1));
                 }
-                catch(ArgumentException argEx)
+                catch(ArgumentException /*argEx*/)
                 {
                     return System.Drawing.Color.LightGray;
                 }
