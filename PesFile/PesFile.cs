@@ -180,6 +180,8 @@ namespace PesFile
                     int colorNum = -1;
                     int colorIndex = 0;
                     List<Stitch> tempStitches = new List<Stitch>();
+                    Stitch prevStitch = null;
+                    bool firstStitchOfBlock = true;
                     while (!thisPartIsDone)
                     {
                         byte val1;
@@ -215,12 +217,13 @@ namespace PesFile
                             curBlock.colorIndex = colorIndex;
                             curBlock.color = getColorFromIndex(colorIndex);
                             //read useless(?) byte
-                            // The value of this 'useless' byte seems to alternate
-                            // between 2 and 1 for every other block. The only
-                            // exception I've noted is the last block which appears
-                            // to always be 0.
+                            // The value of this 'useless' byte seems to start with 2 for the first block and
+                            // alternate between 2 and 1 for every other block after that. The only exception
+                            // I've noted is the last block which appears to always be 0.
                             curBlock.unknownStartByte = fileIn.ReadByte();
                             blocks.Add(curBlock);
+
+                            firstStitchOfBlock = true;
 
                             tempStitches = new List<Stitch>();
                         }
@@ -229,6 +232,8 @@ namespace PesFile
                             int deltaX = 0;
                             int deltaY = 0;
                             int extraBits1 = 0x00;
+                            Stitch.MoveBitSize xMoveBits;
+                            Stitch.MoveBitSize yMoveBits;
                             if ((val1 & 0x80) == 0x80)
                             {
                                 // Save the top 4 bits to output with debug info
@@ -241,6 +246,8 @@ namespace PesFile
                                 // of up to +2047 or -2048.
                                 deltaX = get12Bit2sComplement(val1, val2);
 
+                                xMoveBits = Stitch.MoveBitSize.TwelveBits;
+
                                 // The X value used both bytes, so read next byte
                                 // for Y value.
                                 val1 = fileIn.ReadByte();
@@ -250,6 +257,8 @@ namespace PesFile
                                 // This is a 7-bit int. Allows for needle movement
                                 // of up to +63 or -64.
                                 deltaX = get7Bit2sComplement(val1);
+
+                                xMoveBits = Stitch.MoveBitSize.SevenBits;
 
                                 // The X value only used 1 byte, so copy the second
                                 // to to the first for Y value.
@@ -269,24 +278,71 @@ namespace PesFile
                                 // Read in the next byte to get the full value
                                 val2 = fileIn.ReadByte();
                                 deltaY = get12Bit2sComplement(val1, val2);
+
+                                yMoveBits = Stitch.MoveBitSize.TwelveBits;
                             }
                             else
                             {
                                 // This is a 7-bit int. Allows for needle movement
                                 // of up to +63 or -64.
                                 deltaY = get7Bit2sComplement(val1);
+
+                                yMoveBits = Stitch.MoveBitSize.SevenBits;
                                 // Finished reading data for this stitch, no more
                                 // bytes needed.
                             }
+
+                            Stitch.StitchType stitchType;
+                            if (deltaX == 0 && deltaY == 0)
+                            {
+                                // A stitch with zero movement seems to indicate the current and next stitches are movement only.
+                                // Almost always occurs at the end of a block.
+                                stitchType = Stitch.StitchType.MovementBeginAnchor;
+                            }
+                            else if (extraBits1 == 0x20 && extraBits2 == 0x20)
+                            {
+                                // A stitch with extrabits 0x20 seems to indicate the current and next stitches are movement only.
+                                // Almost always occurs within a block, not the beginning or end.
+                                stitchType = Stitch.StitchType.MovementOnly;
+                            }
+                            else if (extraBits1 == 0x10 && extraBits2 == 0x10)
+                            {
+                                // A stitch with extrabits 0x10 seems to indicate the current stitch is movement only.
+                                // Almost always occurs at the beginning of a block.
+                                stitchType = Stitch.StitchType.MovementEndAnchor;
+                            }
+                            else if (prevStitch != null &&
+                                (prevStitch.stitchType == Stitch.StitchType.MovementOnly ||
+                                prevStitch.stitchType == Stitch.StitchType.MovementBeginAnchor))
+                            {
+                                stitchType = Stitch.StitchType.MovementEndAnchor;
+                            }
+                            else
+                            {
+                                if (firstStitchOfBlock)
+                                {
+                                    // First stitch of block is usually a movement to position the needle in the block
+                                    firstStitchOfBlock = false;
+                                    stitchType = Stitch.StitchType.MovementEndAnchor;
+                                }
+                                else
+                                {
+                                    // Assume everything else is a normal stitch
+                                    stitchType = Stitch.StitchType.NormalStitch;
+                                }
+                            }
+
                             // Add stitch to list
-                            tempStitches.Add(
-                                new Stitch(
+                            prevStitch = new Stitch(
                                     new Point(prevX, prevY),
                                     new Point(prevX + deltaX, prevY + deltaY),
                                     extraBits1,
-                                    extraBits2
-                                )
-                            );
+                                    extraBits2,
+                                    xMoveBits,
+                                    yMoveBits,
+                                    stitchType
+                                );
+                            tempStitches.Add(prevStitch);
 
                             // Calculate new "previous" position
                             prevX = prevX + deltaX;
@@ -346,15 +402,18 @@ namespace PesFile
         public string saveDebugInfo()
         {
             string retval = System.IO.Path.ChangeExtension(_filename, ".txt");
-            System.IO.StreamWriter outfile = new System.IO.StreamWriter(retval);
-            outfile.Write(getDebugInfo());
-            outfile.Close();
+            using (System.IO.StreamWriter outfile = new System.IO.StreamWriter(retval))
+            {
+                outfile.Write(getDebugInfo());
+                outfile.Close();
+            }
             return retval;
         }
 
         public string getDebugInfo()
         {
             System.IO.StringWriter outfile = new System.IO.StringWriter();
+            outfile.WriteLine(_filename);
             outfile.WriteLine("PES header");
             outfile.WriteLine("PES version:\t" + pesVersion);
 
@@ -381,7 +440,7 @@ namespace PesFile
                     outfile.WriteLine("unknown start byte: " + thisBlock.unknownStartByte.ToString("X2"));
                     foreach (Stitch thisStitch in thisBlock.stitches)
                     {
-                        string tempLine = thisStitch.a.ToString() + " - " + thisStitch.b.ToString() + ", length " + thisStitch.calcLength();
+                        string tempLine = thisStitch.a.ToString() + " - " + thisStitch.b.ToString() + ", length " + thisStitch.calcLength().ToString("F02");
                         if (thisStitch.extraBits1 != 0x00)
                         {
                             tempLine += " (extra bits 1: " + thisStitch.extraBits1.ToString("X2") + ")";
@@ -390,6 +449,27 @@ namespace PesFile
                         {
                             tempLine += " (extra bits 2: " + thisStitch.extraBits2.ToString("X2") + ")";
                         }
+
+                        if(thisStitch.XMoveBits == Stitch.MoveBitSize.SevenBits)
+                        {
+                            tempLine += " (7 bit X move)";
+                        }
+                        else if(thisStitch.XMoveBits == Stitch.MoveBitSize.TwelveBits)
+                        {
+                            tempLine += " (12 bit X move)";
+                        }
+
+                        if (thisStitch.YMoveBits == Stitch.MoveBitSize.SevenBits)
+                        {
+                            tempLine += " (7 bit Y move)";
+                        }
+                        else if (thisStitch.YMoveBits == Stitch.MoveBitSize.TwelveBits)
+                        {
+                            tempLine += " (12 bit Y move)";
+                        }
+
+                        tempLine += " (type " + thisStitch.stitchType + ")";
+
                         outfile.WriteLine(tempLine);
                     }
                     blockCount++;
@@ -458,9 +538,15 @@ namespace PesFile
 
                     foreach(StitchBlock thisBlock in blocks)
                     {
+                        // Skip this block if it doesn't have stitches, for any reason
+                        if(thisBlock.stitches.Length == 0)
+                        {
+                            continue;
+                        }
+
                         // Set new color for this block
                         tempPen.Color = thisBlock.color;
-                        
+
                         foreach (Stitch thisStitch in thisBlock.stitches)
                         {
                             if (filterUglyStitches && // Check for filter ugly stitches option
@@ -470,6 +556,30 @@ namespace PesFile
                                 // This stitch is too long, so skip it
                                 continue;
                             }
+
+                            // Style special stitches differently
+                            // TODO: Finish figuring out the remaining stitch types
+                            /*if (thisStitch.stitchType == Stitch.StitchType.MovementBeginAnchor)
+                            {
+                                tempPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
+                                tempPen.Width = tempThreadThickness * 0.5f;
+                            }
+                            else if (thisStitch.stitchType == Stitch.StitchType.MovementOnly)
+                            {
+                                tempPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
+                                tempPen.Width = tempThreadThickness * 0.5f;
+                            }
+                            else if(thisStitch.stitchType == Stitch.StitchType.MovementEndAnchor)
+                            {
+                                tempPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
+                                tempPen.Width = tempThreadThickness * 0.5f;
+                            }
+                            else if (thisStitch.stitchType == Stitch.StitchType.NormalStitch)
+                            {
+                                tempPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Solid;
+                                tempPen.Width = tempThreadThickness;
+                            }*/
+
                             Point tempA = new Point((int)(thisStitch.a.X * scale), (int)(thisStitch.a.Y * scale));
                             Point tempB = new Point((int)(thisStitch.b.X * scale), (int)(thisStitch.b.Y * scale));
                             xGraph.DrawLine(tempPen, tempA, tempB);

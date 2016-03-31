@@ -29,11 +29,31 @@ namespace PesFile
 {
     public class Stitch
     {
+        public enum MoveBitSize
+        {
+            Unknown,
+            SevenBits,
+            TwelveBits
+        };
+
+        public enum StitchType
+        {
+            Unknown,
+            NormalStitch,
+            MovementBeginAnchor,
+            MovementEndAnchor,
+            MovementOnly
+        }
+
         public Point a;
         public Point b;
         // Extra bits to output with debug info
         public int extraBits1;
         public int extraBits2;
+        // Was this stitch represented as 7 bit move or 12 bit move in the file
+        public MoveBitSize XMoveBits;
+        public MoveBitSize YMoveBits;
+        public StitchType stitchType;
 
         public Stitch(Point pointA, Point pointB)
         {
@@ -41,12 +61,15 @@ namespace PesFile
             this.b = pointB;
         }
 
-        public Stitch(Point pointA, Point pointB, int extraBits1, int extraBits2)
+        public Stitch(Point pointA, Point pointB, int extraBits1, int extraBits2, MoveBitSize XMoveBits, MoveBitSize YMoveBits, StitchType stitchType)
         {
             this.a = pointA;
             this.b = pointB;
             this.extraBits1 = extraBits1;
             this.extraBits2 = extraBits2;
+            this.XMoveBits = XMoveBits;
+            this.YMoveBits = YMoveBits;
+            this.stitchType = stitchType;
         }
 
         public double calcLength()
