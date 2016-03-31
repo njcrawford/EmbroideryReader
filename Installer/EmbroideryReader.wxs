@@ -689,7 +689,7 @@
         </UI>
         <Upgrade Id="{CE1642E2-5EE0-454F-B7DF-5C9C92D6D40D}">
             <UpgradeVersion Minimum="$(var.ProductVersion)" Property="NEWERPRODUCTFOUND" OnlyDetect="yes" IncludeMinimum="no" />
-            <UpgradeVersion Property="UPGRADEFOUND" IncludeMinimum="yes" Minimum="1.99.0" Maximum="$(var.ProductVersion)" MigrateFeatures="yes" IncludeMaximum="no" />
+            <UpgradeVersion Property="UPGRADEFOUND" IncludeMinimum="yes" Minimum="1.6.0" Maximum="$(var.ProductVersion)" MigrateFeatures="yes" IncludeMaximum="no" />
         </Upgrade>
         <InstallExecuteSequence>
             <Custom Action="DIRCA_CheckFX" Sequence="1" />
