@@ -2,8 +2,8 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 
     <!-- ProductGuid should change whenever ProductVersion changes -->
-    <?define ProductVersion="2.1.0" ?>
-    <?define ProductGuid="857EB1E7-7BAE-4829-8178-7D9D95635CBC" ?>
+    <?define ProductVersion="2.1.1" ?>
+    <?define ProductGuid="A77ECC03-A6A7-4DC9-8A4E-7B108BAE9356" ?>
 
     <Product Id="$(var.ProductGuid)" Codepage="65001" Language="1033" Manufacturer="NJCrawford Software" Name="Embroidery Reader" UpgradeCode="{CE1642E2-5EE0-454F-B7DF-5C9C92D6D40D}" Version="$(var.ProductVersion)">
         <Package Compressed="yes" InstallerVersion="200" Languages="1033" Manufacturer="Nathan Crawford" Platform="x86" />
