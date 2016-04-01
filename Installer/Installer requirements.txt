@@ -1,0 +1,26 @@
+Installer must:
+1. Install files
+	a. Program .exe and .dlls
+	b. Translation .inis
+2. Install Start menu Folder
+	a. Short cut to .exe
+3. Check for required .net version before installing
+	a. Should also direct user to download page, if not installed
+4. Check for old non-Wix versions before installing
+	a. Version 1.5.1 and older
+	b. Would be nice if it would offer to remove old version as well
+5. Only allow upgrades
+	a. If downgrade is required, uninstall current version and install older version
+	b. Older Wix-based installers must be removed during install (to maintain a single Programs and Features entry)
+6. Must have a respectable Programs and Features presence
+	a. Correct program name
+	b. Program icon
+	c. Contact URL
+	d. Support URL
+	e. Help URL
+7. Must install for all users
+8. Must include correct license in installer
+9. Must install a file association
+	a. Show icon for .pes files
+	b. Open .pes file with double click
+

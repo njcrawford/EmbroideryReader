@@ -110,3 +110,4 @@ UpgradeLog*.XML
 *.bak
 *.wixpdb
 *.wixobj
+Thumbs.db
