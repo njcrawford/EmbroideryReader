@@ -8,26 +8,28 @@
         <Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder" Name="PFiles">
-                <Component Id="RequiredFiles" DiskId="1" Guid="ad3defbe-e276-41ab-9d76-9ab9f2976ac2">
-                    <File Id="EMBROIDERYREADER.EXE" Name="embroideryReader.exe" Source="..\embroideryReader\bin\Release\embroideryReader.exe" KeyPath="yes">
-                        <Shortcut Id="ExeShortcut" Directory="ProgramMenuDir" Name="Embroidery Reader" Advertise="yes" Icon="StartMenuIcon.exe" IconIndex="0" />
-                    </File>
-                    <ProgId Id="EmbroideryDesign" Description="Embroidery Design File" Icon="StartMenuIcon.exe" IconIndex="0" Advertise="yes">
-                        <Extension Id="pes" Advertise="yes">
-                            <Verb Id="open" Command="&amp;Open" Argument="&quot;%1&quot;" Sequence="1" />
-                        </Extension>
-                    </ProgId>
-                    <File Id="PESFILE.DLL" Name="PesFile.dll" Source="..\embroideryReader\bin\Release\PesFile.dll" />
-                    <File Id="INIFILE.DLL" Name="IniFile.dll" Source="..\embroideryReader\bin\Release\IniFile.dll" />
-                    <File Id="ERRORREPORTER.DLL" Name="ErrorReporter.dll" Source="..\embroideryReader\bin\Release\ErrorReporter.dll" />
-                </Component>
-                <Directory Id="TRANSLATIONS" Name="translations">
-                    <Component Id="Translations" DiskId="1" KeyPath="yes" Guid="4ac2c11d-b2c9-4557-a618-fa4bacf50889">
-                        <File Id="EN_US.INI" Name="en-US.ini" Source="..\translations\en-US.ini" />
-                        <File Id="IT_IT.INI" Name="it-IT.ini" Source="..\translations\it-IT.ini" />
-                        <File Id="ZH_HANS.INI" Name="zh-Hans.ini" Source="..\translations\zh-Hans.ini" />
-                        <File Id="ZH_HANT.INI" Name="zh-Hant.ini" Source="..\translations\zh-Hant.ini" />
+                <Directory Id="PRODUCTDIR" Name="Embroidery Reader">
+                    <Component Id="RequiredFiles" DiskId="1" Guid="ad3defbe-e276-41ab-9d76-9ab9f2976ac2">
+                        <File Id="EMBROIDERYREADER.EXE" Name="embroideryReader.exe" Source="..\embroideryReader\bin\Release\embroideryReader.exe" KeyPath="yes">
+                            <Shortcut Id="ExeShortcut" Directory="ProgramMenuDir" Name="Embroidery Reader" Advertise="yes" Icon="StartMenuIcon.exe" IconIndex="0" />
+                        </File>
+                        <ProgId Id="EmbroideryDesign" Description="Embroidery Design File" Icon="StartMenuIcon.exe" IconIndex="0" Advertise="yes">
+                            <Extension Id="pes" Advertise="yes">
+                                <Verb Id="open" Command="&amp;Open" Argument="&quot;%1&quot;" Sequence="1" />
+                            </Extension>
+                        </ProgId>
+                        <File Id="PESFILE.DLL" Name="PesFile.dll" Source="..\embroideryReader\bin\Release\PesFile.dll" />
+                        <File Id="INIFILE.DLL" Name="IniFile.dll" Source="..\embroideryReader\bin\Release\IniFile.dll" />
+                        <File Id="ERRORREPORTER.DLL" Name="ErrorReporter.dll" Source="..\embroideryReader\bin\Release\ErrorReporter.dll" />
                     </Component>
+                    <Directory Id="TRANSLATIONS" Name="translations">
+                        <Component Id="Translations" DiskId="1" KeyPath="yes" Guid="4ac2c11d-b2c9-4557-a618-fa4bacf50889">
+                            <File Id="EN_US.INI" Name="en-US.ini" Source="..\translations\en-US.ini" />
+                            <File Id="IT_IT.INI" Name="it-IT.ini" Source="..\translations\it-IT.ini" />
+                            <File Id="ZH_HANS.INI" Name="zh-Hans.ini" Source="..\translations\zh-Hans.ini" />
+                            <File Id="ZH_HANT.INI" Name="zh-Hant.ini" Source="..\translations\zh-Hant.ini" />
+                        </Component>
+                    </Directory>
                 </Directory>
             </Directory>
             <Directory Id="ProgramMenuFolder">
@@ -45,7 +47,8 @@
             <ComponentRef Id="StartMenuShortcuts" />
         </Feature>
         <UI />
-        <UIRef Id="WixUI_Minimal" />
+        <UIRef Id="WixUI_InstallDir" />
+        <Property Id="WIXUI_INSTALLDIR" Value="PRODUCTDIR" />
         <PropertyRef Id="NETFRAMEWORK40CLIENT" />
         <Condition Message="This application requires .NET Framework X.Y.">Installed OR NETFRAMEWORK40CLIENT</Condition>
         <Icon Id="StartMenuIcon.exe" SourceFile="..\embroideryReader\bin\Release\embroideryReader.exe" />
