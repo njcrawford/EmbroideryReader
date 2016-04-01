@@ -98,6 +98,7 @@
         <Property Id="OLD_INSTALL">
             <RegistrySearch Id="SearchForOldVersions" Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Embroidery Reader" Name="DisplayName" Type="raw" />
         </Property>
+        <Property Id="PREVIOUSVERSIONSINSTALLED" Secure="yes" />
         <UI>
             <RadioButtonGroup Property="AdminMaintenanceForm_Action">
                 <RadioButton Height="17" Text="{\VSI_MS_Sans_Serif13.0_0_0}&amp;Repair [ProductName]" Value="Repair" Width="348" X="0" Y="0" />
@@ -689,7 +690,7 @@
         </UI>
         <Upgrade Id="{CE1642E2-5EE0-454F-B7DF-5C9C92D6D40D}">
             <UpgradeVersion Minimum="$(var.ProductVersion)" Property="NEWERPRODUCTFOUND" OnlyDetect="yes" IncludeMinimum="no" />
-            <UpgradeVersion Property="UPGRADEFOUND" IncludeMinimum="yes" Minimum="1.6.0" Maximum="$(var.ProductVersion)" MigrateFeatures="yes" IncludeMaximum="no" />
+            <UpgradeVersion Property="PREVIOUSVERSIONSINSTALLED" IncludeMinimum="yes" Minimum="1.6.0" Maximum="$(var.ProductVersion)" MigrateFeatures="yes" IncludeMaximum="no" />
         </Upgrade>
         <InstallExecuteSequence>
             <Custom Action="DIRCA_CheckFX" Sequence="1" />
@@ -759,7 +760,7 @@
             <PublishFeatures Sequence="6300" />
             <PublishProduct Sequence="6400" />
             <InstallFinalize Sequence="6600" />
-            <RemoveExistingProducts Sequence="6550" />
+            <RemoveExistingProducts Before="InstallInitialize" />
             <InstallExecute Sequence="6500" />
             <MsiPublishAssemblies Sequence="6250" />
             <MsiUnpublishAssemblies Sequence="1650" />
