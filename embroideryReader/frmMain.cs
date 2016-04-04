@@ -223,11 +223,11 @@ namespace embroideryReader
             {
                 // Scale image code from http://stackoverflow.com/questions/1922040/resize-an-image-c-sharp
                 Rectangle destRect = new Rectangle(0, 0, width, height);
-                Bitmap destImage = new Bitmap(width, height);
+                Bitmap scaledImage = new Bitmap(width, height);
 
-                destImage.SetResolution(tempImage.HorizontalResolution, tempImage.VerticalResolution);
+                scaledImage.SetResolution(tempImage.HorizontalResolution, tempImage.VerticalResolution);
 
-                using (var graphics = Graphics.FromImage(destImage))
+                using (var graphics = Graphics.FromImage(scaledImage))
                 {
                     graphics.CompositingMode = CompositingMode.SourceCopy;
                     graphics.CompositingQuality = CompositingQuality.HighQuality;
@@ -241,8 +241,9 @@ namespace embroideryReader
                         graphics.DrawImage(tempImage, destRect, 0, 0, tempImage.Width, tempImage.Height, GraphicsUnit.Pixel, wrapMode);
                     }
                 }
-                // Keep the scaled image and toss the intermediate image
-                tempImage = destImage;
+                // Keep the scaled image and dispose the intermediate image
+                tempImage.Dispose();
+                tempImage = scaledImage;
             }
 
             // About to abandon the current DrawArea object, dispose it now
