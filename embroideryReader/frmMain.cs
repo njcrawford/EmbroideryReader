@@ -244,6 +244,13 @@ namespace embroideryReader
                 tempImage = destImage;
             }
 
+            // About to abandon the current DrawArea object, dispose it now
+            if(DrawArea != null)
+            {
+                DrawArea.Dispose();
+                DrawArea = null;
+            }
+
             // Add transparency grid
             if (settings.transparencyGridEnabled)
             {
@@ -268,10 +275,15 @@ namespace embroideryReader
                     }
 
                     g.DrawImage(tempImage, 0, 0);
+
+                    // Done with tempImage
+                    tempImage.Dispose();
+                    tempImage = null;
                 }
             }
             else
             {
+                // Keeping the object tempImage was pointing at, so don't dispose it
                 DrawArea = tempImage;
             }
 
@@ -511,8 +523,10 @@ namespace embroideryReader
             {
                 float inchesPerMM = 0.03937007874015748031496062992126f;
                 e.Graphics.ScaleTransform((float)(e.PageSettings.PrinterResolution.X * inchesPerMM * 0.01f), (float)(e.PageSettings.PrinterResolution.Y * inchesPerMM * 0.01f));
-                Bitmap tempDrawArea = design.designToBitmap((float)settings.threadThickness, settings.filterStiches, settings.filterStitchesThreshold, e.PageSettings.PrinterResolution.X * inchesPerMM * 0.2f);
-                e.Graphics.DrawImage(tempDrawArea, 30, 30);
+                using (Bitmap tempDrawArea = design.designToBitmap((float)settings.threadThickness, settings.filterStiches, settings.filterStitchesThreshold, e.PageSettings.PrinterResolution.X * inchesPerMM * 0.2f))
+                {
+                    e.Graphics.DrawImage(tempDrawArea, 30, 30);
+                }
             }
         }
 
@@ -527,12 +541,15 @@ namespace embroideryReader
             if (DrawArea != null)
             {
                 Clipboard.Clear();
-                Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-                Graphics tempGraph = Graphics.FromImage(temp);
-                tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
-                tempGraph.DrawImageUnscaled(DrawArea, 0, 0);
-                tempGraph.Dispose();
-                Clipboard.SetImage(temp);
+                using (Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb))
+                {
+                    using (Graphics tempGraph = Graphics.FromImage(temp))
+                    {
+                        tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
+                        tempGraph.DrawImageUnscaled(DrawArea, 0, 0);
+                    }
+                    Clipboard.SetImage(temp);
+                }
             }
         }
 
@@ -587,41 +604,43 @@ namespace embroideryReader
         {
             if (DrawArea != null)
             {
-                Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-
-                Graphics tempGraph = Graphics.FromImage(temp);
-                tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
-                tempGraph.DrawImageUnscaled(DrawArea, 0, 0);
-                tempGraph.Dispose();
-                saveFileDialog1.FileName = "";
-                // "Bitmap (*.bmp)|*.bmp|PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|TIFF (*.tif)|*.tif|All Files (*.*)|*.*"
-                saveFileDialog1.Filter = translation.GetTranslatedString(Translation.StringID.FILE_TYPE_BMP) + " (*.bmp)|*.bmp|" + 
-                    translation.GetTranslatedString(Translation.StringID.FILE_TYPE_PNG) + " (*.png)|*.png|" +
-                    translation.GetTranslatedString(Translation.StringID.FILE_TYPE_JPG) + " (*.jpg)|*.jpg|" +
-                    translation.GetTranslatedString(Translation.StringID.FILE_TYPE_GIF) + " (*.gif)|*.gif|" +
-                    translation.GetTranslatedString(Translation.StringID.FILE_TYPE_TIFF) + " (*.tif)|*.tif|" +
-                    translation.GetTranslatedString(Translation.StringID.FILE_TYPE_ALL) + " (*.*)|*.*";
-                if (settings.lastSaveImageLocation != null)
+                using (Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb))
                 {
-                    saveFileDialog1.InitialDirectory = settings.lastSaveImageLocation;
-                }
-                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-                {
-                    string filename = "";
-                    filename = saveFileDialog1.FileName;
-                    System.Drawing.Imaging.ImageFormat format;
-                    switch (System.IO.Path.GetExtension(filename).ToLower())
+                    using (Graphics tempGraph = Graphics.FromImage(temp))
                     {
-                        case ".bmp": format = System.Drawing.Imaging.ImageFormat.Bmp; break;
-                        case ".png": format = System.Drawing.Imaging.ImageFormat.Png; break;
-                        case ".jpg": format = System.Drawing.Imaging.ImageFormat.Jpeg; break;
-                        case ".gif": format = System.Drawing.Imaging.ImageFormat.Gif; break;
-                        case ".tif": format = System.Drawing.Imaging.ImageFormat.Tiff; break;
-                        default: format = System.Drawing.Imaging.ImageFormat.Bmp; break;
+                        tempGraph.FillRectangle(Brushes.White, 0, 0, temp.Width, temp.Height);
+                        tempGraph.DrawImageUnscaled(DrawArea, 0, 0);
                     }
-                    temp.Save(filename, format);
-                    showStatus(translation.GetTranslatedString(Translation.StringID.IMAGE_SAVED), 5000); // "Image saved"
-                    settings.lastSaveImageLocation = System.IO.Path.GetDirectoryName(filename);
+                    saveFileDialog1.FileName = "";
+                    // "Bitmap (*.bmp)|*.bmp|PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|TIFF (*.tif)|*.tif|All Files (*.*)|*.*"
+                    saveFileDialog1.Filter = translation.GetTranslatedString(Translation.StringID.FILE_TYPE_BMP) + " (*.bmp)|*.bmp|" +
+                        translation.GetTranslatedString(Translation.StringID.FILE_TYPE_PNG) + " (*.png)|*.png|" +
+                        translation.GetTranslatedString(Translation.StringID.FILE_TYPE_JPG) + " (*.jpg)|*.jpg|" +
+                        translation.GetTranslatedString(Translation.StringID.FILE_TYPE_GIF) + " (*.gif)|*.gif|" +
+                        translation.GetTranslatedString(Translation.StringID.FILE_TYPE_TIFF) + " (*.tif)|*.tif|" +
+                        translation.GetTranslatedString(Translation.StringID.FILE_TYPE_ALL) + " (*.*)|*.*";
+                    if (settings.lastSaveImageLocation != null)
+                    {
+                        saveFileDialog1.InitialDirectory = settings.lastSaveImageLocation;
+                    }
+                    if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                    {
+                        string filename = "";
+                        filename = saveFileDialog1.FileName;
+                        System.Drawing.Imaging.ImageFormat format;
+                        switch (System.IO.Path.GetExtension(filename).ToLower())
+                        {
+                            case ".bmp": format = System.Drawing.Imaging.ImageFormat.Bmp; break;
+                            case ".png": format = System.Drawing.Imaging.ImageFormat.Png; break;
+                            case ".jpg": format = System.Drawing.Imaging.ImageFormat.Jpeg; break;
+                            case ".gif": format = System.Drawing.Imaging.ImageFormat.Gif; break;
+                            case ".tif": format = System.Drawing.Imaging.ImageFormat.Tiff; break;
+                            default: format = System.Drawing.Imaging.ImageFormat.Bmp; break;
+                        }
+                        temp.Save(filename, format);
+                        showStatus(translation.GetTranslatedString(Translation.StringID.IMAGE_SAVED), 5000); // "Image saved"
+                        settings.lastSaveImageLocation = System.IO.Path.GetDirectoryName(filename);
+                    }
                 }
             }
         }
