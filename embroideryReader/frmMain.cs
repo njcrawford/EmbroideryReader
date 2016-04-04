@@ -142,11 +142,12 @@ namespace embroideryReader
                     blueByte = Convert.ToByte(blue);
                     retval = true;
                 }
-                catch (Exception ex)
+                catch (FormatException /* ex */)
                 {
-#if DEBUG
-                    Console.WriteLine(ex.Message);
-#endif
+                    retval = false;
+                }
+                catch (OverflowException /* ex */)
+                {
                     retval = false;
                 }
             }
