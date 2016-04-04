@@ -11,9 +11,9 @@
                 <Directory Id="PRODUCTDIR" Name="Embroidery Reader">
                     <Component Id="RequiredFiles" DiskId="1" Guid="ad3defbe-e276-41ab-9d76-9ab9f2976ac2">
                         <File Id="EMBROIDERYREADER.EXE" Name="embroideryReader.exe" Source="..\embroideryReader\bin\Release\embroideryReader.exe" KeyPath="yes">
-                            <Shortcut Id="ExeShortcut" Directory="ProgramMenuDir" Name="Embroidery Reader" Advertise="yes" Icon="StartMenuIcon.exe" IconIndex="0" />
+                            <Shortcut Id="ExeShortcut" Directory="ProgramMenuDir" Name="Embroidery Reader" Advertise="yes" Icon="StartMenuIcon.exe" />
                         </File>
-                        <ProgId Id="EmbroideryDesign" Description="Embroidery Design File" Icon="StartMenuIcon.exe" IconIndex="0" Advertise="yes">
+                        <ProgId Id="EmbroideryDesign" Description="Embroidery Design File" Icon="StartMenuIcon.exe" Advertise="yes">
                             <Extension Id="pes" Advertise="yes">
                                 <Verb Id="open" Command="&amp;Open" Argument="&quot;%1&quot;" Sequence="1" />
                             </Extension>
@@ -49,9 +49,12 @@
         <UI />
         <UIRef Id="WixUI_InstallDir" />
         <Property Id="WIXUI_INSTALLDIR" Value="PRODUCTDIR" />
+        <!-- Require .Net Framework 4.0 Client profile -->
         <PropertyRef Id="NETFRAMEWORK40CLIENT" />
         <Condition Message="This application requires .NET Framework X.Y.">Installed OR NETFRAMEWORK40CLIENT</Condition>
-        <Icon Id="StartMenuIcon.exe" SourceFile="..\embroideryReader\bin\Release\embroideryReader.exe" />
+        <!-- Icon for start menu and file association -->
+        <Icon Id="StartMenuIcon.exe" SourceFile="..\embroideryReader\icon.ico" />
+        <!-- Allow upgrades from any older version with a Wix-based installer -->
         <MajorUpgrade DowngradeErrorMessage="Downgrades are not supported. If you would like to install this version, you must uninstall the newer version first." />
         <!-- Install for all users -->
         <Property Id="ALLUSERS" Value="2" />
