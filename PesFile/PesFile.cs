@@ -579,6 +579,20 @@ namespace PesFile
 
         public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, double filterUglyStitchesThreshold, float scale)
         {
+            // Do some basic input checks
+            if(scale < 0.0000001f)
+            {
+                throw new ArgumentException("Scale must be > 0");
+            }
+            if(filterUglyStitchesThreshold < 1.0)
+            {
+                throw new ArgumentException("Filter ungly stitches threshold must be at least 1.0");
+            }
+            if(threadThickness < 0.1)
+            {
+                throw new ArgumentException("Thread thickness must be at least 0.1");
+            }
+
             int imageWidth = (int)((GetWidth() + (threadThickness * 2)) * scale);
             int imageHeight = (int)((GetHeight() + (threadThickness * 2)) * scale);
             float tempThreadThickness = threadThickness * scale;
