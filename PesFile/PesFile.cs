@@ -506,6 +506,77 @@ namespace PesFile
             }
         }
 
+        struct optimizedBlockData
+        {
+            public Color color;
+            public Point [] points;
+
+            public optimizedBlockData(Color color, Point [] points)
+            {
+                this.color = color;
+                this.points = points;
+            }
+        }
+
+        private List<optimizedBlockData> getOptimizedDrawData(StitchBlock block, float scale, bool filterUglyStitches, double filterUglyStitchesThreshold)
+        {
+            List<optimizedBlockData> retval = new List<optimizedBlockData>();
+
+            // Skip this block if it doesn't have stitches, for any reason
+            if (block.stitches.Length == 0)
+            {
+                return retval;
+            }
+
+            // Start first block
+            List<Point> currentPoints = new List<Point>();
+
+            foreach (Stitch thisStitch in block.stitches)
+            {
+                if (filterUglyStitches && // Check for filter ugly stitches option
+                    !formatWarning && // Only filter stitches if we think we understand the format
+                    thisStitch.calcLength() > filterUglyStitchesThreshold) // Check stitch length
+                {
+                    // This stitch is too long, so skip it and start a new block
+                    if (currentPoints.Count != 0)
+                    {
+                        retval.Add(new optimizedBlockData(block.color, currentPoints.ToArray()));
+                    }
+                    currentPoints = new List<Point>();
+                    continue;
+                }
+
+                // Style special stitches differently
+                // TODO: Finish figuring out the remaining stitch types
+                if (filterUglyStitches && (thisStitch.stitchType == Stitch.StitchType.MovementBeginAnchor ||
+                    thisStitch.stitchType == Stitch.StitchType.MovementOnly ||
+                    thisStitch.stitchType == Stitch.StitchType.MovementEndAnchor))
+                {
+                    // Skip these stitch types, and start a new block
+                    if (currentPoints.Count != 0)
+                    {
+                        retval.Add(new optimizedBlockData(block.color, currentPoints.ToArray()));
+                    }
+                    currentPoints = new List<Point>();
+                    continue;
+                }
+
+                if(currentPoints.Count == 0)
+                {
+                    // If this is the first point in this optimized block, we'll need the previous point to form a line
+                    currentPoints.Add(new Point((int)(thisStitch.a.X * scale), (int)(thisStitch.a.Y * scale)));
+                }
+                currentPoints.Add(new Point((int)(thisStitch.b.X * scale), (int)(thisStitch.b.Y * scale)));
+            }
+
+            if(currentPoints.Count != 0)
+            {
+                retval.Add(new optimizedBlockData(block.color, currentPoints.ToArray()));
+            }
+
+            return retval;
+        }
+
         public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, double filterUglyStitchesThreshold, float scale)
         {
             int imageWidth = (int)((GetWidth() + (threadThickness * 2)) * scale);
@@ -536,55 +607,24 @@ namespace PesFile
                     tempPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
                     tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
 
+                    // List to build up draw-optimized data
+                    List<optimizedBlockData> optimizedBlocks = new List<optimizedBlockData>();
+
+                    // Get optimized data
                     foreach(StitchBlock thisBlock in blocks)
                     {
-                        // Skip this block if it doesn't have stitches, for any reason
-                        if(thisBlock.stitches.Length == 0)
-                        {
-                            continue;
-                        }
-
-                        // Set new color for this block
-                        tempPen.Color = thisBlock.color;
-
-                        foreach (Stitch thisStitch in thisBlock.stitches)
-                        {
-                            if (filterUglyStitches && // Check for filter ugly stitches option
-                                !formatWarning && // Only filter stitches if we think we understand the format
-                                thisStitch.calcLength() > filterUglyStitchesThreshold) // Check stitch length
-                            {
-                                // This stitch is too long, so skip it
-                                continue;
-                            }
-
-                            // Style special stitches differently
-                            // TODO: Finish figuring out the remaining stitch types
-                            /*if (thisStitch.stitchType == Stitch.StitchType.MovementBeginAnchor)
-                            {
-                                tempPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
-                                tempPen.Width = tempThreadThickness * 0.5f;
-                            }
-                            else if (thisStitch.stitchType == Stitch.StitchType.MovementOnly)
-                            {
-                                tempPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
-                                tempPen.Width = tempThreadThickness * 0.5f;
-                            }
-                            else if(thisStitch.stitchType == Stitch.StitchType.MovementEndAnchor)
-                            {
-                                tempPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
-                                tempPen.Width = tempThreadThickness * 0.5f;
-                            }
-                            else if (thisStitch.stitchType == Stitch.StitchType.NormalStitch)
-                            {
-                                tempPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Solid;
-                                tempPen.Width = tempThreadThickness;
-                            }*/
-
-                            Point tempA = new Point((int)(thisStitch.a.X * scale), (int)(thisStitch.a.Y * scale));
-                            Point tempB = new Point((int)(thisStitch.b.X * scale), (int)(thisStitch.b.Y * scale));
-                            xGraph.DrawLine(tempPen, tempA, tempB);
-                        }
+                        optimizedBlocks.AddRange(getOptimizedDrawData(thisBlock, scale, filterUglyStitches, filterUglyStitchesThreshold));
                     }
+
+                    // Draw using optimized data
+                    foreach(optimizedBlockData optBlock in optimizedBlocks)
+                    {
+                        tempPen.Color = optBlock.color;
+                        xGraph.DrawLines(tempPen, optBlock.points);
+                    }
+
+                    // Done with optimized data
+                    optimizedBlocks = null;
                 }
             }
 
