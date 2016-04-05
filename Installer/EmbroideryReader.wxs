@@ -11,9 +11,9 @@
                 <Directory Id="PRODUCTDIR" Name="Embroidery Reader">
                     <Component Id="RequiredFiles" DiskId="1" Guid="ad3defbe-e276-41ab-9d76-9ab9f2976ac2">
                         <File Id="EMBROIDERYREADER.EXE" Name="embroideryReader.exe" Source="..\embroideryReader\bin\Release\embroideryReader.exe" KeyPath="yes">
-                            <Shortcut Id="ExeShortcut" Directory="ProgramMenuDir" Name="Embroidery Reader" Advertise="yes" Icon="StartMenuIcon.exe" />
+                            <Shortcut Id="ExeShortcut" Directory="ProgramMenuDir" Name="Embroidery Reader" Advertise="yes" Icon="StartMenuIcon.ico" />
                         </File>
-                        <ProgId Id="EmbroideryDesign" Description="Embroidery Design File" Icon="StartMenuIcon.exe" Advertise="yes">
+                        <ProgId Id="EmbroideryDesign" Description="Embroidery Design File" Icon="StartMenuIcon.ico" Advertise="yes">
                             <Extension Id="pes" Advertise="yes">
                                 <Verb Id="open" Command="&amp;Open" Argument="&quot;%1&quot;" Sequence="1" />
                             </Extension>
@@ -53,7 +53,7 @@
         <PropertyRef Id="NETFRAMEWORK40CLIENT" />
         <Condition Message="This application requires .NET Framework X.Y.">Installed OR NETFRAMEWORK40CLIENT</Condition>
         <!-- Icon for start menu and file association -->
-        <Icon Id="StartMenuIcon.exe" SourceFile="..\embroideryReader\icon.ico" />
+        <Icon Id="StartMenuIcon.ico" SourceFile="..\embroideryReader\icon.ico" />
         <!-- Allow upgrades from any older version with a Wix-based installer -->
         <MajorUpgrade DowngradeErrorMessage="Downgrades are not supported. If you would like to install this version, you must uninstall the newer version first." />
         <!-- Install for all users -->
@@ -65,7 +65,7 @@
         <!-- Show info/about URL in Programs and Features -->
         <Property Id="ARPURLINFOABOUT" Value="http://www.njcrawford.com/programs/embroidery-reader/" />
         <!-- Show icon in Programs and Features -->
-        <Property Id="ARPPRODUCTICON" Value="StartMenuIcon.exe" />
+        <Property Id="ARPPRODUCTICON" Value="StartMenuIcon.ico" />
         <!-- Search for pre-Wix installer versions -->
         <Property Id="OLD_INSTALL">
             <RegistrySearch Id="SearchForOldVersions" Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Embroidery Reader" Name="DisplayName" Type="raw" />
