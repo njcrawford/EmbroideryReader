@@ -56,7 +56,7 @@ namespace embroideryReader
             args = Environment.GetCommandLineArgs();
         }
 
-        private void checkSettings()
+        private void loadSettings(bool reload)
         {
             if (settings.backgroundColorEnabled)
             {
@@ -66,16 +66,19 @@ namespace embroideryReader
             {
                 panel2.BackColor = Color.FromKnownColor(KnownColor.Control);
             }
-            if (settings.windowMaximized)
+            if (!reload)
             {
-                // Check maximized first
-                this.WindowState = FormWindowState.Maximized;
-            }
-            else
-            {
-                // Not maximized, restore last saved window size
-                this.Width = settings.windowWidth;
-                this.Height = settings.windowHeight;
+                if (settings.windowMaximized)
+                {
+                    // Check maximized first
+                    this.WindowState = FormWindowState.Maximized;
+                }
+                else
+                {
+                    // Not maximized, restore last saved window size
+                    this.Width = settings.windowWidth;
+                    this.Height = settings.windowHeight;
+                }
             }
             setDesignScaleSetting(1.0f, settings.AutoScaleDesign, false);
         }
@@ -86,7 +89,7 @@ namespace embroideryReader
             this.Text = APP_TITLE;
 
             // Load and check settings
-            checkSettings();
+            loadSettings(false);
             
             // Load translation
             loadTranslatedStrings(settings.translation);
@@ -510,7 +513,8 @@ namespace embroideryReader
             if (tempForm.ShowDialog() == DialogResult.OK)
             {
                 settings = tempForm.settingsToModify;
-                checkSettings();
+                loadSettings(true);
+                updateDesignImage();
             }
             loadTranslatedStrings(settings.translation);
         }

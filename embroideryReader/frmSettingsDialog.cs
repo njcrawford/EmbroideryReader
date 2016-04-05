@@ -70,10 +70,7 @@ namespace embroideryReader
                 chkDrawGrid.Checked = settings.transparencyGridEnabled;
                 gridSize = settings.transparencyGridSize;
                 txtGridSize.Text = gridSize.ToString();
-                if(chkDrawGrid.Checked)
-                {
-                    transparencyGridColor = settings.transparencyGridColor;
-                }
+                transparencyGridColor = settings.transparencyGridColor;
                 updateGridColorControls();
             }
         }
