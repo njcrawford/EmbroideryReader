@@ -596,7 +596,17 @@ namespace PesFile
             int imageWidth = (int)((GetWidth() + (threadThickness * 2)) * scale);
             int imageHeight = (int)((GetHeight() + (threadThickness * 2)) * scale);
             float tempThreadThickness = threadThickness * scale;
+            // This assumes the image format will use 4 bytes per pixel
+            UInt64 imageRequiredRam = (UInt64)(imageHeight * imageWidth * 4);
 
+            // Check for a bitmap that might be too large.
+            // Apparently, there is a 2GB (minus a little overhead) limit for objects on the GC heap in
+            // .Net, even when using a 64 bit framework. More detail at:
+            // https://blogs.msdn.microsoft.com/joshwil/2005/08/10/bigarrayt-getting-around-the-2gb-array-size-limit/
+            if(imageRequiredRam > (Int32.MaxValue - 1024))
+            {
+                throw new ArgumentOutOfRangeException("Generated image would be too large (" + imageWidth + "x" + imageHeight + ", " + imageRequiredRam + " bytes)");
+            }
             Bitmap DrawArea = new Bitmap(imageWidth, imageHeight);
             // Return now if for any reason there aren't any blocks
             if(blocks.Count == 0)
