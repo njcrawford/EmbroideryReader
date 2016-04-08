@@ -8,6 +8,7 @@
         <Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="ProgramFilesFolder" Name="PFiles">
+                <Directory Id="ROOTDIR" Name="NJCrawford Software">
                 <Directory Id="PRODUCTDIR" Name="Embroidery Reader">
                     <Component Id="RequiredFiles" DiskId="1" Guid="ad3defbe-e276-41ab-9d76-9ab9f2976ac2">
                         <File Id="EMBROIDERYREADER.EXE" Name="embroideryReader.exe" Source="..\embroideryReader\bin\Release\embroideryReader.exe" KeyPath="yes">
@@ -30,6 +31,7 @@
                             <File Id="ZH_HANT.INI" Name="zh-Hant.ini" Source="..\translations\zh-Hant.ini" />
                         </Component>
                     </Directory>
+                </Directory>
                 </Directory>
             </Directory>
             <Directory Id="ProgramMenuFolder">
