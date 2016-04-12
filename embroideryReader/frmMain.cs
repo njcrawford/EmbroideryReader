@@ -531,24 +531,23 @@ namespace embroideryReader
         {
             if (design != null)
             {
-                int xDpi = e.PageSettings.PrinterResolution.X;
-                int yDpi = e.PageSettings.PrinterResolution.Y;
-                // Basic checks on printer resolution
-                if(xDpi < 20 || xDpi > 10000)
+                // Calculate scale values for print graphics object (100 dpi seems to be the default for the printer graphics object)
+                double graphicsXScaleFactor = (100.0 / design.NativeDPI);
+                double graphicsYScaleFactor = (100.0 / design.NativeDPI);
+
+                // Check for scale out of range
+                if(graphicsXScaleFactor < 0.001 || graphicsXScaleFactor > 100.0)
                 {
-                    throw new ArgumentOutOfRangeException("Printer X DPI claims to be '" + xDpi + "', expected range 20 - 10000");
+                    throw new ArgumentOutOfRangeException("Print X graphics scale is '" + graphicsXScaleFactor + "', expected range is 0.001 - 100.0");
                 }
-                if (yDpi < 20 || yDpi > 10000)
+                if (graphicsYScaleFactor < 0.001 || graphicsYScaleFactor > 100.0)
                 {
-                    throw new ArgumentOutOfRangeException("Printer Y DPI claims to be '" + yDpi + "', expected range 20 - 10000");
+                    throw new ArgumentOutOfRangeException("Print Y graphics scale is '" + graphicsYScaleFactor + "', expected range is 0.001 - 100.0");
                 }
 
-                const double inchesPerMM = 0.03937007874015748031496062992126f;
-                double graphicsXScaleFactor = xDpi * inchesPerMM * 0.01;
-                double graphicsYScaleFactor = yDpi * inchesPerMM * 0.01;
-                double designScaleFactor = xDpi * inchesPerMM * 0.2f;
+                // Set print graphics object scale and draw the image
                 e.Graphics.ScaleTransform((float)graphicsXScaleFactor, (float)graphicsYScaleFactor);
-                using (Bitmap tempDrawArea = design.designToBitmap((float)settings.threadThickness, settings.filterStiches, settings.filterStitchesThreshold, (float)designScaleFactor))
+                using (Bitmap tempDrawArea = design.designToBitmap((float)settings.threadThickness, settings.filterStiches, settings.filterStitchesThreshold, 1.0f))
                 {
                     e.Graphics.DrawImage(tempDrawArea, 30, 30);
                 }

@@ -44,6 +44,8 @@ namespace PesFile
         private Int64 startStitches = 0;
         private Point translateStart;
         private UInt16 pesVersion;
+        // Native format appears to use 0.1mm steps, for 254 steps per inch
+        public int NativeDPI = 254;
 
 
         // If set to true, this variable means we couldn't figure out some or
@@ -577,6 +579,7 @@ namespace PesFile
             return retval;
         }
 
+        // When scale is 1.0, each pixel appears to be 0.1mm, or about 254 ppi
         public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, double filterUglyStitchesThreshold, float scale)
         {
             // Do some basic input checks
