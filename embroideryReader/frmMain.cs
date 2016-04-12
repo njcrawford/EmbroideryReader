@@ -559,8 +559,15 @@ namespace embroideryReader
 
         private void printPreviewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            printPreviewDialog1.Document = printDocument1;
-            printPreviewDialog1.ShowDialog();
+            try
+            {
+                printPreviewDialog1.Document = printDocument1;
+                printPreviewDialog1.ShowDialog();
+            }
+            catch(System.Drawing.Printing.InvalidPrinterException pex)
+            {
+                MessageBox.Show("Unable to find a default printer: " + pex.Message + Environment.NewLine + Environment.NewLine + "Possible reasons include: no printers are installed, or no printer is set as the default.");
+            }
         }
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
