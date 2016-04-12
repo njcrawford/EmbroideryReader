@@ -177,7 +177,10 @@ namespace embroideryReader
                 return;
             }
 
-            Bitmap tempImage = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, 1.0f);
+            // Assume 96 DPI until we can come up with a better way to calculate it
+            float screenDPI = 96;
+
+            Bitmap tempImage = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, (screenDPI / design.NativeDPI));
 
             // Rotate image
             switch (designRotation)
