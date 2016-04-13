@@ -58,7 +58,7 @@
         <Icon Id="StartMenuIcon.ico" SourceFile="..\embroideryReader\icon.ico" />
         <!-- Allow upgrades from any older version with a Wix-based installer -->
         <MajorUpgrade DowngradeErrorMessage="Downgrades are not supported. If you would like to install this version, you must uninstall the newer version first." />
-        <!-- Install for all users -->
+        <!-- Install for all users (or highest available level) by default -->
         <Property Id="ALLUSERS" Value="2" />
         <!-- Show help link in Programs and Features -->
         <Property Id="ARPHELPLINK" Value="http://www.njcrawford.com/contact/" />
@@ -73,7 +73,8 @@
             <RegistrySearch Id="SearchForOldVersions" Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Embroidery Reader" Name="DisplayName" Type="raw" />
         </Property>
         <Condition Message="Embroidery Reader 1.5 or earlier is installed. Please remove previous versions of Embroidery Reader and run the installer again.">OLD_INSTALL = null</Condition>
-        <Property Id="PREVIOUSVERSIONSINSTALLED" Secure="yes" />
+        <!-- It doesn't appear that PREVIOUSVERSIONSINSTALLED is needed with MajorUpgrade -->
+        <!-- <Property Id="PREVIOUSVERSIONSINSTALLED" Secure="yes" /> -->
         <!-- Specify license file -->
         <WixVariable Id="WixUILicenseRtf" Value="..\docs\license.rtf" />
         <!-- Specify custom banner bitmap 493x58 -->
