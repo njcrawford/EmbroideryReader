@@ -534,7 +534,14 @@ namespace embroideryReader
         {
             if (design != null)
             {
-                // Calculate scale values for print graphics object (100 dpi seems to be the default for the printer graphics object)
+                // Note: scaling based on reported printer DPI may produce terrible results in some
+                // cases. The reported DPI can even be a negative number, which indicates a general print
+                // quality. So, future self, for the sake of your sanity... just don't do it. :-)
+                // See https://msdn.microsoft.com/en-us/library/system.drawing.printing.printerresolution.x(v=vs.110).aspx
+                // for more detail.
+
+                // Calculate scale values for print graphics object (100 dpi seems to be the default
+                // for the printer graphics object)
                 double graphicsXScaleFactor = (100.0 / design.NativeDPI);
                 double graphicsYScaleFactor = (100.0 / design.NativeDPI);
 
