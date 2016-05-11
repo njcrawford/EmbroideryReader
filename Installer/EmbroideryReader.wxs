@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
     <!-- ProductGuid should change whenever ProductVersion changes -->
-    <?define ProductVersion="2.2.2" ?>
-    <?define ProductGuid="{195E5DBD-0A0C-4D34-8018-189B5FDC443A}" ?>
+    <?define ProductVersion="2.2.3" ?>
+    <?define ProductGuid="{13885371-473E-465C-95D6-84430334655D}" ?>
     <Product Id="$(var.ProductGuid)" Name="Embroidery Reader" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Nathan Crawford" UpgradeCode="CE1642E2-5EE0-454F-B7DF-5C9C92D6D40D">
         <Package Description="Test file in a Product" Comments="Simple test" InstallerVersion="200" Compressed="yes" />
         <Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />

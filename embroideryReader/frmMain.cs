@@ -416,9 +416,10 @@ namespace embroideryReader
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string message = String.Format(translation.GetTranslatedString(Translation.StringID.ABOUT_MESSAGE), currentVersion()); // "EmbroideryReader version " + currentVersion() + ". This program reads and displays embroidery designs from .PES files."
-            message += Environment.NewLine + Environment.NewLine + "GUI GDI count: " + GuiResources.GetGuiResourcesGDICount();
-            message += Environment.NewLine + "GUI USER count: " + GuiResources.GetGuiResourcesUserCount();
-            message += Environment.NewLine + ".Net framework version: " + Environment.Version;
+            //message += Environment.NewLine;
+            //message += Environment.NewLine + "GUI GDI count: " + GuiResources.GetGuiResourcesGDICount();
+            //message += Environment.NewLine + "GUI USER count: " + GuiResources.GetGuiResourcesUserCount();
+            //message += Environment.NewLine + ".Net framework version: " + Environment.Version;
             MessageBox.Show(message);
         }
 
