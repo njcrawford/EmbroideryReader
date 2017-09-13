@@ -72,7 +72,7 @@ namespace PesFile
             this.stitchType = stitchType;
         }
 
-        public double calcLength()
+        public double CalcLength()
         {
             double diffx = Math.Abs(a.X - b.X);
             double diffy = Math.Abs(a.Y - b.Y);

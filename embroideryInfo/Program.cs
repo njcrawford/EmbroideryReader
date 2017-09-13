@@ -29,7 +29,7 @@ namespace embroideryInfo
 {
     class Program
     {
-        static void printHelp()
+        static void PrintHelp()
         {
             Console.WriteLine("No input file specified.");
             Console.WriteLine("To generate design debug text file:");
@@ -42,12 +42,12 @@ namespace embroideryInfo
             Console.WriteLine("embroideryInfo.exe --image --all");
         }
 
-        static void generateDebug(string filename)
+        static void GenerateDebug(string filename)
         {
             try
             {
                 PesFile.PesFile design = new PesFile.PesFile(filename);
-                design.saveDebugInfo();
+                design.SaveDebugInfo();
             }
             catch (Exception ex)
             {
@@ -55,12 +55,12 @@ namespace embroideryInfo
             }
         }
 
-        static void generateImage(string filename)
+        static void GenerateImage(string filename)
         {
             try
             {
                 PesFile.PesFile design = new PesFile.PesFile(filename);
-                Bitmap DrawArea = design.designToBitmap(5.0f, false, 0.0f, 1.0f);
+                Bitmap DrawArea = design.DesignToBitmap(5.0f, false, 0.0f, 1.0f);
                 Bitmap temp = new Bitmap(DrawArea.Width, DrawArea.Height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
                 using (Graphics tempGraph = Graphics.FromImage(temp))
                 {
@@ -82,7 +82,7 @@ namespace embroideryInfo
             {
                 if(args[0] == "--help" || args[0] == "-h" || args[0] == "/?")
                 {
-                    printHelp();
+                    PrintHelp();
                 }
                 else if (args[0] == "--image" && args.Length > 1)
                 {
@@ -90,12 +90,12 @@ namespace embroideryInfo
                     {
                         foreach(string file in System.IO.Directory.EnumerateFiles(Environment.CurrentDirectory, "*.pes"))
                         {
-                            generateImage(file);
+                            GenerateImage(file);
                         }
                     }
                     else
                     {
-                        generateImage(args[1]);
+                        GenerateImage(args[1]);
                     }
                 }
                 else if (args[0] == "--debug" && args.Length > 1)
@@ -104,18 +104,18 @@ namespace embroideryInfo
                     {
                         foreach (string file in System.IO.Directory.EnumerateFiles(Environment.CurrentDirectory, "*.pes"))
                         {
-                            generateDebug(file);
+                            GenerateDebug(file);
                         }
                     }
                     else
                     {
-                        generateDebug(args[1]);
+                        GenerateDebug(args[1]);
                     }
                 }
             }
             else
             {
-                printHelp();
+                PrintHelp();
             }
         }
     }

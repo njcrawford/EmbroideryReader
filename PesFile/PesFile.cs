@@ -61,7 +61,7 @@ namespace PesFile
 
         // Returns an Int16 representation of the 12 bit signed int contained in
         // high and low bytes
-        private Int16 get12Bit2sComplement(byte high, byte low)
+        private Int16 Get12Bit2sComplement(byte high, byte low)
         {
             Int32 retval;
 
@@ -88,7 +88,7 @@ namespace PesFile
 
         // Returns a signed byte representation of the 7 bit signed int contained
         // in b.
-        private SByte get7Bit2sComplement(byte b)
+        private SByte Get7Bit2sComplement(byte b)
         {
             SByte retval;
 
@@ -203,7 +203,7 @@ namespace PesFile
                             colorNum++;
                             colorIndex = colorList[colorNum];
                             curBlock.colorIndex = colorIndex;
-                            curBlock.color = getColorFromIndex(colorIndex);
+                            curBlock.color = GetColorFromIndex(colorIndex);
                             blocks.Add(curBlock);
                         }
                         else if (val1 == 0xfe && val2 == 0xb0)
@@ -217,7 +217,7 @@ namespace PesFile
                             colorNum++;
                             colorIndex = colorList[colorNum];
                             curBlock.colorIndex = colorIndex;
-                            curBlock.color = getColorFromIndex(colorIndex);
+                            curBlock.color = GetColorFromIndex(colorIndex);
                             //read useless(?) byte
                             // The value of this 'useless' byte seems to start with 2 for the first block and
                             // alternate between 2 and 1 for every other block after that. The only exception
@@ -246,7 +246,7 @@ namespace PesFile
 
                                 // This is a 12-bit int. Allows for needle movement
                                 // of up to +2047 or -2048.
-                                deltaX = get12Bit2sComplement(val1, val2);
+                                deltaX = Get12Bit2sComplement(val1, val2);
 
                                 xMoveBits = Stitch.MoveBitSize.TwelveBits;
 
@@ -258,7 +258,7 @@ namespace PesFile
                             {
                                 // This is a 7-bit int. Allows for needle movement
                                 // of up to +63 or -64.
-                                deltaX = get7Bit2sComplement(val1);
+                                deltaX = Get7Bit2sComplement(val1);
 
                                 xMoveBits = Stitch.MoveBitSize.SevenBits;
 
@@ -279,7 +279,7 @@ namespace PesFile
                                 // of up to +2047 or -2048.
                                 // Read in the next byte to get the full value
                                 val2 = fileIn.ReadByte();
-                                deltaY = get12Bit2sComplement(val1, val2);
+                                deltaY = Get12Bit2sComplement(val1, val2);
 
                                 yMoveBits = Stitch.MoveBitSize.TwelveBits;
                             }
@@ -287,7 +287,7 @@ namespace PesFile
                             {
                                 // This is a 7-bit int. Allows for needle movement
                                 // of up to +63 or -64.
-                                deltaY = get7Bit2sComplement(val1);
+                                deltaY = Get7Bit2sComplement(val1);
 
                                 yMoveBits = Stitch.MoveBitSize.SevenBits;
                                 // Finished reading data for this stitch, no more
@@ -401,18 +401,18 @@ namespace PesFile
         }
 
         // Returns the path of the file it saved debug info to
-        public string saveDebugInfo()
+        public string SaveDebugInfo()
         {
             string retval = System.IO.Path.ChangeExtension(_filename, ".txt");
             using (System.IO.StreamWriter outfile = new System.IO.StreamWriter(retval))
             {
-                outfile.Write(getDebugInfo());
+                outfile.Write(GetDebugInfo());
                 outfile.Close();
             }
             return retval;
         }
 
-        public string getDebugInfo()
+        public string GetDebugInfo()
         {
             System.IO.StringWriter outfile = new System.IO.StringWriter();
             outfile.WriteLine(_filename);
@@ -442,7 +442,7 @@ namespace PesFile
                     outfile.WriteLine("unknown start byte: " + thisBlock.unknownStartByte.ToString("X2"));
                     foreach (Stitch thisStitch in thisBlock.stitches)
                     {
-                        string tempLine = thisStitch.a.ToString() + " - " + thisStitch.b.ToString() + ", length " + thisStitch.calcLength().ToString("F02");
+                        string tempLine = thisStitch.a.ToString() + " - " + thisStitch.b.ToString() + ", length " + thisStitch.CalcLength().ToString("F02");
                         if (thisStitch.extraBits1 != 0x00)
                         {
                             tempLine += " (extra bits 1: " + thisStitch.extraBits1.ToString("X2") + ")";
@@ -481,17 +481,17 @@ namespace PesFile
             return outfile.ToString();
         }
 
-        public bool getColorWarning()
+        public bool GetColorWarning()
         {
             return colorWarning;
         }
 
-        public bool getFormatWarning()
+        public bool GetFormatWarning()
         {
             return formatWarning;
         }
 
-        private Color getColorFromIndex(int index)
+        private Color GetColorFromIndex(int index)
         {
             if(index >= 1 && index <= 64)
             {
@@ -508,21 +508,21 @@ namespace PesFile
             }
         }
 
-        struct optimizedBlockData
+        struct OptimizedBlockData
         {
             public Color color;
             public Point [] points;
 
-            public optimizedBlockData(Color color, Point [] points)
+            public OptimizedBlockData(Color color, Point [] points)
             {
                 this.color = color;
                 this.points = points;
             }
         }
 
-        private List<optimizedBlockData> getOptimizedDrawData(StitchBlock block, float scale, bool filterUglyStitches, double filterUglyStitchesThreshold)
+        private List<OptimizedBlockData> GetOptimizedDrawData(StitchBlock block, float scale, bool filterUglyStitches, double filterUglyStitchesThreshold)
         {
-            List<optimizedBlockData> retval = new List<optimizedBlockData>();
+            List<OptimizedBlockData> retval = new List<OptimizedBlockData>();
 
             // Skip this block if it doesn't have stitches, for any reason
             if (block.stitches.Length == 0)
@@ -537,12 +537,12 @@ namespace PesFile
             {
                 if (filterUglyStitches && // Check for filter ugly stitches option
                     !formatWarning && // Only filter stitches if we think we understand the format
-                    thisStitch.calcLength() > filterUglyStitchesThreshold) // Check stitch length
+                    thisStitch.CalcLength() > filterUglyStitchesThreshold) // Check stitch length
                 {
                     // This stitch is too long, so skip it and start a new block
                     if (currentPoints.Count != 0)
                     {
-                        retval.Add(new optimizedBlockData(block.color, currentPoints.ToArray()));
+                        retval.Add(new OptimizedBlockData(block.color, currentPoints.ToArray()));
                     }
                     currentPoints = new List<Point>();
                     continue;
@@ -557,7 +557,7 @@ namespace PesFile
                     // Skip these stitch types, and start a new block
                     if (currentPoints.Count != 0)
                     {
-                        retval.Add(new optimizedBlockData(block.color, currentPoints.ToArray()));
+                        retval.Add(new OptimizedBlockData(block.color, currentPoints.ToArray()));
                     }
                     currentPoints = new List<Point>();
                     continue;
@@ -573,14 +573,14 @@ namespace PesFile
 
             if(currentPoints.Count != 0)
             {
-                retval.Add(new optimizedBlockData(block.color, currentPoints.ToArray()));
+                retval.Add(new OptimizedBlockData(block.color, currentPoints.ToArray()));
             }
 
             return retval;
         }
 
         // When scale is 1.0, each pixel appears to be 0.1mm, or about 254 ppi
-        public Bitmap designToBitmap(Single threadThickness, bool filterUglyStitches, double filterUglyStitchesThreshold, float scale)
+        public Bitmap DesignToBitmap(Single threadThickness, bool filterUglyStitches, double filterUglyStitchesThreshold, float scale)
         {
             // Do some basic input checks
             if(scale < 0.0000001f)
@@ -635,16 +635,16 @@ namespace PesFile
                     tempPen.LineJoin = System.Drawing.Drawing2D.LineJoin.Round;
 
                     // List to build up draw-optimized data
-                    List<optimizedBlockData> optimizedBlocks = new List<optimizedBlockData>();
+                    List<OptimizedBlockData> optimizedBlocks = new List<OptimizedBlockData>();
 
                     // Get optimized data
                     foreach(StitchBlock thisBlock in blocks)
                     {
-                        optimizedBlocks.AddRange(getOptimizedDrawData(thisBlock, scale, filterUglyStitches, filterUglyStitchesThreshold));
+                        optimizedBlocks.AddRange(GetOptimizedDrawData(thisBlock, scale, filterUglyStitches, filterUglyStitchesThreshold));
                     }
 
                     // Draw using optimized data
-                    foreach(optimizedBlockData optBlock in optimizedBlocks)
+                    foreach(OptimizedBlockData optBlock in optimizedBlocks)
                     {
                         tempPen.Color = optBlock.color;
                         xGraph.DrawLines(tempPen, optBlock.points);

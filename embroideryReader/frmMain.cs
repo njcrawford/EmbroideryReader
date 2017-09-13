@@ -56,7 +56,7 @@ namespace embroideryReader
             args = Environment.GetCommandLineArgs();
         }
 
-        private void loadSettings(bool reload)
+        private void LoadSettings(bool reload)
         {
             if (settings.backgroundColorEnabled)
             {
@@ -80,7 +80,7 @@ namespace embroideryReader
                     this.Height = settings.windowHeight;
                 }
             }
-            setDesignScaleSetting(1.0f, settings.AutoScaleDesign, false);
+            SetDesignScaleSetting(1.0f, settings.AutoScaleDesign, false);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -89,15 +89,15 @@ namespace embroideryReader
             this.Text = APP_TITLE;
 
             // Load and check settings
-            loadSettings(false);
+            LoadSettings(false);
             
             // Load translation
-            loadTranslatedStrings(settings.translation);
+            LoadTranslatedStrings(settings.translation);
 
             // Load design, if specified
             if (args.Length > 1)
             {
-                openFile(args[1]);
+                OpenFile(args[1]);
             }
         }
 
@@ -126,7 +126,7 @@ namespace embroideryReader
             base.WndProc(ref m);
         }
 
-        public static bool checkColorFromStrings(string red, string green, string blue)
+        public static bool CheckColorFromStrings(string red, string green, string blue)
         {
             byte redByte;
             byte greenByte;
@@ -157,9 +157,9 @@ namespace embroideryReader
             return retval;
         }
 
-        public static Color makeColorFromStrings(string red, string green, string blue)
+        public static Color MakeColorFromStrings(string red, string green, string blue)
         {
-            if (checkColorFromStrings(red, green, blue))
+            if (CheckColorFromStrings(red, green, blue))
             {
                 return Color.FromArgb(Convert.ToByte(red), Convert.ToByte(green), Convert.ToByte(blue));
             }
@@ -169,7 +169,7 @@ namespace embroideryReader
             }
         }
 
-        private void updateDesignImage()
+        private void UpdateDesignImage()
         {
             if(design == null)
             {
@@ -180,7 +180,7 @@ namespace embroideryReader
             // Assume 96 DPI until we can come up with a better way to calculate it
             float screenDPI = 96;
 
-            Bitmap tempImage = design.designToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, (screenDPI / design.NativeDPI));
+            Bitmap tempImage = design.DesignToBitmap((float)settings.threadThickness, (settings.filterStiches), settings.filterStitchesThreshold, (screenDPI / design.NativeDPI));
 
             // Rotate image
             switch (designRotation)
@@ -305,7 +305,7 @@ namespace embroideryReader
             this.Text = System.IO.Path.GetFileName(loadedFileName) + " (" + (designScale * 100).ToString("0") + "%) - " + APP_TITLE;
         }
 
-        private void openFile(string filename)
+        private void OpenFile(string filename)
         {
             if (!System.IO.File.Exists(filename))
             {
@@ -334,13 +334,13 @@ namespace embroideryReader
             loadedFileName = filename;
             if (design != null)
             {
-                updateDesignImage();
+                UpdateDesignImage();
 
-                if (design.getFormatWarning())
+                if (design.GetFormatWarning())
                 {
                     toolStripStatusLabel1.Text = translation.GetTranslatedString(Translation.StringID.UNSUPPORTED_FORMAT); // "The format of this file is not completely supported";
                 }
-                else if (design.getColorWarning())
+                else if (design.GetColorWarning())
                 {
                     toolStripStatusLabel1.Text = translation.GetTranslatedString(Translation.StringID.COLOR_WARNING); // "Colors shown for this design may be inaccurate"
                 }
@@ -395,7 +395,7 @@ namespace embroideryReader
                 else
                 {
                     settings.lastOpenFileFolder = System.IO.Path.GetDirectoryName(filename);
-                    openFile(filename);
+                    OpenFile(filename);
                 }
             }
         }
@@ -415,7 +415,7 @@ namespace embroideryReader
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string message = String.Format(translation.GetTranslatedString(Translation.StringID.ABOUT_MESSAGE), currentVersion()); // "EmbroideryReader version " + currentVersion() + ". This program reads and displays embroidery designs from .PES files."
+            string message = String.Format(translation.GetTranslatedString(Translation.StringID.ABOUT_MESSAGE), CurrentVersion()); // "EmbroideryReader version " + currentVersion() + ". This program reads and displays embroidery designs from .PES files."
             //message += Environment.NewLine;
             //message += Environment.NewLine + "GUI GDI count: " + GuiResources.GetGuiResourcesGDICount();
             //message += Environment.NewLine + "GUI USER count: " + GuiResources.GetGuiResourcesUserCount();
@@ -436,7 +436,7 @@ namespace embroideryReader
             else if (updater.IsUpdateAvailable())
             {
                 if (MessageBox.Show(String.Format(translation.GetTranslatedString(Translation.StringID.NEW_VERSION_MESSAGE),
-                    updater.VersionAvailable(), updater.getReleaseDate().ToShortDateString(), currentVersion()) + // "Version " + updater.VersionAvailable() + " was released on " + updater.getReleaseDate().ToShortDateString() + ". You have version " + currentVersion() + "."
+                    updater.VersionAvailable(), updater.getReleaseDate().ToShortDateString(), CurrentVersion()) + // "Version " + updater.VersionAvailable() + " was released on " + updater.getReleaseDate().ToShortDateString() + ". You have version " + currentVersion() + "."
                     Environment.NewLine +
                     translation.GetTranslatedString(Translation.StringID.NEW_VERSION_QUESTION), // "Would you like to go to the Embroidery Reader website to download or find out more about the new version?",
                     translation.GetTranslatedString(Translation.StringID.NEW_VERSION_TITLE), // "New version available",
@@ -458,7 +458,7 @@ namespace embroideryReader
                 MessageBox.Show(translation.GetTranslatedString(Translation.StringID.NO_UPDATE) + // "No updates are available right now."
                      Environment.NewLine + 
                      String.Format(translation.GetTranslatedString(Translation.StringID.LATEST_VERSION),
-                     updater.VersionAvailable(), currentVersion())); // "(Latest version is " + updater.VersionAvailable() + ", you have version " + currentVersion() + ")");
+                     updater.VersionAvailable(), CurrentVersion())); // "(Latest version is " + updater.VersionAvailable() + ", you have version " + currentVersion() + ")");
             }
         }
 
@@ -482,7 +482,7 @@ namespace embroideryReader
             settings.save();
         }
 
-        private string currentVersion()
+        private string CurrentVersion()
         {
             return Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
@@ -493,7 +493,7 @@ namespace embroideryReader
             {
                 try
                 {
-                    string debugFile = design.saveDebugInfo();
+                    string debugFile = design.SaveDebugInfo();
                     MessageBox.Show(String.Format(translation.GetTranslatedString(Translation.StringID.DEBUG_INFO_SAVED), // "Saved debug info to " + debugFile
                         debugFile));
                 }
@@ -517,10 +517,10 @@ namespace embroideryReader
             if (tempForm.ShowDialog() == DialogResult.OK)
             {
                 settings = tempForm.settingsToModify;
-                loadSettings(true);
-                updateDesignImage();
+                LoadSettings(true);
+                UpdateDesignImage();
             }
-            loadTranslatedStrings(settings.translation);
+            LoadTranslatedStrings(settings.translation);
         }
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
@@ -558,7 +558,7 @@ namespace embroideryReader
 
                 // Set print graphics object scale and draw the image
                 e.Graphics.ScaleTransform((float)graphicsXScaleFactor, (float)graphicsYScaleFactor);
-                using (Bitmap tempDrawArea = design.designToBitmap((float)settings.threadThickness, settings.filterStiches, settings.filterStitchesThreshold, 1.0f))
+                using (Bitmap tempDrawArea = design.DesignToBitmap((float)settings.threadThickness, settings.filterStiches, settings.filterStitchesThreshold, 1.0f))
                 {
                     e.Graphics.DrawImage(tempDrawArea, 30, 30);
                 }
@@ -598,7 +598,7 @@ namespace embroideryReader
         private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
             designRotation = 0;
-            updateDesignImage();
+            UpdateDesignImage();
         }
 
         private void rotateLeftToolStripMenuItem_Click(object sender, EventArgs e)
@@ -608,7 +608,7 @@ namespace embroideryReader
             {
                 designRotation += 360;
             }
-            updateDesignImage();
+            UpdateDesignImage();
         }
 
         private void rotateRightToolStripMenuItem_Click(object sender, EventArgs e)
@@ -618,7 +618,7 @@ namespace embroideryReader
             {
                 designRotation -= 360;
             }
-            updateDesignImage();
+            UpdateDesignImage();
         }
 
         private void showDebugInfoToolStripMenuItem_Click(object sender, EventArgs e)
@@ -628,7 +628,7 @@ namespace embroideryReader
                 try
                 {
                     frmTextbox theform = new frmTextbox();
-                    theform.showText(design.getDebugInfo());
+                    theform.showText(design.GetDebugInfo());
                 }
                 catch (Exception ex)
                 {
@@ -680,14 +680,14 @@ namespace embroideryReader
                             default: format = System.Drawing.Imaging.ImageFormat.Bmp; break;
                         }
                         temp.Save(filename, format);
-                        showStatus(translation.GetTranslatedString(Translation.StringID.IMAGE_SAVED), 5000); // "Image saved"
+                        ShowStatus(translation.GetTranslatedString(Translation.StringID.IMAGE_SAVED), 5000); // "Image saved"
                         settings.lastSaveImageLocation = System.IO.Path.GetDirectoryName(filename);
                     }
                 }
             }
         }
 
-        private void showStatus(string text, int msec)
+        private void ShowStatus(string text, int msec)
         {
             toolStripStatusLabel2.Text = text;
             timer1.Interval = msec;
@@ -699,7 +699,7 @@ namespace embroideryReader
             toolStripStatusLabel2.Text = "";
         }
 
-        private void loadTranslatedStrings(String translationName)
+        private void LoadTranslatedStrings(String translationName)
         {
             translation = new Translation(translationName);
 
@@ -732,7 +732,7 @@ namespace embroideryReader
             aboutToolStripMenuItem.Text = translation.GetTranslatedString(Translation.StringID.MENU_ABOUT);
         }
 
-        private void setDesignScaleSetting(float scale, bool autoSize, bool updateDesign)
+        private void SetDesignScaleSetting(float scale, bool autoSize, bool updateDesign)
         {
             if(autoSize)
             {
@@ -748,63 +748,63 @@ namespace embroideryReader
             
             if (updateDesign)
             {
-                updateDesignImage();
+                UpdateDesignImage();
             }
         }
 
         private void scale100ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(1.0f, false, true);
+            SetDesignScaleSetting(1.0f, false, true);
         }
 
         private void scale90ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(0.9f, false, true);
+            SetDesignScaleSetting(0.9f, false, true);
         }
 
         private void scale80ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(0.8f, false, true);
+            SetDesignScaleSetting(0.8f, false, true);
         }
 
         private void scale70ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(0.7f, false, true);
+            SetDesignScaleSetting(0.7f, false, true);
         }
 
         private void scale60ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(0.6f, false, true);
+            SetDesignScaleSetting(0.6f, false, true);
         }
 
         private void scale50ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(0.5f, false, true);
+            SetDesignScaleSetting(0.5f, false, true);
         }
 
         private void scale40ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(0.4f, false, true);
+            SetDesignScaleSetting(0.4f, false, true);
         }
 
         private void scale30ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(0.3f, false, true);
+            SetDesignScaleSetting(0.3f, false, true);
         }
 
         private void scale20ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(0.2f, false, true);
+            SetDesignScaleSetting(0.2f, false, true);
         }
 
         private void scale10ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(0.1f, false, true);
+            SetDesignScaleSetting(0.1f, false, true);
         }
 
         private void scale5ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            setDesignScaleSetting(0.05f, false, true);
+            SetDesignScaleSetting(0.05f, false, true);
         }
 
         private void fitToWindowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -812,7 +812,7 @@ namespace embroideryReader
             // Toggle checked state
             fitToWindowToolStripMenuItem.Checked = !fitToWindowToolStripMenuItem.Checked;
             // Update design
-            setDesignScaleSetting(1.0f, fitToWindowToolStripMenuItem.Checked, true);
+            SetDesignScaleSetting(1.0f, fitToWindowToolStripMenuItem.Checked, true);
         }
 
         private void frmMain_ResizeEnd(object sender, EventArgs e)
@@ -822,7 +822,7 @@ namespace embroideryReader
             // of panel2 has changed to see if it's really a resize event.
             if (fitToWindowToolStripMenuItem.Checked && panel2LastUpdateSize != panel2.Size)
             {
-                updateDesignImage();
+                UpdateDesignImage();
             }
         }
 
@@ -838,7 +838,7 @@ namespace embroideryReader
                 
                 if (fitToWindowToolStripMenuItem.Checked)
                 {
-                    updateDesignImage();
+                    UpdateDesignImage();
                 }
             }
         }
