@@ -36,7 +36,7 @@ namespace PesFile
         public byte unknownStartByte;
         public StitchBlock()
         {
-            color = System.Drawing.Color.Black;
+            color = Color.Black;
         }
     }
 }

@@ -29,7 +29,7 @@ using System.IO;
 
 namespace PesFile
 {
-    public class PECFormatException : System.Exception
+    public class PECFormatException : Exception
     {
         public PECFormatException(string message) : base(message) { }
     }
@@ -200,8 +200,14 @@ namespace PesFile
                             curBlock.stitches = new Stitch[tempStitches.Count];
                             tempStitches.CopyTo(curBlock.stitches);
                             curBlock.stitchesTotal = tempStitches.Count;
+
                             colorNum++;
+                            if(colorNum >= colorList.Count)
+                            {
+                                throw new IndexOutOfRangeException("colorNum (" + colorNum + ") out of range (" + colorList.Count + ") in end of stitches block");
+                            }
                             colorIndex = colorList[colorNum];
+
                             curBlock.colorIndex = colorIndex;
                             curBlock.color = GetColorFromIndex(colorIndex);
                             blocks.Add(curBlock);
@@ -214,8 +220,14 @@ namespace PesFile
                             curBlock.stitches = new Stitch[tempStitches.Count];
                             tempStitches.CopyTo(curBlock.stitches);
                             curBlock.stitchesTotal = tempStitches.Count;
+
                             colorNum++;
+                            if (colorNum >= colorList.Count)
+                            {
+                                throw new IndexOutOfRangeException("colorNum (" + colorNum + ") out of range (" + colorList.Count + ") in color switch block");
+                            }
                             colorIndex = colorList[colorNum];
+
                             curBlock.colorIndex = colorIndex;
                             curBlock.color = GetColorFromIndex(colorIndex);
                             //read useless(?) byte
