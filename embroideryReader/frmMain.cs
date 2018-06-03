@@ -479,7 +479,18 @@ namespace embroideryReader
                     settings.windowHeight = this.Height;
                 }
             }
-            settings.save();
+            try
+            {
+                settings.save();
+            }
+            catch (System.IO.IOException /*ioex*/)
+            {
+                // Ignore IO exceptions when saving settings file, to deal with crashes caused by
+                // closing many windows at once.
+
+                // This isn't a great way to handle the problem, but it's better than getting
+                // the same automated error report over and over.
+            }
         }
 
         private string CurrentVersion()

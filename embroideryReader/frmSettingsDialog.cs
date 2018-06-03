@@ -135,6 +135,9 @@ namespace embroideryReader
 
             // Save translation setting
             settings.translation = availableTranslations[cmbLanguage.SelectedIndex].Item2;
+
+            // Save settings file
+            settings.save();
         }
 
         public Translation setTranslation
