@@ -39,9 +39,9 @@ namespace PesFile
         private int imageWidth;
         private int imageHeight;
         private string _filename;
+        private string designName;
         public List<StitchBlock> blocks = new List<StitchBlock>();
-        public List<Tuple<int, int>> colorTable = new List<Tuple<int, int>>();
-        private Int64 startStitches = 0;
+        private byte[] colorList;
         private Point translateStart;
         private UInt16 pesVersion;
         // Native format appears to use 0.1mm steps, for 254 steps per inch
@@ -154,23 +154,94 @@ namespace PesFile
 
                     int pecstart = fileIn.ReadInt32();
                     // Sanity check on PEC start position
-                    if (fileIn.BaseStream.Length < (pecstart + 532))
+                    if (fileIn.BaseStream.Length < (pecstart + 512 + 20))
                     {
                         // This file is probably truncated
                         throw new PECFormatException("File appears to be truncated (PEC section is beyond end of file)");
                     }
 
-                    // Read number of colors in this design
-                    fileIn.BaseStream.Position = pecstart + 48;
-                    int numColors = fileIn.ReadByte() + 1;
-                    List<byte> colorList = new List<byte>();
-                    for (int x = 0; x < numColors; x++)
+                    // Jump to the PEC section
+                    fileIn.BaseStream.Position = pecstart;
+
+                    // Read design name - always preceded by "LA:" as far as I can tell
+                    string pecIntro = "";
+                    pecIntro += (char)fileIn.ReadByte();
+                    pecIntro += (char)fileIn.ReadByte();
+                    pecIntro += (char)fileIn.ReadByte();
+                    if(pecIntro != "LA:")
                     {
-                        colorList.Add(fileIn.ReadByte());
+                        throw new PECFormatException("Missing 'LA:' at beginning of PEC header");
+                    }
+                    designName = "";
+                    for (int i = 0; i < 16; i++)
+                    {
+                        designName += (char)fileIn.ReadByte();
                     }
 
+                    // This byte always seems to be 0x0d (13). Could mean a carriage return, or maybe
+                    // it indicates this section is 13 bytes long.
+                    byte afterName = fileIn.ReadByte();
+                    if(afterName != 0x0d)
+                    {
+                        throw new PECFormatException("Byte after design name has unexpected value: " + afterName);
+                    }
+
+                    // Get rest of design name
+                    designName += " ";
+                    for (int i = 0; i < 12; i++)
+                    {
+                        designName += (char)fileIn.ReadByte();
+                    }
+                    designName = designName.Trim();
+
+                    // 0xff
+                    byte blockStart1 = fileIn.ReadByte();
+                    // 0x00
+                    byte blockStart2 = fileIn.ReadByte();
+                    // 0x06
+                    byte blockType1 = fileIn.ReadByte();
+                    // 0x26
+                    byte blockType2 = fileIn.ReadByte();
+                    if(!(blockStart1 == 0xff && blockStart2 == 0x00 && blockType1 == 0x06 && blockType2 == 0x26))
+                    {
+                        throw new PECFormatException("Block start before color list is unexpected: " + blockStart1.ToString("x2") + " " + blockStart2.ToString("x2") + " " + blockType1.ToString("x2") + " " + blockType2.ToString("x2"));
+                    }
+
+                    // 12 bytes of something, always observed to be 0x20
+                    byte[] something1 = fileIn.ReadBytes(12);
+
+                    //fileIn.BaseStream.Position = pecstart + 48;
+                    // Read number of colors in this design, or perhaps the number of color changes.
+                    // It seems that different digitisers use different meanings for this field.
+                    int numColors = fileIn.ReadByte() + 1;
+                    // Read the remaining bytes as a color table
+                    // 512 - 48 - 1 = 463 bytes remaining
+                    colorList = fileIn.ReadBytes(463);
+
+                    // 0x00
+                    byte anotherBlockStart1 = fileIn.ReadByte();
+                    // 0x00
+                    byte anotherBlockStart2 = fileIn.ReadByte();
+                    if(!(anotherBlockStart1 == 0x00 && anotherBlockStart2 == 0x00))
+                    {
+                        throw new PECFormatException("Block start after color list is unexpected: " + anotherBlockStart1.ToString("x2") + " " + anotherBlockStart2.ToString("x2"));
+                    }
+                    // 4 bytes of something
+                    byte[] something2 = fileIn.ReadBytes(4);
+
+                    // 0xff
+                    byte yetAnotherBlockStart1 = fileIn.ReadByte();
+                    // 0xf0
+                    byte yetAnotherBlockStart2 = fileIn.ReadByte();
+                    if(!(yetAnotherBlockStart1 == 0xff && yetAnotherBlockStart2 == 0xf0))
+                    {
+                        throw new PECFormatException("Block start before stitch blocks begin is unexpected: " + yetAnotherBlockStart1.ToString("x2") + " " + yetAnotherBlockStart2.ToString("x2"));
+                    }
+                    // 12 bytes of something
+                    byte[] something3 = fileIn.ReadBytes(12);
+
                     // Read stitch data
-                    fileIn.BaseStream.Position = pecstart + 532;
+                    //fileIn.BaseStream.Position = pecstart + 512 + 20;
                     bool thisPartIsDone = false;
                     StitchBlock curBlock;
                     int prevX = 0;
@@ -179,7 +250,7 @@ namespace PesFile
                     int minX = 0;
                     int maxY = 0;
                     int minY = 0;
-                    int colorNum = -1;
+                    int colorNum = 0;
                     int colorIndex = 0;
                     List<Stitch> tempStitches = new List<Stitch>();
                     Stitch prevStitch = null;
@@ -201,10 +272,9 @@ namespace PesFile
                             tempStitches.CopyTo(curBlock.stitches);
                             curBlock.stitchesTotal = tempStitches.Count;
 
-                            colorNum++;
-                            if(colorNum >= colorList.Count)
+                            if (colorNum >= colorList.Length)
                             {
-                                throw new IndexOutOfRangeException("colorNum (" + colorNum + ") out of range (" + colorList.Count + ") in end of stitches block");
+                                throw new IndexOutOfRangeException("colorNum (" + colorNum + ") out of range (" + colorList.Length + ") in end of stitches block");
                             }
                             colorIndex = colorList[colorNum];
 
@@ -221,12 +291,12 @@ namespace PesFile
                             tempStitches.CopyTo(curBlock.stitches);
                             curBlock.stitchesTotal = tempStitches.Count;
 
-                            colorNum++;
-                            if (colorNum >= colorList.Count)
+                            if (colorNum >= colorList.Length)
                             {
-                                throw new IndexOutOfRangeException("colorNum (" + colorNum + ") out of range (" + colorList.Count + ") in color switch block");
+                                throw new IndexOutOfRangeException("colorNum (" + colorNum + ") out of range (" + colorList.Length + ") in color switch block");
                             }
                             colorIndex = colorList[colorNum];
+                            colorNum++;
 
                             curBlock.colorIndex = colorIndex;
                             curBlock.color = GetColorFromIndex(colorIndex);
@@ -412,6 +482,11 @@ namespace PesFile
             }
         }
 
+        public string GetInternalDesignName()
+        {
+            return designName;
+        }
+
         // Returns the path of the file it saved debug info to
         public string SaveDebugInfo()
         {
@@ -428,10 +503,11 @@ namespace PesFile
         {
             System.IO.StringWriter outfile = new System.IO.StringWriter();
             outfile.WriteLine(_filename);
-            outfile.WriteLine("PES header");
             outfile.WriteLine("PES version:\t" + pesVersion);
+            outfile.WriteLine("Internal name:\t" + designName);
+            outfile.WriteLine("Format warning:\t" + formatWarning);
+            outfile.WriteLine("Color warning:\t" + colorWarning);
 
-            outfile.WriteLine("stitches start: " + startStitches.ToString());
             outfile.WriteLine("block info");
             outfile.WriteLine("number\tcolor\tstitches");
             for (int i = 0; i < this.blocks.Count; i++)
@@ -439,10 +515,10 @@ namespace PesFile
                 outfile.WriteLine((i + 1).ToString() + "\t" + blocks[i].colorIndex.ToString() + "\t" + blocks[i].stitchesTotal.ToString());
             }
             outfile.WriteLine("color table");
-            outfile.WriteLine("number\ta\tb");
-            for (int i = 0; i < colorTable.Count; i++)
+            outfile.WriteLine("block number\tcolor");
+            for (int i = 0; i < colorList.Length; i++)
             {
-                outfile.WriteLine((i + 1).ToString() + "\t" + colorTable[i].Item1.ToString() + ", " + colorTable[i].Item2.ToString());
+                outfile.WriteLine((i + 1).ToString() + "\t" + colorList[i]);
             }
             if (blocks.Count > 0)
             {
