@@ -124,6 +124,19 @@ namespace embroideryReader
             string exePath = System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath);
             exePath = System.IO.Path.Combine(exePath, TRANSLATIONS_FOLDER);
 
+            // if the path does not exist, create it
+            if (!System.IO.Directory.Exists(exePath))
+            {
+                try
+                {
+                    System.IO.Directory.CreateDirectory(exePath);
+                }
+                catch
+                {
+
+                }
+            }
+
             // If the default path exists, use it
             if (System.IO.Directory.Exists(exePath))
             {

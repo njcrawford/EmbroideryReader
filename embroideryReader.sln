@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Windows Desktop
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32228.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{1BA749B5-4B20-4C6A-AAE0-57F3A718B6E7}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryThumbs", "embroideryThumbs\embroideryThumbs.csproj", "{C4E7E0E5-EA6E-45DC-809A-1EF1FF8CCFE0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranslationBuilder", "TranslationBuilder\TranslationBuilder.csproj", "{470DCEFF-9178-475E-B3A0-A1ABF42AB1ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embroideryConverter", "embroideryConverter\embroideryConverter.csproj", "{C1D02527-F4D8-4E0B-B7D8-6408066283B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,8 +89,23 @@ Global
 		{470DCEFF-9178-475E-B3A0-A1ABF42AB1ED}.Release|Mixed Platforms.Build.0 = Release|x86
 		{470DCEFF-9178-475E-B3A0-A1ABF42AB1ED}.Release|x86.ActiveCfg = Release|x86
 		{470DCEFF-9178-475E-B3A0-A1ABF42AB1ED}.Release|x86.Build.0 = Release|x86
+		{C1D02527-F4D8-4E0B-B7D8-6408066283B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1D02527-F4D8-4E0B-B7D8-6408066283B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1D02527-F4D8-4E0B-B7D8-6408066283B3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C1D02527-F4D8-4E0B-B7D8-6408066283B3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C1D02527-F4D8-4E0B-B7D8-6408066283B3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C1D02527-F4D8-4E0B-B7D8-6408066283B3}.Debug|x86.Build.0 = Debug|Any CPU
+		{C1D02527-F4D8-4E0B-B7D8-6408066283B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1D02527-F4D8-4E0B-B7D8-6408066283B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1D02527-F4D8-4E0B-B7D8-6408066283B3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C1D02527-F4D8-4E0B-B7D8-6408066283B3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C1D02527-F4D8-4E0B-B7D8-6408066283B3}.Release|x86.ActiveCfg = Release|Any CPU
+		{C1D02527-F4D8-4E0B-B7D8-6408066283B3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {51532B78-1CD6-42B9-83C0-36F7C3E1BAE1}
 	EndGlobalSection
 EndGlobal

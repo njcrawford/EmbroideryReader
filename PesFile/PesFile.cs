@@ -677,11 +677,13 @@ namespace PesFile
             }
             if(filterUglyStitchesThreshold < 1.0)
             {
-                throw new ArgumentException("Filter ungly stitches threshold must be at least 1.0");
+                // throw new ArgumentException("Filter ungly stitches threshold must be at least 1.0");
+                filterUglyStitchesThreshold = 1.0;
             }
             if(threadThickness < 0.1)
             {
-                throw new ArgumentException("Thread thickness must be at least 0.1");
+                //throw new ArgumentException("Thread thickness must be at least 0.1");
+                threadThickness = (float) 0.1;
             }
 
             int imageWidth = (int)((GetWidth() + (threadThickness * 2)) * scale);

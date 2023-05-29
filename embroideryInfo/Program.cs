@@ -88,10 +88,7 @@ namespace embroideryInfo
                 {
                     if (args[1] == "--all")
                     {
-                        foreach(string file in System.IO.Directory.EnumerateFiles(Environment.CurrentDirectory, "*.pes"))
-                        {
-                            GenerateImage(file);
-                        }
+                        processDirectory(Environment.CurrentDirectory);
                     }
                     else
                     {
@@ -116,6 +113,19 @@ namespace embroideryInfo
             else
             {
                 PrintHelp();
+            }
+        }
+
+        private static void processDirectory(string dir)
+        {
+            foreach (string file in System.IO.Directory.EnumerateFiles(dir, "*.pes"))
+            {
+                GenerateImage(file);
+            }
+
+            foreach( string childDir in System.IO.Directory.EnumerateDirectories(dir))
+            {
+                processDirectory(childDir);
             }
         }
     }
